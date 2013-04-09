@@ -9,11 +9,6 @@ A Stellar Spectral Synthesis Suite (S4, for short). This is a suit that holds py
 The spectral synthesis are done with Tlusty/Synspec (Hubeny & Lanz et al.)
 
 
-To Do
------
-
-* Translate Synplot from IDL to python
-
 References
 ----------
 ***NLTE line blanketed model atmospheres of hot stars. I. Hybrid Complete Linearization/Accelerated Lambda Iteration Method***, 1995, Hubeny, I., & Lanz, T., Astrophysical Journal, 439, 875 ([Abstract](http://adsabs.harvard.edu/cgi-bin/nph-bib_query?1995ApJ...439..875H&db_key=AST)) ([Full article](http://adsabs.harvard.edu/cgi-bin/nph-article_query?1995ApJ...439..875H&db_key=AST), [PDF](http://nova.astro.umd.edu/Tlusty2002/pdf/1995ApJ...439..875H.pdf)) 
