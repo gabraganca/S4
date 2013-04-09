@@ -56,3 +56,27 @@ def subselect_spectra(spec, min_wl, max_wl, rad_vel = 0):
                  
     return cut_spec
 #=============================================================================
+
+#==============================================================================
+# Obtain FWHM of a spectral line
+def get_fwhm(spec, line_center):
+    """Obtain FWHM of a spectral line"""
+    
+    size = 20                                     #Maximum size of half wing
+    
+    line_pos = line_position(spec, line_center)   #get line_center coords
+    res = spec[1, 0] - spec[0, 0]                 #get resolution
+    arg = list(spec[:, 0]).index(line_pos[0])     #get argument of line center
+    half_max = 1 - (1  -line_pos[1])/2            #get half maximum flux
+    
+    left_values = []
+    right_values = []
+    for i in range(arg-int(size/res), arg):
+        if spec[i, 1] > half_max - 0.005 and spec[i, 1] < half_max + 0.005:
+            left_values.append(spec[i, 0])
+    for i in range(arg, arg+int(size/res)):
+        if spec[i, 1] > half_max - 0.005 and spec[i, 1] < half_max + 0.005:
+            right_values.append(spec[i, 0])
+    
+    return (np.mean(right_values) - np.mean(left_values)) 
+#==============================================================================
