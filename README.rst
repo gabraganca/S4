@@ -8,3 +8,13 @@ A Stellar Spectral Synthesis Suite (S4, for short). This is a suit that holds py
 modules that are aimed to spectral synthesis reduction of observed spectra.
 
 The spectral synthesis are done with Tlusty/Synspec (Hubeny & Lanz et al.)
+
+
+Dependencies
+------------
+
+- Numpy
+
+- Matplotlib
+
+- Scipy
