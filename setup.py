@@ -24,6 +24,7 @@ setup(name=NAME,
       packages=['s4',
                 's4.spectra',
                 's4.idltools',
+                's4.plot',
                 's4'],
       classifiers=[
         'Development Status :: Alpha',
