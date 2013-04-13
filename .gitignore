@@ -1,3 +1,32 @@
 *log
 *~
 *.py[cod]
+
+#Synspec rules
+
+#Plots, logs and temp files
+s4/synthesis/synplot/*.pdf
+s4/synthesis/synplot/*.eps
+s4/synthesis/synplot/*.ps
+s4/synthesis/synplot/*.png
+s4/synthesis/synplot/log*
+s4/synthesis/synplot/*log
+s4/synthesis/synplot/.*
+
+#Compiled files
+s4/synthesis/synplot/synspec49
+s4/synthesis/synplot/rotin3
+
+#Files created on the run
+s4/synthesis/synplot/*tmp
+s4/synthesis/synplot/data/
+s4/synthesis/synplot/intrp.[57]
+s4/synthesis/synplot/f[12]
+s4/synthesis/synplot/f55
+s4/synthesis/synplot/fort.[1578]
+s4/synthesis/synplot/fort.1[12467]
+s4/synthesis/synplot/fort.2[1256]
+s4/synthesis/synplot/fort.5[56]
+s4/synthesis/synplot/fort.84
+s4/synthesis/synplot/fort.95
+s4/synthesis/synplot/chisq.dat
