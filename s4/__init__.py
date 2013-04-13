@@ -1,3 +1,3 @@
-import idltools
+import idlwrapper
 import spectra
 import plot

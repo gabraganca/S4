@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from decimal import Decimal
 import scipy.stats as st
 from ..spectra import spectra
-from ..idltools import idltools
+from ..idlwrapper import idlwrapper
 from pylab import subplot
 from matplotlib.widgets import SpanSelector, Cursor
 
@@ -160,7 +160,7 @@ def flux_countour_plot(spec_line, **kwargs):
         kwargs['wstart'] = spec_line - 30
         kwargs['wend'] = spec_line + 30
         # Calculate the spectra
-        spec = idltools.run_load(idltools.synplot_input(**kwargs))
+        spec = idlwrapper.run_load(idlwrapper.synplot_input(**kwargs))
         #Find the intensity          
         int_storage[count] = pair[0], pair[1],                          \
                               spectra.line_position(spec, spec_line)[1]

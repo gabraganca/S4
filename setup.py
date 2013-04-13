@@ -23,7 +23,7 @@ setup(name=NAME,
       license=LICENSE,
       packages=['s4',
                 's4.spectra',
-                's4.idltools',
+                's4.idlwrapper',
                 's4.plot',
                 's4'],
       classifiers=[
