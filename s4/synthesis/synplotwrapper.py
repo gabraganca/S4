@@ -11,6 +11,14 @@ SYNPLOT_PATH  = getenv('HOME')+'/.s4/synthesis/synplot/'
 #=============================================================================
 
 #=============================================================================
+# Change synplot path
+def change_spath(new_path):
+    """Change synplot path"""
+    global SYNPLOT_PATH
+    SYNPLOT_PATH = new_path
+#=============================================================================
+
+#=============================================================================
 #     
 def synplot_input(**kwargs):
     """Build the synplot command to IDL.
