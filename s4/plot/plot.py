@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from decimal import Decimal
 import scipy.stats as st
 from ..spectra import spectra
-from ..synthesis import synplotwrapper
+from ..synthesis.synplotwrapper import synplot
 from pylab import subplot
 from matplotlib.widgets import SpanSelector, Cursor
 
@@ -160,10 +160,12 @@ def flux_countour_plot(spec_line, **kwargs):
         kwargs['wstart'] = spec_line - 30
         kwargs['wend'] = spec_line + 30
         # Calculate the spectra
-        spec = synplotwrapper.run_load(synplotwrapper.synplot_input(**kwargs))
+        spec = synplot(**kwargs)
+        spec.run()
         #Find the intensity          
-        int_storage[count] = pair[0], pair[1],                          \
-                              spectra.line_position(spec, spec_line)[1]
+        int_storage[count] = pair[0], pair[1],                               \
+                              spectra.line_position(spec.spectra,            \
+                                                    spec_line)[1]
         #print count,pair[0],pair[1], int_storage[count,2]
     
     #Do the contour plot
