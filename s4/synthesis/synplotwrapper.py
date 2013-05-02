@@ -1,8 +1,9 @@
 #=============================================================================
 # Modules
 from numpy import loadtxt
-from ..idlwrapper import idlwrapper
 from os import getenv
+import matplotlib.pyplot as plt
+from ..idlwrapper import idlwrapper
 #=============================================================================
 
 
@@ -22,8 +23,11 @@ class synplot:
                 raise ValueError(par + ' were not defined.')    
         
         self.parameters = kwargs
+        
+        #Override IDL plotting
+        self.parameters['noplot'] = '1'
 
-    #=============================================================================
+    #=========================================================================
     #     
     def synplot_input(self):
         """Build the synplot command to IDL."""
@@ -33,9 +37,9 @@ class synplot:
                 
         return "CD, '"+self.path+"' & synplot, "+ \
                         ', '.join(synplot_command)
-    #============================================================================= 
+    #========================================================================= 
     
-    #=============================================================================
+    #=========================================================================
     # Run synplot and return the computed spectra
     def run(self):
         '''Run synplot and store the computed spectra'''
@@ -44,4 +48,34 @@ class synplot:
     
         #load synthetized spectra
         self.spectra = loadtxt(self.path + 'fort.11')    
+    #=========================================================================
+    
+    #==============================================================================
+    # Plot     
+    def plot(self):
+        """
+        Plot the synthetic spectra. 
+        If the synthetic spectra were not calculated, it will calculate.
+        
+        Feature to add:
+            - Overplot
+            - Line identification
+        """
+        
+        # Check if spectra were calculated
+        if 'self.spectra' not in globals():
+            self.run()
+            
+        # Plot
+        plt.plot(self.spectra[:, 0], self.spectra[:, 1])
+        plt.xlabel(r'Wavelength $(\AA)$')
+        plt.xlim([self.parameters['wstart'], self.parameters['wend']])
+        if 'relative' in self.parameters:
+            plt.ylabel('Normalized Flux')
+            plt.ylim([0, 1.05])
+        else:
+            plt.ylabel('Flux')
+        
+        plt.show(block = False)    
+        plt.clf()        
     #==============================================================================
