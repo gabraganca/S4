@@ -3,6 +3,7 @@
 from numpy import loadtxt
 from os import getenv
 import matplotlib.pyplot as plt
+import re
 from ..idlwrapper import idlwrapper
 #=============================================================================
 
@@ -26,6 +27,12 @@ class synplot:
         
         #Override IDL plotting
         self.parameters['noplot'] = '1'
+        
+        # Check if line identification is required
+        if 'ident' in self.parameters:
+            # Tells Synplot to not identify lines
+            self.parameters['ident'] = '0'
+            self.line_id = True
 
     #=========================================================================
     #     
@@ -50,7 +57,7 @@ class synplot:
         self.spectra = loadtxt(self.path + 'fort.11')    
     #=========================================================================
     
-    #==============================================================================
+    #=========================================================================
     # Plot     
     def plot(self):
         """
@@ -78,4 +85,25 @@ class synplot:
         
         plt.show(block = False)    
         plt.clf()        
-    #==============================================================================
+    #=========================================================================
+    
+    #=========================================================================
+    # Select lines to line identification
+    def lineid_select(self):
+        """Identify lines to be plot by lineid_plot"""
+        # List of chemical elements 
+        table = open(self.path + 'fort.12').read() +                         \
+                open(self.path + 'fort.14').read()
+        
+        # Pattern for regex
+        ptrn  = '(\\d{4}\\.\\d{3})\\s+(\\w{1,2}\\s+I{1,3})'   
+        
+        #Find patterns
+        regex_table = re.findall(ptrn, table)
+        
+        # Parse table
+        wavelengths = [float(line[0]) for line in regex_table]
+        chem_elements = [line[1] for line in regex_table]
+        
+        return wavelengths, chem_elements        
+    #=========================================================================
