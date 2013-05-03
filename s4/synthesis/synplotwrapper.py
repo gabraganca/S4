@@ -32,8 +32,9 @@ class synplot:
         # Check if line identification is required
         if 'ident' in self.parameters:
             # Tells Synplot to not identify lines
+            self.line_id = self.parameters['ident']
             self.parameters['ident'] = '0'
-            self.line_id = True
+            
         else:
             self.line_id = False
 
@@ -78,7 +79,11 @@ class synplot:
         # Plot
         fig = plt.figure()
 
-        ax = fig.add_axes([0.1, 0.1, 0.85, 0.65])
+        # Identify lines, if required
+        if self.line_id is not False:
+            ax = fig.add_axes([0.1, 0.1, 0.85, 0.6])
+        else:
+            ax = fig.gca()
         ax.plot(self.spectra[:, 0], self.spectra[:, 1])
         plt.xlabel(r'Wavelength $(\AA)$')
         plt.xlim([self.parameters['wstart'], self.parameters['wend']])
@@ -89,13 +94,13 @@ class synplot:
             plt.ylabel('Flux')
         
         # Identify lines, if required
-        if self.line_id:
+        if self.line_id is not False:
             # Obtain the spectral line wavelength and identification
             line_wave, line_label = self.lineid_select()
             lineid_plot.plot_line_ids(self.spectra[:, 0], self.spectra[:, 1],
                                       line_wave, line_label, label1_size = 10,
                                       extend = False, ax = ax,
-                                      box_axes_space = 0.12)
+                                      box_axes_space = 0.15)
 
 
         plt.show(block = False)    
@@ -111,14 +116,17 @@ class synplot:
                 open(self.path + 'fort.14').read()
         
         # Pattern for regex
-        ptrn  = '(\d{4}\.\d{3})\s+(\\w{1,2}\s+I{1,3}).+(\*+)'   
-        
+        ptrn = r'(\d{4}\.\d{3})\s+(\w{1,2}\s+I{1,3}).+(\b\d+\.\d)\s+(\*+)'
+
         #Find patterns
         regex_table = re.findall(ptrn, table)
-        
+ 
         # Parse table
-        wavelengths = [float(line[0]) for line in regex_table]
-        chem_elements = [line[1] + ' ' + line[0] for line in regex_table]
+        wavelengths = [float(line[0]) for line in regex_table 
+                       if float(line[2]) >= self.line_id] 
+        chem_elements = [line[1] + ' ' + line[0] + '  ' + line[2]
+                         for line in regex_table 
+                         if float(line[2]) >= self.line_id]
         
         return wavelengths, chem_elements        
     #=========================================================================
