@@ -18,3 +18,5 @@ Dependencies
 - Matplotlib
 
 - Scipy
+
+- `Lineid_plot <https://github.com/phn/lineid_plot>`_
