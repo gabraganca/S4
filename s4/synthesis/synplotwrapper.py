@@ -76,25 +76,28 @@ class synplot:
             self.run()
             
         # Plot
-        if self.line_id:
-            # Obtain the spectral line wavelength and identification
-            line_wave, line_label = self.lineid_select()
-            #ax = fig.add_axes([0.1, 0.1, 0.85, 0.65])
-            #ax.plot(self.spectra[:, 0], self.spectra[:, 1])
-            lineid_plot.plot_line_ids(self.spectra[:, 0], self.spectra[:, 1],
-                                      line_wave, line_label, label1_size = 10,
-                                      extend = False,  
-                                      box_axes_space = 0.12)
-        else:
-            plt.plot(self.spectra[:, 0], self.spectra[:, 1])
+        fig = plt.figure()
+
+        ax = fig.add_axes([0.1, 0.1, 0.85, 0.65])
+        ax.plot(self.spectra[:, 0], self.spectra[:, 1])
         plt.xlabel(r'Wavelength $(\AA)$')
         plt.xlim([self.parameters['wstart'], self.parameters['wend']])
         if 'relative' in self.parameters:
-            plt.ylabel('Normalized Flux')
             plt.ylim([0, 1.05])
+            plt.ylabel('Normalized Flux')
         else:
             plt.ylabel('Flux')
         
+        # Identify lines, if required
+        if self.line_id:
+            # Obtain the spectral line wavelength and identification
+            line_wave, line_label = self.lineid_select()
+            lineid_plot.plot_line_ids(self.spectra[:, 0], self.spectra[:, 1],
+                                      line_wave, line_label, label1_size = 10,
+                                      extend = False, ax = ax,
+                                      box_axes_space = 0.12)
+
+
         plt.show(block = False)    
         plt.clf()        
     #=========================================================================
