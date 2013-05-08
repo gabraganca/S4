@@ -116,7 +116,7 @@ class synplot:
                 open(self.path + 'fort.14').read()
         
         # Pattern for regex
-        ptrn = r'(\d{4}\.\d{3})\s+(\w{1,2}\s+I{1,3}).+(\b\d+\.\d)\s+(\*+)'
+        ptrn = r'(\d{4}\.\d{3})\s+(\w{1,2}\s+I*V*I*).+(\b\d+\.\d)\s+(\*+)'
 
         #Find patterns
         regex_table = re.findall(ptrn, table)
