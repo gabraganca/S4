@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import re
 import lineid_plot
 from ..idlwrapper import idlwrapper
+from ..utils import handling
 #=============================================================================
 
 
@@ -13,16 +14,28 @@ from ..idlwrapper import idlwrapper
 class synplot:
     """Add docstring"""
     
-    def __init__(self, synplot_path = None, **kwargs):
+    def __init__(self, teff, logg, synplot_path = None, **kwargs):
         if synplot_path is None:
             self.path = getenv('HOME')+'/.s4/synthesis/synplot/'
         else:
             self.path = synplot_path
-        
+            
+        # Setting teff and logg on the dictionary
+        kwargs['teff'] = teff
+        kwargs['logg'] = logg
+            
         #Check if some params were defined    
-        for par in ['teff', 'logg', 'wstart', 'wend']:
-            if par not in kwargs.keys():
-                raise ValueError(par + ' were not defined.')    
+        if 'wstart' not in kwargs.keys():
+            kwargs['wstart'] = float(handling.File(self.path + 'fort.19').\
+                               head()[0].split()[0]) * 10
+            print 'wstart not defined.'
+            print 'Setting as {:.2f} Angstrons.\n'.format(kwargs['wstart'])
+
+        if 'wend' not in kwargs.keys():
+            kwargs['wend'] = float(handling.File(self.path + 'fort.19').\
+                               tail()[0].split()[0]) * 10
+            print 'wend not defined.'
+            print 'Setting as {:.2f} Angstrons.\n'.format(kwargs['wend'])     
         
         self.parameters = kwargs
         
