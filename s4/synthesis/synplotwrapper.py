@@ -1,6 +1,6 @@
 #=============================================================================
 # Modules
-from numpy import loadtxt
+import numpy as np
 from os import getenv
 import matplotlib.pyplot as plt
 import re
@@ -39,6 +39,12 @@ class synplot:
         
         self.parameters = kwargs
         
+        # Check if a observation spectra is available
+        if 'observ' in self.parameters:
+            self.observation = np.loadtxt(self.parameters['observ'])
+            #Delete entry to not input in IDL            
+            del self.parameters['observ']  
+        
         #Override IDL plotting
         self.parameters['noplot'] = '1'
         
@@ -71,7 +77,7 @@ class synplot:
         idlwrapper.run_idl(self.synplot_input(), do_log = True)
     
         #load synthetized spectra
-        self.spectra = loadtxt(self.path + 'fort.11')    
+        self.spectra = np.loadtxt(self.path + 'fort.11')    
     #=========================================================================
     
     #=========================================================================
@@ -81,12 +87,11 @@ class synplot:
         Plot the synthetic spectra. 
         If the synthetic spectra were not calculated, it will calculate.
         
-        Feature to add:
-            - Overplot
         """
         
         # Check if spectra were calculated
-        if 'self.spectra' not in globals():
+        #if 'self.spectra' not in globals():
+        if not hasattr(self, 'spectra'):
             self.run()
             
         # Plot
@@ -97,7 +102,13 @@ class synplot:
             ax = fig.add_axes([0.1, 0.1, 0.85, 0.6])
         else:
             ax = fig.gca()
-        ax.plot(self.spectra[:, 0], self.spectra[:, 1])
+        ax.plot(self.spectra[:, 0], self.spectra[:, 1], label = 'Synthetic')
+        
+        # If a observation spectra is available, plot it  
+        if hasattr(self, 'observation'):
+            ax.plot(self.observation[:, 0], self.observation[:, 1], 
+                    label = 'Observation')
+        
         plt.xlabel(r'Wavelength $(\AA)$')
         plt.xlim([self.parameters['wstart'], self.parameters['wend']])
         if 'relative' in self.parameters:
@@ -115,7 +126,7 @@ class synplot:
                                       extend = False, ax = ax,
                                       box_axes_space = 0.15)
 
-
+        plt.legend(fancybox = True, loc = 'lower right')
         plt.show(block = False)    
         plt.clf()        
     #=========================================================================
