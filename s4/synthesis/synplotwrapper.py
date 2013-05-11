@@ -5,6 +5,7 @@ from os import getenv
 import matplotlib.pyplot as plt
 import re
 import lineid_plot
+from ..spectra import rvcorr
 from ..idlwrapper import idlwrapper
 from ..utils import handling
 #=============================================================================
@@ -94,6 +95,15 @@ class synplot:
         if not hasattr(self, 'spectra'):
             self.run()
             
+            
+        # Apply scale and radial velocity if needed
+        self.mod_spectra = self.spectra
+        if 'rv' in  self.parameters:
+            self.mod_spectra[:, 0] *= rvcorr(self.parameters['rv'])
+            
+        if 'scale' in self.parameters:
+            self.mod_spectra[:, 1] *= self.parameters['scale']
+            
         # Plot
         fig = plt.figure()
 
@@ -102,7 +112,8 @@ class synplot:
             ax = fig.add_axes([0.1, 0.1, 0.85, 0.6])
         else:
             ax = fig.gca()
-        ax.plot(self.spectra[:, 0], self.spectra[:, 1], label = 'Synthetic')
+        ax.plot(self.mod_spectra[:, 0], self.mod_spectra[:, 1], 
+                label = 'Synthetic')
         
         # If a observation spectra is available, plot it  
         if hasattr(self, 'observation'):
