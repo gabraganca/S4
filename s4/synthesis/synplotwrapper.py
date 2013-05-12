@@ -95,14 +95,12 @@ class synplot:
         if not hasattr(self, 'spectra'):
             self.run()
             
-            
         # Apply scale and radial velocity if needed
-        self.mod_spectra = self.spectra
         if 'rv' in  self.parameters:
-            self.mod_spectra[:, 0] *= rvcorr(self.parameters['rv'])
+            self.apply_rvcorr()
             
         if 'scale' in self.parameters:
-            self.mod_spectra[:, 1] *= self.parameters['scale']
+            self.apply_scale()
             
         # Plot
         fig = plt.figure()
@@ -112,7 +110,7 @@ class synplot:
             ax = fig.add_axes([0.1, 0.1, 0.85, 0.6])
         else:
             ax = fig.gca()
-        ax.plot(self.mod_spectra[:, 0], self.mod_spectra[:, 1], 
+        ax.plot(self.spectra[:, 0], self.spectra[:, 1], 
                 label = 'Synthetic')
         
         # If a observation spectra is available, plot it  
@@ -164,4 +162,20 @@ class synplot:
                          if float(line[2]) >= self.line_id]
         
         return wavelengths, chem_elements        
+    #=========================================================================
+    
+    #=========================================================================
+    #Apply scale
+    def apply_scale(self):
+        """ Apply scale. """
+        self.spectra[:, 1] *= self.parameters['scale']
+                 
+    #=========================================================================
+    
+    #=========================================================================
+    #Apply scale
+    def apply_rvcorr(self):
+        """ Apply raidal velocity correction. """
+        self.spectra[:, 0] *= rvcorr(self.parameters['rv'])
+                 
     #=========================================================================
