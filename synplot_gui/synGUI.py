@@ -13,16 +13,29 @@ from PyQt4 import QtGui
 #==============================================================================
 
 #==============================================================================
+# 
+class Example(QtGui.QWidget):
+    
+    def __init__(self):
+        super(Example, self).__init__()
+        
+        self.initUI()
+        
+    def initUI(self):
+        
+        self.setGeometry(600, 200, 640, 480)
+        self.setWindowTitle('synGUI')
+    
+        self.show()
+#==============================================================================
+
+#==============================================================================
 #
 def main():
     
     app = QtGui.QApplication(sys.argv)
 
-    w = QtGui.QWidget()
-    w.resize(640, 480)
-    w.move(600, 100)
-    w.setWindowTitle('synGUI')
-    w.show()
+    ex = Example()
     
     sys.exit(app.exec_()) 
 #==============================================================================
