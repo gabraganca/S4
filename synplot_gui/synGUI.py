@@ -3,6 +3,8 @@
 
 """
 Create and interactive synplot.
+
+I am following the tutorial found at http://zetcode.com/tutorials/pyqt4/
 """
 #==============================================================================
 
