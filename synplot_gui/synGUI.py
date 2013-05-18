@@ -13,6 +13,10 @@ http://eli.thegreenplace.net/2009/01/20/matplotlib-with-pyqt-guis/
 # Import Modules
 import sys
 from PyQt4 import QtGui, QtCore
+import matplotlib
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
 import s4
 
 #==============================================================================
@@ -29,8 +33,20 @@ class Widget(QtGui.QMainWindow):
     
     def __init__(self):
         super(Widget, self).__init__()
+
+        # set font for tips
+        QtGui.QToolTip.setFont(QtGui.QFont('SansSerif', 10))
+
+        # Frame setup
+        self.resize(FRAME_WIDTH, FRAME_HEIGHT)
+        self.center()
+        self.setWindowTitle('synGUI')
+        self.create_menu()
         
         self.initUI()
+
+        self.synplot()
+        self.on_draw()
         
     # About    
     def on_about(self):
@@ -46,24 +62,68 @@ class Widget(QtGui.QMainWindow):
         self.syn.run()    
         
     def initUI(self):
+
+        self.main_frame = QtGui.QWidget()
         
-        self.resize(FRAME_WIDTH, FRAME_HEIGHT)
-        self.center()
-        self.setWindowTitle('synGUI')
-        self.create_menu()
+        # Create the mpl Figure and FigCanvas objects. 
+        # 5x4 inches, 100 dots-per-inch
+        #
+        self.dpi = 100
+        self.fig = Figure((5.0, 4.0), dpi=self.dpi)
+        self.canvas = FigureCanvas(self.fig)
+        self.canvas.setParent(self.main_frame)  
         
-        # set font for tips
-        QtGui.QToolTip.setFont(QtGui.QFont('SansSerif', 10))
+        # Since we have only one plot, we can use add_axes 
+        # instead of add_subplot, but then the subplot
+        # configuration tool in the navigation toolbar wouldn't
+        # work.
+        #
+        self.axes = self.fig.add_subplot(111)   
         
+        # Create the navigation toolbar, tied to the canvas
+        #
+        self.mpl_toolbar = NavigationToolbar(self.canvas, self.main_frame) 
+        
+        # Other GUI controls
+        # 
         # button to run synplot
-        run_btn = QtGui.QPushButton('Run', self)
-        run_btn.clicked.connect(self.synplot)
-        run_btn.setToolTip('Press to run <b>synplot</b> <b>(INACTIVE)</b>')
-        run_btn.resize(run_btn.sizeHint())
-        run_btn.move(50, 50)
+        self.run_button = QtGui.QPushButton('Run', self)
+        self.run_button.clicked.connect(self.synplot)
+        self.run_button.setToolTip('Press to run <b>synplot</b>')
+        self.run_button.resize(self.run_button.sizeHint())
         
-    
+        #
+        # Layout with box sizers
+        # 
+        hbox = QtGui.QHBoxLayout()
+        
+        for w in [self.run_button]:
+            hbox.addWidget(w)
+            hbox.setAlignment(w, QtCore.Qt.AlignVCenter)
+        
+        vbox = QtGui.QVBoxLayout()
+        vbox.addWidget(self.canvas)
+        vbox.addWidget(self.mpl_toolbar)
+        vbox.addLayout(hbox)                  
+
+        self.main_frame.setLayout(vbox)
+        self.setCentralWidget(self.main_frame)
+       
         self.show()
+
+    # Draw canvas        
+    def on_draw(self):
+        """ Redraws the figure
+        """
+        # clear the axes and redraw the plot anew
+        #
+        self.axes.clear()        
+        
+        self.axes.plot(
+            self.syn.spectra[:, 0], 
+            self.syn.spectra[:, 1])
+        
+        self.canvas.draw()        
         
     # Set window to center of desktop
     def center(self):
