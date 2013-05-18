@@ -16,13 +16,6 @@ import s4
 #==============================================================================
 
 #==============================================================================
-# synplot test module
-def synplot_test():
-    syn = s4.synthesis.synplot(20000, 4, wstart = 4460, wend = 4480)
-    syn.plot()
-#==============================================================================
-
-#==============================================================================
 # 
 class Widget(QtGui.QWidget):
     
@@ -30,6 +23,11 @@ class Widget(QtGui.QWidget):
         super(Widget, self).__init__()
         
         self.initUI()
+
+    # synplotmodule    
+    def synplot(self):
+        self.syn = s4.synthesis.synplot(20000, 4, wstart = 4460, wend = 4480)
+        self.syn.run()    
         
     def initUI(self):
         
@@ -42,7 +40,7 @@ class Widget(QtGui.QWidget):
         
         # button to run synplot
         run_btn = QtGui.QPushButton('Run', self)
-        run_btn.clicked.connect(synplot_test)
+        run_btn.clicked.connect(self.synplot)
         run_btn.setToolTip('Press to run <b>synplot</b> <b>(INACTIVE)</b>')
         run_btn.resize(run_btn.sizeHint())
         run_btn.move(50, 50)
