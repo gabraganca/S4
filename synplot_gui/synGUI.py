@@ -85,19 +85,26 @@ class Widget(QtGui.QMainWindow):
         self.mpl_toolbar = NavigationToolbar(self.canvas, self.main_frame) 
         
         # Other GUI controls
-        # 
+        #
+        self.textbox_teff = QtGui.QLineEdit()
+        self.textbox_teff.setMaximumWidth(55)
+        self.connect(self.textbox_teff, QtCore.SIGNAL('editingFinished ()'),
+                     self.test)        
+         
         # button to run synplot
         self.run_button = QtGui.QPushButton('Run', self)
-        self.run_button.clicked.connect(self.synplot)
+        #self.run_button.clicked.connect(self.synplot)
+        self.connect(self.run_button, QtCore.SIGNAL('clicked()'), self.on_draw)
         self.run_button.setToolTip('Press to run <b>synplot</b>')
         self.run_button.resize(self.run_button.sizeHint())
+        self.run_button.setMaximumWidth(50)
         
         #
         # Layout with box sizers
         # 
         hbox = QtGui.QHBoxLayout()
         
-        for w in [self.run_button]:
+        for w in [self.textbox_teff, self.run_button]:
             hbox.addWidget(w)
             hbox.setAlignment(w, QtCore.Qt.AlignVCenter)
         
@@ -183,6 +190,9 @@ class Widget(QtGui.QMainWindow):
         if checkable:
             action.setCheckable(True)
         return action
+        
+    def test(self):
+        print 'this is a test'        
         
 #==============================================================================
 
