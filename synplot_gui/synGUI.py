@@ -33,7 +33,8 @@ class Widget(QtGui.QWidget):
         
     def initUI(self):
         
-        self.setGeometry(600, 200, 640, 480)
+        self.resize(640, 480)
+        self.center()
         self.setWindowTitle('synGUI')
         
         # set font for tips
@@ -48,6 +49,14 @@ class Widget(QtGui.QWidget):
         
     
         self.show()
+        
+    # Set window to center of desktop
+    def center(self):
+        
+        qr = self.frameGeometry()
+        cp = QtGui.QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())        
 #==============================================================================
 
 #==============================================================================
