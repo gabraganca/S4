@@ -52,7 +52,7 @@ class Widget(QtGui.QMainWindow):
     def on_about(self):
         msg = """ A GUI for synplot
         
-         * descride using ReST
+         * describe using ReST
         """
         QtGui.QMessageBox.about(self, "About synGUI", msg.strip())        
 
@@ -69,7 +69,7 @@ class Widget(QtGui.QMainWindow):
         # 5x4 inches, 100 dots-per-inch
         #
         self.dpi = 100
-        self.fig = Figure((5.0, 4.0), dpi=self.dpi)
+        self.fig = Figure((5.0, 4.0), dpi = self.dpi)
         self.canvas = FigureCanvas(self.fig)
         self.canvas.setParent(self.main_frame)  
         
@@ -151,7 +151,7 @@ class Widget(QtGui.QMainWindow):
             shortcut="Ctrl+S", slot=self.save_plot, 
             tip="Save the plot")
         """    
-        quit_action = self.create_action("&Quit", slot=self.close, 
+        quit_action = self.create_action("&Quit", slot = self.close, 
             shortcut="Ctrl+Q", tip="Close the application")
         
         #self.add_actions(self.file_menu, (load_file_action, None, quit_action))
@@ -159,9 +159,8 @@ class Widget(QtGui.QMainWindow):
         
         # add help menu
         self.help_menu = self.menuBar().addMenu("&Help")
-        about_action = self.create_action("&About", 
-            shortcut='F1', slot=self.on_about, 
-            tip='About synGUI')
+        about_action = self.create_action("&About", shortcut='F1', 
+                       slot=self.on_about, tip='About synGUI')
         
         self.add_actions(self.help_menu, (about_action,))       
 
@@ -174,12 +173,11 @@ class Widget(QtGui.QMainWindow):
                 target.addAction(action)
         
     # Create (generic) action
-    def create_action(self, text, slot=None, shortcut=None, 
-                      icon=None, tip=None, checkable=False, 
-                      signal="triggered()"):
+    def create_action(self, text, slot=None, shortcut=None, icon=None, 
+                      tip=None, checkable=False, signal="triggered()"):
         action = QtGui.QAction(text, self)
         if icon is not None:
-            action.setIcon(QIcon(":/%s.png" % icon))
+            action.setIcon(QtGui.QIcon(":/%s.png" % icon))
         if shortcut is not None:
             action.setShortcut(shortcut)
         if tip is not None:
