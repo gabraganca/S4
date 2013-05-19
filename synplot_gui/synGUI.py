@@ -109,18 +109,25 @@ class Widget(QtGui.QMainWindow):
         #
         # Layout with box sizers
         # 
-        hbox = QtGui.QHBoxLayout()
         
+        # add vertical box for canvas        
+        vbox_canvas = QtGui.QVBoxLayout()
+        vbox_canvas.addWidget(self.canvas)
+        vbox_canvas.addWidget(self.mpl_toolbar)        
+        
+        # add a vertical box for the buttons, text and textbox 
+        vbox_btns = QtGui.QVBoxLayout()
+                
         for w in [self.textbox_teff, self.run_button]:
-            hbox.addWidget(w)
-            hbox.setAlignment(w, QtCore.Qt.AlignVCenter)
+            vbox_btns.addWidget(w)
+            vbox_btns.setAlignment(w, QtCore.Qt.AlignVCenter)
         
-        vbox = QtGui.QVBoxLayout()
-        vbox.addWidget(self.canvas)
-        vbox.addWidget(self.mpl_toolbar)
-        vbox.addLayout(hbox)                  
+        # arrange vbox's on a horizontal box
+        hbox_main = QtGui.QHBoxLayout()
+        hbox_main.addLayout(vbox_canvas)   # First column
+        hbox_main.addLayout(vbox_btns)     # Second column
 
-        self.main_frame.setLayout(vbox)
+        self.main_frame.setLayout(hbox_main)
         self.setCentralWidget(self.main_frame)
        
         self.show()
