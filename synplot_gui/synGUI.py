@@ -23,13 +23,13 @@ import s4
 
 #==============================================================================
 # Global variables
-FRAME_WIDTH = 640
+FRAME_WIDTH = 760
 FRAME_HEIGHT = 480
 #==============================================================================
 
 #==============================================================================
 # 
-class Widget(QtGui.QMainWindow):
+class Widget(QtGui.QWidget):
     
     def __init__(self):
         super(Widget, self).__init__()
@@ -41,12 +41,10 @@ class Widget(QtGui.QMainWindow):
         self.resize(FRAME_WIDTH, FRAME_HEIGHT)
         self.center()
         self.setWindowTitle('synGUI')
-        self.create_menu()
-        
+       
         self.create_frame()
 
         self.synplot()
-        self.on_draw()
         
     # About    
     def on_about(self):
@@ -62,6 +60,9 @@ class Widget(QtGui.QMainWindow):
     def synplot(self):
         self.syn = s4.synthesis.synplot(20000, 4, wstart = 4460, wend = 4480)
         self.syn.run()
+        self.on_draw()
+        # This is a test
+        self.test()
     #=========================================================================
     
     #=========================================================================
@@ -92,43 +93,61 @@ class Widget(QtGui.QMainWindow):
         
         # Other GUI controls
         #
-        self.textbox_teff = QtGui.QLineEdit()
-        self.textbox_teff.setMaximumWidth(55)
-        self.connect(self.textbox_teff, QtCore.SIGNAL('editingFinished ()'),
-                     self.test)        
+        # teff
+        self.teff_label = QtGui.QLabel('teff')
+        
+        self.teff_textbox = self.add_text_input('Enter value for ' + \
+                                                'Effective Temperature')
+        # logg
+        self.logg_label = QtGui.QLabel('logg')
+        
+        self.logg_textbox = self.add_text_input('Enter value for ' + \
+                                                'logarithm of surface ' + \
+                                                'gravity')
+        # wstart
+        self.wstart_label = QtGui.QLabel('wstart')
+        
+        self.wstart_textbox = self.add_text_input('Starting Wavelength')
+        # wend
+        self.wend_label = QtGui.QLabel('wend')
+        
+        self.wend_textbox = self.add_text_input('Ending Wavelength')                                                 
          
         # button to run synplot
         self.run_button = QtGui.QPushButton('Run', self)
         #self.run_button.clicked.connect(self.synplot)
-        self.connect(self.run_button, QtCore.SIGNAL('clicked()'), 
-                     self.on_draw)
+        #             self.synplot)
         self.run_button.setToolTip('Press to run <b>synplot</b>')
         self.run_button.resize(self.run_button.sizeHint())
         self.run_button.setMaximumWidth(50)
-        
+
         #
         # Layout with box sizers
-        # 
+        #
+        # define grid
+        grid = QtGui.QGridLayout()
+        #grid.setSpacing(10)
         
-        # add vertical box for canvas        
-        vbox_canvas = QtGui.QVBoxLayout()
-        vbox_canvas.addWidget(self.canvas)
-        vbox_canvas.addWidget(self.mpl_toolbar)        
-        
-        # add a vertical box for the buttons, text and textbox 
-        vbox_btns = QtGui.QVBoxLayout()
-                
-        for w in [self.textbox_teff, self.run_button]:
-            vbox_btns.addWidget(w)
-            vbox_btns.setAlignment(w, QtCore.Qt.AlignVCenter)
-        
-        # arrange vbox's on a horizontal box
-        hbox_main = QtGui.QHBoxLayout()
-        hbox_main.addLayout(vbox_canvas)   # First column
-        hbox_main.addLayout(vbox_btns)     # Second column
+        #set canvas
+        grid.addWidget(self.canvas, 0, 0, 5, 1)
+        grid.addWidget(self.mpl_toolbar, 6, 0)
 
-        self.main_frame.setLayout(hbox_main)
-        self.setCentralWidget(self.main_frame)
+        # Define first row
+        grid.addWidget(self.teff_label, 0, 1)
+        grid.addWidget(self.teff_textbox, 0, 2)
+        grid.addWidget(self.logg_label, 0, 3)
+        grid.addWidget(self.logg_textbox, 0, 4)
+        # Define second row
+        grid.addWidget(self.wstart_label, 1, 1)
+        grid.addWidget(self.wstart_textbox, 1, 2)
+        grid.addWidget(self.wend_label, 1, 3)
+        grid.addWidget(self.wend_textbox, 1, 4)          
+        # Define third row        
+        grid.addWidget(self.run_button, 2, 4)
+        # set grid  
+        self.setLayout(grid) 
+        
+        #self.setCentralWidget(self.main_frame)
        
         self.show()
 
@@ -153,35 +172,22 @@ class Widget(QtGui.QMainWindow):
         cp = QtGui.QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())        
-        
-    # Create a menu
-    def create_menu(self):
-    
-        # add File menu
-        self.file_menu = self.menuBar().addMenu("&File")
-        
-        """
-        load_file_action = self.create_action("&Save plot",
-            shortcut="Ctrl+S", slot=self.save_plot, 
-            tip="Save the plot")
-        """    
-        quit_action = self.create_action("&Quit", slot = self.close, 
-            shortcut="Ctrl+Q", tip="Close the application")
-        
-        #self.add_actions(self.file_menu, (load_file_action, None, quit_action))
-        self.add_actions(self.file_menu, (None, quit_action))
-        
-        # add help menu
-        self.help_menu = self.menuBar().addMenu("&Help")
-        about_action = self.create_action("&About", shortcut='F1', 
-                       slot=self.on_about, tip='About synGUI')
-        
-        self.add_actions(self.help_menu, (about_action,))  
-        
     #=========================================================================
         
     #=========================================================================
     # Support Modules
+    
+    # add Label + text input
+    def add_text_input(self, tip = None, signal = None):
+        text_input = QtGui.QLineEdit()
+        if tip != None:
+            text_input.setToolTip(tip)
+        text_input.setMaximumWidth(55)
+        #self.connect(self.logg_textbox, QtCore.SIGNAL('editingFinished ()'),
+        #             self.on_draw)         
+        return text_input
+                 
+        
     # ????
     def add_actions(self, target, actions):
         for action in actions:
@@ -218,9 +224,7 @@ class Widget(QtGui.QMainWindow):
 def main():
     
     app = QtGui.QApplication(sys.argv)
-
     wdg = Widget()
-    
     sys.exit(app.exec_()) 
 #==============================================================================
 
