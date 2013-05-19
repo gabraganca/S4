@@ -25,6 +25,12 @@ import s4
 # Global variables
 FRAME_WIDTH = 760
 FRAME_HEIGHT = 480
+teff = '20000'
+logg = '4'
+wstart = '4460'
+wend = '4480'
+
+
 #==============================================================================
 
 #==============================================================================
@@ -44,6 +50,10 @@ class Widget(QtGui.QWidget):
        
         self.create_frame()
 
+        self.teff_textbox.setText(teff) 
+        self.logg_textbox.setText(logg) 
+        self.wstart_textbox.setText(wstart) 
+        self.wend_textbox.setText(wend) 
         self.synplot()
         
     # About    
@@ -58,11 +68,16 @@ class Widget(QtGui.QWidget):
     # Core modules
     # synplotmodule    
     def synplot(self):
-        self.syn = s4.synthesis.synplot(20000, 4, wstart = 4460, wend = 4480)
+        global teff, logg, wstart, wend
+        # Get parameters
+        teff = self.teff_textbox.text()
+        logg = self.logg_textbox.text()
+        wstart = self.wstart_textbox.text()
+        wend = self.wend_textbox.text()
+        self.syn = s4.synthesis.synplot(teff, logg, 
+                                        wstart = wstart, wend = wend)
         self.syn.run()
         self.on_draw()
-        # This is a test
-        self.test()
     #=========================================================================
     
     #=========================================================================
@@ -95,28 +110,23 @@ class Widget(QtGui.QWidget):
         #
         # teff
         self.teff_label = QtGui.QLabel('teff')
-        
         self.teff_textbox = self.add_text_input('Enter value for ' + \
                                                 'Effective Temperature')
         # logg
         self.logg_label = QtGui.QLabel('logg')
-        
         self.logg_textbox = self.add_text_input('Enter value for ' + \
                                                 'logarithm of surface ' + \
                                                 'gravity')
         # wstart
         self.wstart_label = QtGui.QLabel('wstart')
-        
         self.wstart_textbox = self.add_text_input('Starting Wavelength')
         # wend
         self.wend_label = QtGui.QLabel('wend')
-        
         self.wend_textbox = self.add_text_input('Ending Wavelength')                                                 
          
         # button to run synplot
         self.run_button = QtGui.QPushButton('Run', self)
-        #self.run_button.clicked.connect(self.synplot)
-        #             self.synplot)
+        self.run_button.clicked.connect(self.synplot)
         self.run_button.setToolTip('Press to run <b>synplot</b>')
         self.run_button.resize(self.run_button.sizeHint())
         self.run_button.setMaximumWidth(50)
@@ -180,7 +190,7 @@ class Widget(QtGui.QWidget):
     # add Label + text input
     def add_text_input(self, tip = None, signal = None):
         text_input = QtGui.QLineEdit()
-        if tip != None:
+        if tip is not None:
             text_input.setToolTip(tip)
         text_input.setMaximumWidth(55)
         #self.connect(self.logg_textbox, QtCore.SIGNAL('editingFinished ()'),
