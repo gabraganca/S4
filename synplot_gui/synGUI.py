@@ -43,7 +43,7 @@ class Widget(QtGui.QMainWindow):
         self.setWindowTitle('synGUI')
         self.create_menu()
         
-        self.initUI()
+        self.create_frame()
 
         self.synplot()
         self.on_draw()
@@ -56,12 +56,18 @@ class Widget(QtGui.QMainWindow):
         """
         QtGui.QMessageBox.about(self, "About synGUI", msg.strip())        
 
+    #=========================================================================
+    # Core modules
     # synplotmodule    
     def synplot(self):
         self.syn = s4.synthesis.synplot(20000, 4, wstart = 4460, wend = 4480)
-        self.syn.run()    
-        
-    def initUI(self):
+        self.syn.run()
+    #=========================================================================
+    
+    #=========================================================================
+    # GUI             
+
+    def create_frame(self):
 
         self.main_frame = QtGui.QWidget()
         
@@ -94,7 +100,8 @@ class Widget(QtGui.QMainWindow):
         # button to run synplot
         self.run_button = QtGui.QPushButton('Run', self)
         #self.run_button.clicked.connect(self.synplot)
-        self.connect(self.run_button, QtCore.SIGNAL('clicked()'), self.on_draw)
+        self.connect(self.run_button, QtCore.SIGNAL('clicked()'), 
+                     self.on_draw)
         self.run_button.setToolTip('Press to run <b>synplot</b>')
         self.run_button.resize(self.run_button.sizeHint())
         self.run_button.setMaximumWidth(50)
@@ -162,8 +169,12 @@ class Widget(QtGui.QMainWindow):
         about_action = self.create_action("&About", shortcut='F1', 
                        slot=self.on_about, tip='About synGUI')
         
-        self.add_actions(self.help_menu, (about_action,))       
-
+        self.add_actions(self.help_menu, (about_action,))  
+        
+    #=========================================================================
+        
+    #=========================================================================
+    # Support Modules
     # ????
     def add_actions(self, target, actions):
         for action in actions:
@@ -173,8 +184,8 @@ class Widget(QtGui.QMainWindow):
                 target.addAction(action)
         
     # Create (generic) action
-    def create_action(self, text, slot=None, shortcut=None, icon=None, 
-                      tip=None, checkable=False, signal="triggered()"):
+    def create_action(self, text, slot = None, shortcut = None, icon = None, 
+                      tip = None, checkable = False, signal = "triggered()"):
         action = QtGui.QAction(text, self)
         if icon is not None:
             action.setIcon(QtGui.QIcon(":/%s.png" % icon))
@@ -190,7 +201,8 @@ class Widget(QtGui.QMainWindow):
         return action
         
     def test(self):
-        print 'this is a test'        
+        print 'this is a test' 
+    #=========================================================================    
         
 #==============================================================================
 
