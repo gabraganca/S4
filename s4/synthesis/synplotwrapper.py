@@ -83,11 +83,15 @@ class synplot:
     
     #=========================================================================
     # Plot     
-    def plot(self):
+    def plot(self, ymin = None, ymax = None):
         """
         Plot the synthetic spectra. 
         If the synthetic spectra were not calculated, it will calculate.
         
+        Parameters
+        ----------
+        
+        ylim : vector 
         """
         
         # Check if spectra were calculated
@@ -117,14 +121,25 @@ class synplot:
         if hasattr(self, 'observation'):
             ax.plot(self.observation[:, 0], self.observation[:, 1], 
                     label = 'Observation')
-        
+
+        # set labels        
         plt.xlabel(r'Wavelength $(\AA)$')
-        plt.xlim([self.parameters['wstart'], self.parameters['wend']])
         if 'relative' in self.parameters:
-            plt.ylim([0, 1.05])
+            if ymin is None:
+                ymin = 0
+            if ymax is None:
+                ymax = 1.05
             plt.ylabel('Normalized Flux')
         else:
             plt.ylabel('Flux')
+        # Set size of plot
+        plt.xlim([self.parameters['wstart'], self.parameters['wend']])
+        if ymin is not None:
+            plt.ylim(ymin = ymin)
+        if ymax is not None:
+            plt.ylim(ymax = ymax)
+        ####            
+
         
         # Identify lines, if required
         if self.line_id is not False:
