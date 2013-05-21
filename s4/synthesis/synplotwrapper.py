@@ -108,9 +108,15 @@ class synplot:
             
         if 'scale' in self.parameters:
             spectrum_copy[:, 1] *= self.parameters['scale']
-            
+        
+        # check if figure was already plotted
+        if plt.fignum_exists(1):
+            fig_exists = True
+            plt.clf()
+        else:
+            fig_exists = False
         # Plot
-        fig = plt.figure()
+        fig = plt.figure(num = 1)
 
         # Identify lines, if required
         if self.line_id is not False:
@@ -155,8 +161,13 @@ class synplot:
                                       box_axes_space = 0.15)
 
         plt.legend(fancybox = True, loc = 'lower right')
-        plt.show(block = False)    
-        plt.clf()        
+        
+        # Plot figure
+        if not fig_exists:
+            fig.show() 
+        else:
+            fig.canvas.draw()
+                 
     #=========================================================================
     
     #=========================================================================
