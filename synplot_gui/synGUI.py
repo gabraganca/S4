@@ -170,8 +170,8 @@ class Widget(QtGui.QWidget):
         self.axes.clear()        
         
         self.axes.plot(
-            self.syn.spectra[:, 0], 
-            self.syn.spectra[:, 1])
+            self.syn.spectrum[:, 0], 
+            self.syn.spectrum[:, 1])
         
         self.canvas.draw()        
         
