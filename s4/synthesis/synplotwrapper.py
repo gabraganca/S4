@@ -8,6 +8,7 @@ import lineid_plot
 from ..spectra import rvcorr
 from ..idlwrapper import idlwrapper
 from ..utils import handling
+from ..plot import *
 #=============================================================================
 
 
@@ -83,7 +84,7 @@ class synplot:
     
     #=========================================================================
     # Plot     
-    def plot(self, ymin = None, ymax = None):
+    def plot(self, ymin = None, ymax = None, windows = None):
         """
         Plot the synthetic spectra. 
         If the synthetic spectra were not calculated, it will calculate.
@@ -130,6 +131,10 @@ class synplot:
         if hasattr(self, 'observation'):
             ax.plot(self.observation[:, 0], self.observation[:, 1], 
                     label = 'Observation')
+                    
+        # If windows were set, plot it
+        if windows is not None:
+            plot.plot_windows(windows)                    
 
         # set labels        
         plt.xlabel(r'Wavelength $(\AA)$')
