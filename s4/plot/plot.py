@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from decimal import Decimal
 import scipy.stats as st
 from ..spectra import spectra
-from ..synthesis.synplotwrapper import synplot
+#from ..synthesis.synplotwrapper import synplot
 from pylab import subplot
 from matplotlib.widgets import SpanSelector, Cursor
 
@@ -133,7 +133,7 @@ def contour_plot(array3d, **kwargs):
         plt.savefig('contour.pdf')
     plt.clf()
 #=============================================================================
-   
+'''   
 #=============================================================================
 # Contruct a spectral line intensity contour plot   
 
@@ -177,3 +177,4 @@ def flux_countour_plot(spec_line, **kwargs):
         return int_storage
 
 #=============================================================================
+'''
