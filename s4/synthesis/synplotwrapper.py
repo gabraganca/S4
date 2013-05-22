@@ -84,7 +84,7 @@ class synplot:
     
     #=========================================================================
     # Plot     
-    def plot(self, ymin = None, ymax = None, windows = None):
+    def plot(self, ymin = None, ymax = None, windows = None, save_name = None):
         """
         Plot the synthetic spectra. 
         If the synthetic spectra were not calculated, it will calculate.
@@ -172,6 +172,10 @@ class synplot:
             fig.show() 
         else:
             fig.canvas.draw()
+        
+        # Save file            
+        if save_name is not None:            
+            plt.savefig(save_name, dpi = 100)
                  
     #=========================================================================
     
