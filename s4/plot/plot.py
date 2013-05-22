@@ -10,7 +10,6 @@ from decimal import Decimal
 import scipy.stats as st
 from ..spectra import spectra
 #from ..synthesis.synplotwrapper import synplot
-from pylab import subplot
 from matplotlib.widgets import SpanSelector, Cursor
 
 #=============================================================================
@@ -29,7 +28,7 @@ def plot_windows(windows):
 
 #=============================================================================
 # This function chooses the windows interactively        
-def choose_windows(spectrum, rad_vel, min_wl, max_wl):
+def choose_windows(spectrum, min_wl, max_wl):
     """ Choose the windows interactively"""
     while True:
         if raw_input("Interactive or manual?[I/m]") in ['i', 'I', '']:
@@ -42,33 +41,27 @@ def choose_windows(spectrum, rad_vel, min_wl, max_wl):
                 plt.draw()
             #Create a plot so the user can choose the windows    
             windows = []                            #Set an empty window
-            axis = subplot(111)
-            axis.plot(spectrum[:, 0]*spectra.rvcorr(rad_vel), spectrum[:, 1],            \
-                     'k-', label='Observed')
-            axis.hlines(1, min_wl, max_wl, color='b', linestyles='dashed')
+            axis = plt.subplot(111)
+            axis.plot(spectrum[:, 0], spectrum[:, 1], 'k-')
+            axis.hlines(1, min_wl, max_wl, color = 'b', linestyles = 'dashed')
             axis.set_xlim([min_wl, max_wl])
             axis.set_ylim([min(spectra.subselect_spectra                     \
-                                   (spectrum, min_wl, max_wl)[1])-0.2, 1.05])
-            axis.legend(loc='lower left', fancybox=True)
+                                   (spectrum, min_wl, max_wl)[1]) - 0.2, 1.05])
             axis.set_xlabel(r'Wavelength $(\AA)$')
             axis.set_ylabel('Normalized Flux')
-            span = SpanSelector(axis, onselect, 'horizontal', minspan=0.05)
+            span = SpanSelector(axis, onselect, 'horizontal', minspan = 0.05)
             # Plot a vertical line at cursor position
-            cursor = Cursor(axis, useblit=True, color='red', linewidth=1 )
+            cursor = Cursor(axis, useblit = True, color = 'red', linewidth = 1 )
             cursor.horizOn = False
             
             plt.show()
             plt.clf()
-            #Print the window and the plot with them
-            
-            print 'Windows were chosen.\nWindows = '+str(windows)
         
         #Manually input
         else:
             import re
             windows = [float(Decimal("%.2f" %float(i))) 
-                    for i in re.split('[^0-9. ]',                            \
-                                      raw_input('Windows = '))[1:-1]]
+                for i in re.split('[^0-9. ]', raw_input('Windows = '))[1:-1]]
         
         # Check if Windows are good    
         while True:
@@ -81,14 +74,17 @@ def choose_windows(spectrum, rad_vel, min_wl, max_wl):
                     print 'Chosen windows is above maximum wavelength!'
                     break
                 else:
-                    #Windows is good.
+                    #Windows are good.
+                    print 'Windows were chosen.\nWindows = ' + str(windows)
                     break    
             else:
                 # This will happen only if windows == []
+                print 'No Windows will be used.\nWindows = []'
                 break
                 
         # Give the chance for the user to retry        
         if raw_input('Restart choosing windows?[y/N]') in ['n', 'N', '']:
+            plt.close()
             return windows
 #=============================================================================
 
