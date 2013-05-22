@@ -78,16 +78,20 @@ class synplot:
         idlwrapper.run_idl(self.synplot_input(), do_log = True)
     
         #load synthetized spectra
-        self.spectra = np.loadtxt(self.path + 'fort.11')    
+        self.spectrum = np.loadtxt(self.path + 'fort.11')    
     #=========================================================================
     
     #=========================================================================
     # Plot     
-    def plot(self):
+    def plot(self, ymin = None, ymax = None):
         """
         Plot the synthetic spectra. 
         If the synthetic spectra were not calculated, it will calculate.
         
+        Parameters
+        ----------
+        
+        ylim : vector 
         """
         
         # Check if spectra were calculated
@@ -95,49 +99,75 @@ class synplot:
         if not hasattr(self, 'spectra'):
             self.run()
             
+        # make a copy of array        
+        spectrum_copy = self.spectrum.copy()
+        
         # Apply scale and radial velocity if needed
         if 'rv' in  self.parameters:
-            self.apply_rvcorr()
+            spectrum_copy[:, 0] *= rvcorr(self.parameters['rv'])
             
         if 'scale' in self.parameters:
-            self.apply_scale()
-            
+            spectrum_copy[:, 1] *= self.parameters['scale']
+        
+        # check if figure was already plotted
+        if plt.fignum_exists(1):
+            fig_exists = True
+            plt.clf()
+        else:
+            fig_exists = False
         # Plot
-        fig = plt.figure()
+        fig = plt.figure(num = 1)
 
         # Identify lines, if required
         if self.line_id is not False:
             ax = fig.add_axes([0.1, 0.1, 0.85, 0.6])
         else:
             ax = fig.gca()
-        ax.plot(self.spectra[:, 0], self.spectra[:, 1], 
+        ax.plot(spectrum_copy[:, 0], spectrum_copy[:, 1], 
                 label = 'Synthetic')
         
         # If a observation spectra is available, plot it  
         if hasattr(self, 'observation'):
             ax.plot(self.observation[:, 0], self.observation[:, 1], 
                     label = 'Observation')
-        
+
+        # set labels        
         plt.xlabel(r'Wavelength $(\AA)$')
-        plt.xlim([self.parameters['wstart'], self.parameters['wend']])
         if 'relative' in self.parameters:
-            plt.ylim([0, 1.05])
+            if ymin is None:
+                ymin = 0
+            if ymax is None:
+                ymax = 1.05
             plt.ylabel('Normalized Flux')
         else:
             plt.ylabel('Flux')
+        # Set size of plot
+        plt.xlim([self.parameters['wstart'], self.parameters['wend']])
+        if ymin is not None:
+            plt.ylim(ymin = ymin)
+        if ymax is not None:
+            plt.ylim(ymax = ymax)
+        ####            
+
         
         # Identify lines, if required
         if self.line_id is not False:
             # Obtain the spectral line wavelength and identification
             line_wave, line_label = self.lineid_select()
-            lineid_plot.plot_line_ids(self.spectra[:, 0], self.spectra[:, 1],
+            lineid_plot.plot_line_ids(spectrum_copy[:, 0], 
+                                      spectrum_copy[:, 1],
                                       line_wave, line_label, label1_size = 10,
                                       extend = False, ax = ax,
                                       box_axes_space = 0.15)
 
         plt.legend(fancybox = True, loc = 'lower right')
-        plt.show(block = False)    
-        plt.clf()        
+        
+        # Plot figure
+        if not fig_exists:
+            fig.show() 
+        else:
+            fig.canvas.draw()
+                 
     #=========================================================================
     
     #=========================================================================
@@ -168,7 +198,7 @@ class synplot:
     #Apply scale
     def apply_scale(self):
         """ Apply scale. """
-        self.spectra[:, 1] *= self.parameters['scale']
+        self.spectrum[:, 1] *= self.parameters['scale']
                  
     #=========================================================================
     
@@ -176,6 +206,6 @@ class synplot:
     #Apply scale
     def apply_rvcorr(self):
         """ Apply raidal velocity correction. """
-        self.spectra[:, 0] *= rvcorr(self.parameters['rv'])
+        self.spectrum[:, 0] *= rvcorr(self.parameters['rv'])
                  
     #=========================================================================
