@@ -11,6 +11,8 @@ import scipy.stats as st
 from ..spectra import spectra
 #from ..synthesis.synplotwrapper import synplot
 from matplotlib.widgets import SpanSelector, Cursor
+from matplotlib.mlab import griddata
+
 
 #=============================================================================
 
@@ -129,6 +131,64 @@ def contour_plot(array3d, **kwargs):
         plt.savefig('contour.pdf')
     plt.clf()
 #=============================================================================
+    
+#=============================================================================
+# 
+def color_map_plot(X_vector, Y_vector, Z_vector, **kwargs):
+    """
+    Do a color map of a X, Y, Z vector. 
+    
+    Parameters
+    ----------
+    
+    X_vector : 
+    Y_vector : 
+    Z_vector : 
+        
+    Optional:
+        scale : Can be 'log'.
+        contour : if True, add contours.
+        map_name : Color map name
+        xlabel : label for x-axis.
+        ylabel : label for y-axis.
+        title : Title for plot.
+        save_name : Name for saved file.
+      
+        
+    Adapted from Anderson Ribeiro code.
+    """
+
+    xi = np.linspace(min(X_vector), max(X_vector), 10 * len(X_vector))    
+    yi = np.linspace(min(Y_vector), max(Y_vector), 10 * len(Y_vector))
+    zi = griddata(X_vector, Y_vector, Z_vector, xi, yi)
+
+    #Apply scale, if defined
+    if kwargs.has_key('scale') and kwargs['scale'] == 'log':
+        zi = np.log(zi)
+        
+    #Do contour plot
+    if 'contour' in kwargs:        
+        plt.contour(xi, yi, zi, linewidths = 0.5, colors = 'k')
+    if 'map_name' in kwargs:        
+        map_id = plt.get_cmap(kwargs['map_name'])
+    else:
+        map_id = None
+    plt.pcolormesh(xi, yi, zi, cmap = map_id)
+    plt.colorbar() 
+    if kwargs.has_key('xlabel'): 
+        plt.xlabel(kwargs['xlabel'])
+    if kwargs.has_key('ylabel'):
+        plt.ylabel(kwargs['ylabel'])
+    if kwargs.has_key('title'):
+        plt.title(kwargs['title'])        
+
+    if kwargs.has_key('save_name'):
+        plt.savefig(kwargs['save_name'])
+    else:        
+        plt.savefig('contour.pdf')
+    plt.clf()
+#=============================================================================    
+    
 '''   
 #=============================================================================
 # Contruct a spectral line intensity contour plot   
