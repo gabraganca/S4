@@ -13,7 +13,7 @@ from ..plot import *
 
 
 
-class synplot:
+class Synplot:
     """Add docstring"""
     
     def __init__(self, teff, logg, synplot_path = None, **kwargs):
