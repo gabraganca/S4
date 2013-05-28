@@ -23,13 +23,13 @@ import s4
 
 #==============================================================================
 # Global variables
-FRAME_WIDTH = 900
+FRAME_WIDTH = 1020
 FRAME_HEIGHT = 480
-teff = '20000'
+
+teff = '20000' 
 logg = '4'
-wstart = '4460'
-wend = '4480'
-vseni = '0'
+parameters = dict(wstart = '4460', wend = '4480', vrot = '0', vturb = '0', 
+                  vmac_rt = '0', rv = '0')
 
 
 #==============================================================================
@@ -53,9 +53,12 @@ class Widget(QtGui.QWidget):
 
         self.teff_textbox.setText(teff) 
         self.logg_textbox.setText(logg) 
-        self.wstart_textbox.setText(wstart) 
-        self.wend_textbox.setText(wend) 
-        self.vseni_textbox.setText(vseni)
+        self.wstart_textbox.setText(parameters['wstart']) 
+        self.wend_textbox.setText(parameters['wend']) 
+        self.rv_textbox.setText(parameters['rv'])        
+        self.vrot_textbox.setText(parameters['vrot'])
+        self.vturb_textbox.setText(parameters['vturb'])
+        self.vmac_textbox.setText(parameters['vmac_rt'])        
         self.synplot()
         
     # About    
@@ -71,16 +74,22 @@ class Widget(QtGui.QWidget):
     # synplotmodule    
     def synplot(self):
         global teff, logg, wstart, wend
-        # Get parameters
+        # Get and update parameters
         teff = self.teff_textbox.text()
         logg = self.logg_textbox.text()
-        wstart = self.wstart_textbox.text()
-        wend = self.wend_textbox.text()
-        vseni = self.vseni_textbox.text()
-        self.syn = s4.synthesis.Synplot(teff, logg, 
-                                        wstart = wstart, wend = wend, 
-                                        vrot = vseni)
+        parameters['wstart'] = self.wstart_textbox.text()
+        parameters['wend'] = self.wend_textbox.text()
+        parameters['vrot'] = self.vrot_textbox.text()
+        parameters['vturb'] = self.vturb_textbox.text()
+        parameters['vmac_rt'] = self.vmac_textbox.text()
+        parameters['rv'] = float(self.rv_textbox.text())
+        # run synplot
+        self.syn = s4.synthesis.Synplot(teff, logg, **parameters)
         self.syn.run()
+        # make corrections
+        print self.syn.parameters['rv']
+        self.syn.apply_rvcorr()
+        # draw    
         self.on_draw()
     #=========================================================================
     
@@ -117,7 +126,7 @@ class Widget(QtGui.QWidget):
         self.teff_textbox = self.add_text_input('Effective Temperature')
         # logg
         self.logg_label = QtGui.QLabel('logg')
-        self.logg_textbox = self.add_text_input('logarithm of surface ' + \
+        self.logg_textbox = self.add_text_input('Logarithm of surface ' + \
                                                 'gravity')
         # wstart
         self.wstart_label = QtGui.QLabel('wstart')
@@ -125,11 +134,20 @@ class Widget(QtGui.QWidget):
         # wend
         self.wend_label = QtGui.QLabel('wend')
         self.wend_textbox = self.add_text_input('Ending Wavelength')
+        # radial velocity
+        self.rv_label = QtGui.QLabel('rv')
+        self.rv_textbox = self.add_text_input('Radial velocity')        
         # vseni
-        self.vseni_label = QtGui.QLabel('vseni')
-        self.vseni_textbox = self.add_text_input('Projected rotational' +\
+        self.vrot_label = QtGui.QLabel('vrot')
+        self.vrot_textbox = self.add_text_input('Projected rotational ' +\
                                                  'velocity')
-       
+        # microturbulent velocity
+        self.vturb_label = QtGui.QLabel('vturb')
+        self.vturb_textbox = self.add_text_input('Mocroturbulent velocity')
+        # macroturbulent velocity
+        self.vmac_label = QtGui.QLabel('vmac_RT')
+        self.vmac_textbox = self.add_text_input('Radial-tangential ' + \
+                                                 'macroturbulent velocity')
                                                  
          
         # button to run synplot
@@ -160,8 +178,14 @@ class Widget(QtGui.QWidget):
         grid.addWidget(self.wend_label, 0, 7)
         grid.addWidget(self.wend_textbox, 0, 8)          
         # Define second row  
-        grid.addWidget(self.vseni_label, 1, 1)
-        grid.addWidget(self.vseni_textbox, 1, 2)          
+        grid.addWidget(self.rv_label, 1, 1)
+        grid.addWidget(self.rv_textbox, 1, 2)        
+        grid.addWidget(self.vrot_label, 1, 3)
+        grid.addWidget(self.vrot_textbox, 1, 4)   
+        grid.addWidget(self.vturb_label, 1, 5)
+        grid.addWidget(self.vturb_textbox, 1, 6)
+        grid.addWidget(self.vmac_label, 1, 7)
+        grid.addWidget(self.vmac_textbox, 1, 8)
         # Define third row        
         grid.addWidget(self.run_button, 2, 8)
         # set grid  
