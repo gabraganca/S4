@@ -74,7 +74,7 @@ class Widget(QtGui.QWidget):
         logg = self.logg_textbox.text()
         wstart = self.wstart_textbox.text()
         wend = self.wend_textbox.text()
-        self.syn = s4.synthesis.synplot(teff, logg, 
+        self.syn = s4.synthesis.Synplot(teff, logg, 
                                         wstart = wstart, wend = wend)
         self.syn.run()
         self.on_draw()
