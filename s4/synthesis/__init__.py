@@ -1,1 +1,1 @@
-from synplotwrapper import synplot
+from synplotwrapper import Synplot
