@@ -17,7 +17,9 @@ import matplotlib
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
+import json
 import s4
+
 
 #==============================================================================
 
@@ -26,10 +28,10 @@ import s4
 FRAME_WIDTH = 1020
 FRAME_HEIGHT = 480
 
-teff = '20000' 
-logg = '4'
-parameters = dict(wstart = '4460', wend = '4480', vrot = '0', vturb = '0', 
-                  vmac_rt = '0', rv = '0')
+
+parameters = json.load(open('config.json'))
+teff = parameters.pop('teff')
+logg = parameters.pop('logg')
 
 
 #==============================================================================
@@ -76,7 +78,7 @@ class Widget(QtGui.QWidget):
         global teff, logg, wstart, wend
         # Get and update parameters
         teff = self.teff_textbox.text()
-        logg = self.logg_textbox.text()
+        logg = float(self.logg_textbox.text())
         parameters['wstart'] = self.wstart_textbox.text()
         parameters['wend'] = self.wend_textbox.text()
         parameters['vrot'] = self.vrot_textbox.text()
@@ -87,10 +89,15 @@ class Widget(QtGui.QWidget):
         self.syn = s4.synthesis.Synplot(teff, logg, **parameters)
         self.syn.run()
         # make corrections
-        print self.syn.parameters['rv']
         self.syn.apply_rvcorr()
         # draw    
         self.on_draw()
+        # save parameter to a JSOn file
+        with open('config.json', 'w') as f:
+            spam = {key : str(value) for key, value in parameters.iteritems()}
+            spam.update({'teff' : str(teff), 'logg' : str(logg)})
+            json.dump(spam, f, sort_keys = True, indent = 4, 
+                      separators=(',', ':'))
     #=========================================================================
     
     #=========================================================================
