@@ -23,12 +23,13 @@ import s4
 
 #==============================================================================
 # Global variables
-FRAME_WIDTH = 760
+FRAME_WIDTH = 900
 FRAME_HEIGHT = 480
 teff = '20000'
 logg = '4'
 wstart = '4460'
 wend = '4480'
+vseni = '0'
 
 
 #==============================================================================
@@ -54,6 +55,7 @@ class Widget(QtGui.QWidget):
         self.logg_textbox.setText(logg) 
         self.wstart_textbox.setText(wstart) 
         self.wend_textbox.setText(wend) 
+        self.vseni_textbox.setText(vseni)
         self.synplot()
         
     # About    
@@ -74,8 +76,10 @@ class Widget(QtGui.QWidget):
         logg = self.logg_textbox.text()
         wstart = self.wstart_textbox.text()
         wend = self.wend_textbox.text()
+        vseni = self.vseni_textbox.text()
         self.syn = s4.synthesis.Synplot(teff, logg, 
-                                        wstart = wstart, wend = wend)
+                                        wstart = wstart, wend = wend, 
+                                        vrot = vseni)
         self.syn.run()
         self.on_draw()
     #=========================================================================
@@ -110,19 +114,23 @@ class Widget(QtGui.QWidget):
         #
         # teff
         self.teff_label = QtGui.QLabel('teff')
-        self.teff_textbox = self.add_text_input('Enter value for ' + \
-                                                'Effective Temperature')
+        self.teff_textbox = self.add_text_input('Effective Temperature')
         # logg
         self.logg_label = QtGui.QLabel('logg')
-        self.logg_textbox = self.add_text_input('Enter value for ' + \
-                                                'logarithm of surface ' + \
+        self.logg_textbox = self.add_text_input('logarithm of surface ' + \
                                                 'gravity')
         # wstart
         self.wstart_label = QtGui.QLabel('wstart')
         self.wstart_textbox = self.add_text_input('Starting Wavelength')
         # wend
         self.wend_label = QtGui.QLabel('wend')
-        self.wend_textbox = self.add_text_input('Ending Wavelength')                                                 
+        self.wend_textbox = self.add_text_input('Ending Wavelength')
+        # vseni
+        self.vseni_label = QtGui.QLabel('vseni')
+        self.vseni_textbox = self.add_text_input('Projected rotational' +\
+                                                 'velocity')
+       
+                                                 
          
         # button to run synplot
         self.run_button = QtGui.QPushButton('Run', self)
@@ -147,13 +155,15 @@ class Widget(QtGui.QWidget):
         grid.addWidget(self.teff_textbox, 0, 2)
         grid.addWidget(self.logg_label, 0, 3)
         grid.addWidget(self.logg_textbox, 0, 4)
-        # Define second row
-        grid.addWidget(self.wstart_label, 1, 1)
-        grid.addWidget(self.wstart_textbox, 1, 2)
-        grid.addWidget(self.wend_label, 1, 3)
-        grid.addWidget(self.wend_textbox, 1, 4)          
+        grid.addWidget(self.wstart_label, 0, 5)
+        grid.addWidget(self.wstart_textbox, 0, 6)
+        grid.addWidget(self.wend_label, 0, 7)
+        grid.addWidget(self.wend_textbox, 0, 8)          
+        # Define second row  
+        grid.addWidget(self.vseni_label, 1, 1)
+        grid.addWidget(self.vseni_textbox, 1, 2)          
         # Define third row        
-        grid.addWidget(self.run_button, 2, 4)
+        grid.addWidget(self.run_button, 2, 8)
         # set grid  
         self.setLayout(grid) 
         
@@ -188,13 +198,11 @@ class Widget(QtGui.QWidget):
     # Support Modules
     
     # add Label + text input
-    def add_text_input(self, tip = None, signal = None):
+    def add_text_input(self, tip = None):
         text_input = QtGui.QLineEdit()
         if tip is not None:
             text_input.setToolTip(tip)
-        text_input.setMaximumWidth(55)
-        #self.connect(self.logg_textbox, QtCore.SIGNAL('editingFinished ()'),
-        #             self.on_draw)         
+        text_input.setMaximumWidth(55)     
         return text_input
                  
         
