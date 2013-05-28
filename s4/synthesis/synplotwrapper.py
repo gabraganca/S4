@@ -92,12 +92,13 @@ class Synplot:
         Parameters
         ----------
         
-        ylim : vector 
+        ymin : lower limit on y-axis
+        ymax : upper limit on y-axis
         """
         
         # Check if spectra were calculated
         #if 'self.spectra' not in globals():
-        if not hasattr(self, 'spectra'):
+        if not hasattr(self, 'spectrum'):
             self.run()
             
         # make a copy of array        
