@@ -50,6 +50,10 @@ class Synplot:
         #Override IDL plotting
         self.parameters['noplot'] = '1'
         
+        # check for normalization
+        if 'relative' not in self.parameters:
+            self.parameters['relative'] = 0
+        
         # Check if line identification is required
         if 'ident' in self.parameters:
             # Tells Synplot to not identify lines
@@ -139,7 +143,7 @@ class Synplot:
 
         # set labels        
         plt.xlabel(r'Wavelength $(\AA)$')
-        if 'relative' in self.parameters:
+        if self.parameters['relative'] != 0:
             if ymin is None:
                 ymin = 0
             if ymax is None:
