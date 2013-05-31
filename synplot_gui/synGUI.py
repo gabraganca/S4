@@ -29,11 +29,6 @@ FRAME_WIDTH = 1020
 FRAME_HEIGHT = 480
 
 
-parameters = json.load(open('config.json'))
-teff = parameters.pop('teff')
-logg = parameters.pop('logg')
-
-
 #==============================================================================
 
 #==============================================================================
@@ -50,17 +45,28 @@ class Widget(QtGui.QWidget):
         self.resize(FRAME_WIDTH, FRAME_HEIGHT)
         self.center()
         self.setWindowTitle('synGUI')
-       
-        self.create_frame()
 
-        self.teff_textbox.setText(teff) 
-        self.logg_textbox.setText(logg) 
-        self.wstart_textbox.setText(parameters['wstart']) 
-        self.wend_textbox.setText(parameters['wend']) 
-        self.rv_textbox.setText(parameters['rv'])        
-        self.vrot_textbox.setText(parameters['vrot'])
-        self.vturb_textbox.setText(parameters['vturb'])
-        self.vmac_textbox.setText(parameters['vmac_rt'])        
+        self.create_frame()
+       
+        # load JSON
+        self.load_JSON()
+        
+        # set text boxes              
+        self.teff_textbox.setText(self.teff) 
+        self.logg_textbox.setText(self.logg) 
+        self.wstart_textbox.setText(self.parameters['wstart']) 
+        self.wend_textbox.setText(self.parameters['wend']) 
+        self.rv_textbox.setText(self.parameters['rv'])        
+        self.vrot_textbox.setText(self.parameters['vrot'])
+        self.vturb_textbox.setText(self.parameters['vturb'])
+        self.vmac_textbox.setText(self.parameters['vmac_rt'])  
+        
+        # set check boxes status
+        if self.parameters["relative"] == "0":
+            self.norm_cb.setChecked(False)
+        else:                                             
+            self.norm_cb.setChecked(True)       
+        
         self.synplot()
         
     # About    
@@ -75,27 +81,32 @@ class Widget(QtGui.QWidget):
     # Core modules
     # synplotmodule    
     def synplot(self):
-        global teff, logg, wstart, wend
+        global teff, logg
         # Get and update parameters
-        teff = self.teff_textbox.text()
-        logg = float(self.logg_textbox.text())
-        parameters['wstart'] = self.wstart_textbox.text()
-        parameters['wend'] = self.wend_textbox.text()
-        parameters['vrot'] = self.vrot_textbox.text()
-        parameters['vturb'] = self.vturb_textbox.text()
-        parameters['vmac_rt'] = self.vmac_textbox.text()
-        parameters['rv'] = float(self.rv_textbox.text())
+        self.teff = self.teff_textbox.text()
+        self.logg = float(self.logg_textbox.text())
+        self.parameters['wstart'] = self.wstart_textbox.text()
+        self.parameters['wend'] = self.wend_textbox.text()
+        self.parameters['vrot'] = self.vrot_textbox.text()
+        self.parameters['vturb'] = self.vturb_textbox.text()
+        self.parameters['vmac_rt'] = self.vmac_textbox.text()
+        self.parameters['rv'] = float(self.rv_textbox.text())
+        if self.norm_cb.isChecked():
+            self.parameters['relative'] = "1"
+        else:
+            self.parameters['relative'] = "0"     
         # run synplot
-        self.syn = s4.synthesis.Synplot(teff, logg, **parameters)
+        self.syn = s4.synthesis.Synplot(self.teff, self.logg, 
+                                        **self.parameters)
         self.syn.run()
         # make corrections
         self.syn.apply_rvcorr()
         # draw    
         self.on_draw()
-        # save parameter to a JSOn file
+        # save parameter to a JSON file
         with open('config.json', 'w') as f:
-            spam = {key : str(value) for key, value in parameters.iteritems()}
-            spam.update({'teff' : str(teff), 'logg' : str(logg)})
+            spam = {key : str(value) for key, value in self.parameters.iteritems()}
+            spam.update({'teff' : str(self.teff), 'logg' : str(self.logg)})
             json.dump(spam, f, sort_keys = True, indent = 4, 
                       separators=(',', ':'))
     #=========================================================================
@@ -155,7 +166,9 @@ class Widget(QtGui.QWidget):
         self.vmac_label = QtGui.QLabel('vmac_RT')
         self.vmac_textbox = self.add_text_input('Radial-tangential ' + \
                                                  'macroturbulent velocity')
-                                                 
+        # normalization
+        self.norm_cb = QtGui.QCheckBox("Normalization")
+        self.norm_cb.setToolTip("If checked, normalize spectrum.")
          
         # button to run synplot
         self.run_button = QtGui.QPushButton('Run', self)
@@ -193,7 +206,8 @@ class Widget(QtGui.QWidget):
         grid.addWidget(self.vturb_textbox, 1, 6)
         grid.addWidget(self.vmac_label, 1, 7)
         grid.addWidget(self.vmac_textbox, 1, 8)
-        # Define third row        
+        # Define third row
+        grid.addWidget(self.norm_cb, 2, 1, 1, 3)        
         grid.addWidget(self.run_button, 2, 8)
         # set grid  
         self.setLayout(grid) 
@@ -235,8 +249,13 @@ class Widget(QtGui.QWidget):
             text_input.setToolTip(tip)
         text_input.setMaximumWidth(55)     
         return text_input
-                 
         
+    def load_JSON(self):
+        self.parameters = json.load(open('config.json'))
+        self.teff = self.parameters.pop('teff')
+        self.logg = self.parameters.pop('logg')
+                 
+    """    
     # ????
     def add_actions(self, target, actions):
         for action in actions:
@@ -261,7 +280,8 @@ class Widget(QtGui.QWidget):
         if checkable:
             action.setCheckable(True)
         return action
-        
+    
+    """    
     def test(self):
         print 'this is a test' 
     #=========================================================================    
