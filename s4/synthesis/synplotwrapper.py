@@ -8,11 +8,12 @@ import lineid_plot
 from ..spectra import rvcorr
 from ..idlwrapper import idlwrapper
 from ..utils import handling
+from ..plot import *
 #=============================================================================
 
 
 
-class synplot:
+class Synplot:
     """Add docstring"""
     
     def __init__(self, teff, logg, synplot_path = None, **kwargs):
@@ -87,7 +88,7 @@ class synplot:
     
     #=========================================================================
     # Plot     
-    def plot(self, ymin = None, ymax = None):
+    def plot(self, ymin = None, ymax = None, windows = None, save_name = None):
         """
         Plot the synthetic spectra. 
         If the synthetic spectra were not calculated, it will calculate.
@@ -95,12 +96,13 @@ class synplot:
         Parameters
         ----------
         
-        ylim : vector 
+        ymin : lower limit on y-axis
+        ymax : upper limit on y-axis
         """
         
         # Check if spectra were calculated
         #if 'self.spectra' not in globals():
-        if not hasattr(self, 'spectra'):
+        if not hasattr(self, 'spectrum'):
             self.run()
             
         # make a copy of array        
@@ -134,6 +136,10 @@ class synplot:
         if hasattr(self, 'observation'):
             ax.plot(self.observation[:, 0], self.observation[:, 1], 
                     label = 'Observation')
+                    
+        # If windows were set, plot it
+        if windows is not None:
+            plot.plot_windows(windows)                    
 
         # set labels        
         plt.xlabel(r'Wavelength $(\AA)$')
@@ -171,6 +177,10 @@ class synplot:
             fig.show() 
         else:
             fig.canvas.draw()
+        
+        # Save file            
+        if save_name is not None:            
+            plt.savefig(save_name, dpi = 100)
                  
     #=========================================================================
     

@@ -9,9 +9,10 @@ import matplotlib.pyplot as plt
 from decimal import Decimal
 import scipy.stats as st
 from ..spectra import spectra
-from ..synthesis.synplotwrapper import synplot
-from pylab import subplot
+#from ..synthesis.synplotwrapper import synplot
 from matplotlib.widgets import SpanSelector, Cursor
+from matplotlib.mlab import griddata
+
 
 #=============================================================================
 
@@ -29,7 +30,7 @@ def plot_windows(windows):
 
 #=============================================================================
 # This function chooses the windows interactively        
-def choose_windows(spectrum, rad_vel, min_wl, max_wl):
+def choose_windows(spectrum, min_wl, max_wl):
     """ Choose the windows interactively"""
     while True:
         if raw_input("Interactive or manual?[I/m]") in ['i', 'I', '']:
@@ -42,33 +43,27 @@ def choose_windows(spectrum, rad_vel, min_wl, max_wl):
                 plt.draw()
             #Create a plot so the user can choose the windows    
             windows = []                            #Set an empty window
-            axis = subplot(111)
-            axis.plot(spectrum[:, 0]*spectra.rvcorr(rad_vel), spectrum[:, 1],            \
-                     'k-', label='Observed')
-            axis.hlines(1, min_wl, max_wl, color='b', linestyles='dashed')
+            axis = plt.subplot(111)
+            axis.plot(spectrum[:, 0], spectrum[:, 1], 'k-')
+            axis.hlines(1, min_wl, max_wl, color = 'b', linestyles = 'dashed')
             axis.set_xlim([min_wl, max_wl])
             axis.set_ylim([min(spectra.subselect_spectra                     \
-                                   (spectrum, min_wl, max_wl)[1])-0.2, 1.05])
-            axis.legend(loc='lower left', fancybox=True)
+                                   (spectrum, min_wl, max_wl)[1]) - 0.2, 1.05])
             axis.set_xlabel(r'Wavelength $(\AA)$')
             axis.set_ylabel('Normalized Flux')
-            span = SpanSelector(axis, onselect, 'horizontal', minspan=0.05)
+            span = SpanSelector(axis, onselect, 'horizontal', minspan = 0.05)
             # Plot a vertical line at cursor position
-            cursor = Cursor(axis, useblit=True, color='red', linewidth=1 )
+            cursor = Cursor(axis, useblit = True, color = 'red', linewidth = 1 )
             cursor.horizOn = False
             
             plt.show()
             plt.clf()
-            #Print the window and the plot with them
-            
-            print 'Windows were chosen.\nWindows = '+str(windows)
         
         #Manually input
         else:
             import re
             windows = [float(Decimal("%.2f" %float(i))) 
-                    for i in re.split('[^0-9. ]',                            \
-                                      raw_input('Windows = '))[1:-1]]
+                for i in re.split('[^0-9. ]', raw_input('Windows = '))[1:-1]]
         
         # Check if Windows are good    
         while True:
@@ -81,14 +76,17 @@ def choose_windows(spectrum, rad_vel, min_wl, max_wl):
                     print 'Chosen windows is above maximum wavelength!'
                     break
                 else:
-                    #Windows is good.
+                    #Windows are good.
+                    print 'Windows were chosen.\nWindows = ' + str(windows)
                     break    
             else:
                 # This will happen only if windows == []
+                print 'No Windows will be used.\nWindows = []'
                 break
                 
         # Give the chance for the user to retry        
         if raw_input('Restart choosing windows?[y/N]') in ['n', 'N', '']:
+            plt.close()
             return windows
 #=============================================================================
 
@@ -133,7 +131,65 @@ def contour_plot(array3d, **kwargs):
         plt.savefig('contour.pdf')
     plt.clf()
 #=============================================================================
-   
+    
+#=============================================================================
+# 
+def color_map_plot(X_vector, Y_vector, Z_vector, **kwargs):
+    """
+    Do a color map of a X, Y, Z vector. 
+    
+    Parameters
+    ----------
+    
+    X_vector : 
+    Y_vector : 
+    Z_vector : 
+        
+    Optional:
+        scale : Can be 'log'.
+        contour : if True, add contours.
+        map_name : Color map name
+        xlabel : label for x-axis.
+        ylabel : label for y-axis.
+        title : Title for plot.
+        save_name : Name for saved file.
+      
+        
+    Adapted from Anderson Ribeiro code.
+    """
+
+    xi = np.linspace(min(X_vector), max(X_vector), 10 * len(X_vector))    
+    yi = np.linspace(min(Y_vector), max(Y_vector), 10 * len(Y_vector))
+    zi = griddata(X_vector, Y_vector, Z_vector, xi, yi)
+
+    #Apply scale, if defined
+    if kwargs.has_key('scale') and kwargs['scale'] == 'log':
+        zi = np.log(zi)
+        
+    #Do contour plot
+    if 'contour' in kwargs:        
+        plt.contour(xi, yi, zi, linewidths = 0.5, colors = 'k')
+    if 'map_name' in kwargs:        
+        map_id = plt.get_cmap(kwargs['map_name'])
+    else:
+        map_id = None
+    plt.pcolormesh(xi, yi, zi, cmap = map_id)
+    plt.colorbar() 
+    if kwargs.has_key('xlabel'): 
+        plt.xlabel(kwargs['xlabel'])
+    if kwargs.has_key('ylabel'):
+        plt.ylabel(kwargs['ylabel'])
+    if kwargs.has_key('title'):
+        plt.title(kwargs['title'])        
+
+    if kwargs.has_key('save_name'):
+        plt.savefig(kwargs['save_name'])
+    else:        
+        plt.savefig('contour.pdf')
+    plt.clf()
+#=============================================================================    
+    
+'''   
 #=============================================================================
 # Contruct a spectral line intensity contour plot   
 
@@ -177,3 +233,4 @@ def flux_countour_plot(spec_line, **kwargs):
         return int_storage
 
 #=============================================================================
+'''
