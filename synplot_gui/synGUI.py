@@ -48,8 +48,8 @@ class Widget(QtGui.QWidget):
 
         self.create_frame()
        
-        # load JSON
-        self.load_JSON()
+        # load config
+        self.load_config()
         
         # set text boxes              
         self.teff_textbox.setText(self.teff) 
@@ -59,7 +59,9 @@ class Widget(QtGui.QWidget):
         self.rv_textbox.setText(self.parameters['rv'])        
         self.vrot_textbox.setText(self.parameters['vrot'])
         self.vturb_textbox.setText(self.parameters['vturb'])
-        self.vmac_textbox.setText(self.parameters['vmac_rt'])  
+        self.vmac_textbox.setText(self.parameters['vmac_rt'])
+        if 'observ' in  self.parameters: 
+            self.obs_textbox.setText(self.parameters['observ']) 
         
         # set check boxes status
         if self.parameters["relative"] == "0":
@@ -91,6 +93,11 @@ class Widget(QtGui.QWidget):
         self.parameters['vturb'] = self.vturb_textbox.text()
         self.parameters['vmac_rt'] = self.vmac_textbox.text()
         self.parameters['rv'] = float(self.rv_textbox.text())
+        if self.obs_textbox.text() != '':
+            self.parameters['observ'] = str(self.obs_textbox.text())
+        else:
+            self.parameters.pop('observ', None)
+                
         if self.norm_cb.isChecked():
             self.parameters['relative'] = "1"
         else:
@@ -161,7 +168,7 @@ class Widget(QtGui.QWidget):
                                                  'velocity')
         # microturbulent velocity
         self.vturb_label = QtGui.QLabel('vturb')
-        self.vturb_textbox = self.add_text_input('Mocroturbulent velocity')
+        self.vturb_textbox = self.add_text_input('Microturbulent velocity')
         # macroturbulent velocity
         self.vmac_label = QtGui.QLabel('vmac_RT')
         self.vmac_textbox = self.add_text_input('Radial-tangential ' + \
@@ -169,13 +176,25 @@ class Widget(QtGui.QWidget):
         # normalization
         self.norm_cb = QtGui.QCheckBox("Normalization")
         self.norm_cb.setToolTip("If checked, normalize spectrum.")
-         
+        
+        # observation file
+        # text edit for observation file path
+        self.obs_textbox = self.add_text_input()
+        self.obs_textbox.setMaximumWidth(500)
+        # button to open file dialog
+        self.obs_button = QtGui.QPushButton('Open', self)
+        self.obs_button.clicked.connect(self.obs_file_dialog)
+        self.obs_button.setToolTip('Open observation file')
+        #self.obs_button.resize(self.obs_button.sizeHint())
+        self.obs_button.setMaximumWidth(60)
+ 
         # button to run synplot
         self.run_button = QtGui.QPushButton('Run', self)
         self.run_button.clicked.connect(self.synplot)
         self.run_button.setToolTip('Press to run <b>synplot</b>')
-        self.run_button.resize(self.run_button.sizeHint())
+        #self.run_button.resize(self.run_button.sizeHint())
         self.run_button.setMaximumWidth(50)
+        
 
         #
         # Layout with box sizers
@@ -184,9 +203,9 @@ class Widget(QtGui.QWidget):
         grid = QtGui.QGridLayout()
         #grid.setSpacing(10)
         
-        #set canvas
+        #set matplotlib canvas
         grid.addWidget(self.canvas, 0, 0, 5, 1)
-        grid.addWidget(self.mpl_toolbar, 6, 0)
+        grid.addWidget(self.mpl_toolbar, 6, 0, 1, 1)
 
         # Define first row
         grid.addWidget(self.teff_label, 0, 1)
@@ -207,8 +226,12 @@ class Widget(QtGui.QWidget):
         grid.addWidget(self.vmac_label, 1, 7)
         grid.addWidget(self.vmac_textbox, 1, 8)
         # Define third row
-        grid.addWidget(self.norm_cb, 2, 1, 1, 3)        
-        grid.addWidget(self.run_button, 2, 8)
+        grid.addWidget(self.norm_cb, 2, 1, 1, 3)
+        # Define fourth row
+        grid.addWidget(self.obs_textbox, 3, 1, 1, 7)
+        grid.addWidget(self.obs_button, 3, 8)
+        # Define seventh row        
+        grid.addWidget(self.run_button, 6, 8)
         # set grid  
         self.setLayout(grid) 
         
@@ -226,7 +249,13 @@ class Widget(QtGui.QWidget):
         
         self.axes.plot(
             self.syn.spectrum[:, 0], 
-            self.syn.spectrum[:, 1])
+            self.syn.spectrum[:, 1], label = "Synthetic")
+        # plot observation, if availabe
+        if 'observ' in self.parameters:
+            self.axes.plot(
+                self.syn.observation[:, 0],     
+                self.syn.observation[:, 1], label = "Observation")                
+            self.axes.legend(fancybox = True, loc = 'lower right')    
         
         self.canvas.draw()        
         
@@ -250,10 +279,20 @@ class Widget(QtGui.QWidget):
         text_input.setMaximumWidth(55)     
         return text_input
         
-    def load_JSON(self):
+    def load_config(self):
+        """Load the configuration file"""
         self.parameters = json.load(open('config.json'))
         self.teff = self.parameters.pop('teff')
         self.logg = self.parameters.pop('logg')
+        
+    def obs_file_dialog(self):
+        """Open a file dialog to open observation file"""
+        #self.fileDialog = QtGui.QFileDialog(self)
+        #self.fileDialog.show()
+        fname = str(QtGui.QFileDialog.getOpenFileName(self,"Open File"))
+        self.obs_textbox.setText(fname)
+        
+                 
                  
     """    
     # ????
