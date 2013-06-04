@@ -49,7 +49,15 @@ class Widget(QtGui.QWidget):
         self.create_frame()
        
         # load config
-        self.load_config()
+        try:
+            self.load_config()
+        except IOError:
+            # set up a basic configuration
+            self.teff = "20000"
+            self.logg = "4"
+            self.parameters = dict(wstart = "4460", wend = "4480", rv = "0",
+                                   vrot = "0", vturb = "0", vmac_rt = "0", 
+                                   relative = "1")
         
         # set text boxes              
         self.teff_textbox.setText(self.teff) 
@@ -110,12 +118,9 @@ class Widget(QtGui.QWidget):
         self.syn.apply_rvcorr()
         # draw    
         self.on_draw()
-        # save parameter to a JSON file
-        with open('config.json', 'w') as f:
-            spam = {key : str(value) for key, value in self.parameters.iteritems()}
-            spam.update({'teff' : str(self.teff), 'logg' : str(self.logg)})
-            json.dump(spam, f, sort_keys = True, indent = 4, 
-                      separators=(',', ':'))
+        # save configuration file
+        self.save_config()
+
     #=========================================================================
     
     #=========================================================================
@@ -284,6 +289,14 @@ class Widget(QtGui.QWidget):
         self.parameters = json.load(open('config.json'))
         self.teff = self.parameters.pop('teff')
         self.logg = self.parameters.pop('logg')
+        
+    def save_config(self):
+        """Save configuration file"""
+        with open('config.json', 'w') as f:
+            spam = {key : str(value) for key, value in self.parameters.iteritems()}
+            spam.update({'teff' : str(self.teff), 'logg' : str(self.logg)})
+            json.dump(spam, f, sort_keys = True, indent = 4, 
+                      separators=(',', ':'))        
         
     def obs_file_dialog(self):
         """Open a file dialog to open observation file"""
