@@ -183,6 +183,8 @@ class Widget(QtGui.QWidget):
         self.norm_cb.setToolTip("If checked, normalize spectrum.")
         
         # observation file
+        # label
+        self.obs_label = QtGui.QLabel("Observation file")
         # text edit for observation file path
         self.obs_textbox = self.add_text_input()
         self.obs_textbox.setMaximumWidth(500)
@@ -209,8 +211,8 @@ class Widget(QtGui.QWidget):
         #grid.setSpacing(10)
         
         #set matplotlib canvas
-        grid.addWidget(self.canvas, 0, 0, 5, 1)
-        grid.addWidget(self.mpl_toolbar, 6, 0, 1, 1)
+        grid.addWidget(self.canvas, 0, 0, 11, 1)
+        grid.addWidget(self.mpl_toolbar, 12, 0, 1, 1)
 
         # Define first row
         grid.addWidget(self.teff_label, 0, 1)
@@ -233,10 +235,12 @@ class Widget(QtGui.QWidget):
         # Define third row
         grid.addWidget(self.norm_cb, 2, 1, 1, 3)
         # Define fourth row
-        grid.addWidget(self.obs_textbox, 3, 1, 1, 7)
-        grid.addWidget(self.obs_button, 3, 8)
+        grid.addWidget(self.obs_label, 3, 1, 1, 3)        
+        # Define fifth row
+        grid.addWidget(self.obs_textbox, 4, 1, 1, 7)
+        grid.addWidget(self.obs_button, 4, 8)
         # Define seventh row        
-        grid.addWidget(self.run_button, 6, 8)
+        grid.addWidget(self.run_button, 12, 8)
         # set grid  
         self.setLayout(grid) 
         
