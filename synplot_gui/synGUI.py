@@ -57,7 +57,7 @@ class Widget(QtGui.QWidget):
             self.logg = "4"
             self.parameters = dict(wstart = "4460", wend = "4480", rv = "0",
                                    vrot = "0", vturb = "0", vmac_rt = "0", 
-                                   relative = "1")
+                                   relative = "1", scale = "1")
         
         # set text boxes              
         self.teff_textbox.setText(self.teff) 
@@ -68,6 +68,7 @@ class Widget(QtGui.QWidget):
         self.vrot_textbox.setText(self.parameters['vrot'])
         self.vturb_textbox.setText(self.parameters['vturb'])
         self.vmac_textbox.setText(self.parameters['vmac_rt'])
+        self.scale_textbox.setText(self.parameters['scale'])        
         if 'observ' in  self.parameters: 
             self.obs_textbox.setText(self.parameters['observ']) 
         
@@ -101,6 +102,7 @@ class Widget(QtGui.QWidget):
         self.parameters['vturb'] = self.vturb_textbox.text()
         self.parameters['vmac_rt'] = self.vmac_textbox.text()
         self.parameters['rv'] = float(self.rv_textbox.text())
+        self.parameters['scale'] = float(self.scale_textbox.text())
         if self.obs_textbox.text() != '':
             self.parameters['observ'] = str(self.obs_textbox.text())
         else:
@@ -114,8 +116,9 @@ class Widget(QtGui.QWidget):
         self.syn = s4.synthesis.Synplot(self.teff, self.logg, 
                                         **self.parameters)
         self.syn.run()
-        # make corrections
+        # make corrections on synthsized spectrum
         self.syn.apply_rvcorr()
+        self.syn.apply_scale()
         # draw    
         self.on_draw()
         # save configuration file
@@ -178,6 +181,10 @@ class Widget(QtGui.QWidget):
         self.vmac_label = QtGui.QLabel('vmac_RT')
         self.vmac_textbox = self.add_text_input('Radial-tangential ' + \
                                                  'macroturbulent velocity')
+                                                 
+        # scale
+        self.scale_label = QtGui.QLabel('Scale')
+        self.scale_textbox = self.add_text_input('Scale factor')                                                 
         # normalization
         self.norm_cb = QtGui.QCheckBox("Normalization")
         self.norm_cb.setToolTip("If checked, normalize spectrum.")
@@ -233,7 +240,9 @@ class Widget(QtGui.QWidget):
         grid.addWidget(self.vmac_label, 1, 7)
         grid.addWidget(self.vmac_textbox, 1, 8)
         # Define third row
-        grid.addWidget(self.norm_cb, 2, 1, 1, 3)
+        grid.addWidget(self.scale_label, 2, 1)
+        grid.addWidget(self.scale_textbox, 2, 2)        
+        grid.addWidget(self.norm_cb, 2, 3, 1, 3)
         # Define fourth row
         grid.addWidget(self.obs_label, 3, 1, 1, 3)        
         # Define fifth row
