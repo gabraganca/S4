@@ -61,7 +61,7 @@ class Widget(QtGui.QWidget):
             self.logg = "4"
             self.parameters = dict(wstart = "4460", wend = "4480", rv = "0",
                                    vrot = "0", vturb = "0", vmac_rt = "0", 
-                                   relative = "1", scale = "1")
+                                   relative = "1", scale = "1", syn_path = None)
         
         # set text boxes              
         self.teff_textbox.setText(self.teff) 
@@ -72,10 +72,12 @@ class Widget(QtGui.QWidget):
         self.vrot_textbox.setText(self.parameters['vrot'])
         self.vturb_textbox.setText(self.parameters['vturb'])
         self.vmac_textbox.setText(self.parameters['vmac_rt'])
-        self.scale_textbox.setText(self.parameters['scale'])        
-        if 'observ' in  self.parameters: 
-            self.obs_textbox.setText(self.parameters['observ']) 
-        
+        self.scale_textbox.setText(self.parameters['scale'])
+        if 'observ' in self.parameters:
+            self.obs_textbox.setText(self.parameters['observ'])
+        if self.syn_path is not None:
+            self.synspec_textbox.setText(self.syn_path)            
+
         # set check boxes status
         if self.parameters["relative"] == "0":
             self.norm_cb.setChecked(False)
@@ -115,9 +117,11 @@ class Widget(QtGui.QWidget):
         if self.norm_cb.isChecked():
             self.parameters['relative'] = "1"
         else:
-            self.parameters['relative'] = "0"     
+            self.parameters['relative'] = "0"    
+            
         # run synplot
         self.syn = s4.synthesis.Synplot(self.teff, self.logg, 
+                                        synplot_path = self.syn_path, 
                                         **self.parameters)
         self.syn.run()
         # make corrections on synthsized spectrum
@@ -330,12 +334,15 @@ class Widget(QtGui.QWidget):
         self.parameters = json.load(open(CONFIG_FILE))
         self.teff = self.parameters.pop('teff')
         self.logg = self.parameters.pop('logg')
+        if 'syn_path' in  self.parameters: 
+            self.syn_path = self.parameters.pop('syn_path')
         
     def save_config(self):
         """Save configuration file"""
         with open(CONFIG_FILE, 'w') as f:
             spam = {key : str(value) for key, value in self.parameters.iteritems()}
-            spam.update({'teff' : str(self.teff), 'logg' : str(self.logg)})
+            spam.update(dict(teff= str(self.teff), logg= str(self.logg), 
+                             syn_path = self.syn_path))
             json.dump(spam, f, sort_keys = True, indent = 4, 
                       separators=(',', ':'))        
         
@@ -352,7 +359,9 @@ class Widget(QtGui.QWidget):
         #self.fileDialog.show()
         fname = str(QtGui.QFileDialog.getExistingDirectory(self, 
                                                            "Select Directory"))
-        self.synspec_textbox.setText(fname)                 
+        self.synspec_textbox.setText(fname + '/')
+        self.syn_path = fname + '/'
+        
                  
     """    
     # ????
