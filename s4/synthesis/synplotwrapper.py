@@ -88,7 +88,8 @@ class Synplot:
     
     #=========================================================================
     # Plot     
-    def plot(self, ymin = None, ymax = None, windows = None, save_name = None):
+    def plot(self, ymin = None, ymax = None, windows = None, save_name = None, 
+             title = None):
         """
         Plot the synthetic spectra. 
         If the synthetic spectra were not calculated, it will calculate.
@@ -171,6 +172,9 @@ class Synplot:
                                       box_axes_space = 0.15)
 
         plt.legend(fancybox = True, loc = 'lower right')
+        
+        if title is not None:
+            plt.title(title)
         
         # Plot figure
         if not fig_exists:
