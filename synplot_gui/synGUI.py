@@ -11,6 +11,7 @@ http://eli.thegreenplace.net/2009/01/20/matplotlib-with-pyqt-guis/
 #==============================================================================
 
 # Import Modules
+import os
 import sys
 from PyQt4 import QtGui, QtCore
 import matplotlib
@@ -27,6 +28,9 @@ import s4
 # Global variables
 FRAME_WIDTH = 1020
 FRAME_HEIGHT = 480
+
+HOME_PATH = os.getenv('HOME') + '/'
+CONFIG_FILE = HOME_PATH + '.s4_config.json'
 
 
 #==============================================================================
@@ -304,13 +308,13 @@ class Widget(QtGui.QWidget):
         
     def load_config(self):
         """Load the configuration file"""
-        self.parameters = json.load(open('config.json'))
+        self.parameters = json.load(open(CONFIG_FILE))
         self.teff = self.parameters.pop('teff')
         self.logg = self.parameters.pop('logg')
         
     def save_config(self):
         """Save configuration file"""
-        with open('config.json', 'w') as f:
+        with open(CONFIG_FILE, 'w') as f:
             spam = {key : str(value) for key, value in self.parameters.iteritems()}
             spam.update({'teff' : str(self.teff), 'logg' : str(self.logg)})
             json.dump(spam, f, sort_keys = True, indent = 4, 
