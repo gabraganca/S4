@@ -196,6 +196,14 @@ class Widget(QtGui.QWidget):
         # normalization
         self.norm_cb = QtGui.QCheckBox("Normalization")
         self.norm_cb.setToolTip("If checked, plot normalized spectrum.")
+        # Abundance
+        self.abund_label = QtGui.QLabel("Abundance")
+        # Helium
+        self.he_label = QtGui.QLabel('He')
+        self.he_textbox = self.add_text_input('Helium abundance') 
+        # Silicon
+        self.si_label = QtGui.QLabel('Si')
+        self.si_textbox = self.add_text_input('Silicon abundance')            
         
         # observation file
         # label
@@ -266,16 +274,23 @@ class Widget(QtGui.QWidget):
         grid.addWidget(self.scale_textbox, 2, 2)        
         grid.addWidget(self.norm_cb, 2, 3, 1, 3)
         # Define fourth row
-        grid.addWidget(self.obs_label, 3, 1, 1, 3)        
+        grid.addWidget(self.abund_label, 3, 1, 1, 2)
         # Define fifth row
-        grid.addWidget(self.obs_textbox, 4, 1, 1, 7)
-        grid.addWidget(self.obs_button, 4, 8)
+        grid.addWidget(self.he_label, 4, 1)
+        grid.addWidget(self.he_textbox, 4, 2)
+        grid.addWidget(self.si_label, 4, 3)
+        grid.addWidget(self.si_textbox, 4, 4)        
         # Define sixth row
-        grid.addWidget(self.synspec_label, 5, 1, 1, 3)              
+        grid.addWidget(self.obs_label, 5, 1, 1, 3)        
         # Define seventh row
-        grid.addWidget(self.synspec_textbox, 6, 1, 1, 7)
-        grid.addWidget(self.synspec_button, 6, 8)        
-        # Define eleventhth row        
+        grid.addWidget(self.obs_textbox, 6, 1, 1, 7)
+        grid.addWidget(self.obs_button, 6, 8)
+        # Define eigth row
+        grid.addWidget(self.synspec_label, 7, 1, 1, 3)              
+        # Define ninth row
+        grid.addWidget(self.synspec_textbox, 8, 1, 1, 7)
+        grid.addWidget(self.synspec_button, 8, 8)        
+        # Define eleventh row        
         grid.addWidget(self.run_button, 12, 8)
         # set grid  
         self.setLayout(grid) 
