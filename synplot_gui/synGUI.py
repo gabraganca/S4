@@ -18,7 +18,9 @@ import matplotlib
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
+import numpy as np
 import json
+import re
 import s4
 
 
@@ -82,7 +84,10 @@ class Widget(QtGui.QWidget):
         if self.parameters["relative"] == "0":
             self.norm_cb.setChecked(False)
         else:                                             
-            self.norm_cb.setChecked(True)       
+            self.norm_cb.setChecked(True)   
+            
+        # check abundances
+        self.abundance_to_textbox()    
         
         self.synplot()
         
@@ -377,7 +382,28 @@ class Widget(QtGui.QWidget):
         self.synspec_textbox.setText(fname + '/')
         self.syn_path = fname + '/'
         
-                 
+    def textbox_to_abundance(self):
+        """Get abundance from textbox and put on synplot format"""
+        # Helium
+        helium = '2, 2, {}'.format(self.he_textbox.text()) 
+        # Silicon
+        silicon = '14, 14, {}'.format(self.si_textbox.text()) 
+        self.abund = '[{}, {}]'.format(helium, silicon)                 
+        
+    def abundance_to_textbox(self):
+        """Get abundance and write on textbox"""   
+        ptrn = '\d+(?:(?=[,\s])|\.\d+)'
+        broken_abund = np.array(re.findall(ptrn, self.abund))
+        # reshape
+        broken_abund = broken_abund.reshape([len(broken_abund) / 3, 3])
+        for a in broken_abund:
+            if a[0] == '2':
+                self.he_textbox.setText(a[-1])
+            if a[0] == '14':
+                self.si_textbox.setText(a[-1])
+        
+        
+    
     """    
     # ????
     def add_actions(self, target, actions):
