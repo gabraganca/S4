@@ -191,7 +191,7 @@ class Widget(QtGui.QWidget):
         self.scale_textbox = self.add_text_input('Scale factor')                                                 
         # normalization
         self.norm_cb = QtGui.QCheckBox("Normalization")
-        self.norm_cb.setToolTip("If checked, normalize spectrum.")
+        self.norm_cb.setToolTip("If checked, plot normalized spectrum.")
         
         # observation file
         # label
@@ -205,6 +205,20 @@ class Widget(QtGui.QWidget):
         self.obs_button.setToolTip('Open observation file')
         #self.obs_button.resize(self.obs_button.sizeHint())
         self.obs_button.setMaximumWidth(60)
+        
+        # observation file
+        # label
+        self.synspec_label = QtGui.QLabel("Synspec path")
+        # text edit for observation file path
+        self.synspec_textbox = self.add_text_input()
+        self.synspec_textbox.setMaximumWidth(500)
+        # button to open file dialog
+        self.synspec_button = QtGui.QPushButton('Open', self)
+        self.synspec_button.clicked.connect(self.synspec_file_dialog)
+        self.synspec_button.setToolTip('Open synspec path. If not set, it ' +\
+                                       ' will use the S4 default.')
+        #self.obs_button.resize(self.obs_button.sizeHint())
+        self.synspec_button.setMaximumWidth(60)        
  
         # button to run synplot
         self.run_button = QtGui.QPushButton('Run', self)
@@ -252,7 +266,12 @@ class Widget(QtGui.QWidget):
         # Define fifth row
         grid.addWidget(self.obs_textbox, 4, 1, 1, 7)
         grid.addWidget(self.obs_button, 4, 8)
-        # Define seventh row        
+        # Define sixth row
+        grid.addWidget(self.synspec_label, 5, 1, 1, 3)              
+        # Define seventh row
+        grid.addWidget(self.synspec_textbox, 6, 1, 1, 7)
+        grid.addWidget(self.synspec_button, 6, 8)        
+        # Define eleventhth row        
         grid.addWidget(self.run_button, 12, 8)
         # set grid  
         self.setLayout(grid) 
@@ -327,7 +346,13 @@ class Widget(QtGui.QWidget):
         fname = str(QtGui.QFileDialog.getOpenFileName(self,"Open File"))
         self.obs_textbox.setText(fname)
         
-                 
+    def synspec_file_dialog(self):
+        """Open a file dialog to get sysnpec _path"""
+        #self.fileDialog = QtGui.QFileDialog(self)
+        #self.fileDialog.show()
+        fname = str(QtGui.QFileDialog.getExistingDirectory(self, 
+                                                           "Select Directory"))
+        self.synspec_textbox.setText(fname)                 
                  
     """    
     # ????
