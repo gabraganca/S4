@@ -273,7 +273,12 @@ class Widget(QtGui.QWidget):
             self.axes.plot(
                 self.syn.observation[:, 0],     
                 self.syn.observation[:, 1], label = "Observation")                
-            self.axes.legend(fancybox = True, loc = 'lower right')    
+            self.axes.legend(fancybox = True, loc = 'lower right') 
+        
+        # set x dimension
+        xmin = float(self.parameters['wstart'])
+        xmax = float(self.parameters['wend'])
+        self.axes.set_xlim(xmin, xmax)
         
         self.canvas.draw()        
         
