@@ -324,10 +324,18 @@ class Widget(QtGui.QWidget):
                 self.syn.observation[:, 1], label = "Observation")                
             self.axes.legend(fancybox = True, loc = 'lower right') 
         
-        # set x dimension
+        # set x dimension and label
         xmin = float(self.parameters['wstart'])
         xmax = float(self.parameters['wend'])
         self.axes.set_xlim(xmin, xmax)
+        self.axes.set_xlabel(r'Wavelength $(\AA)$')
+
+        # set y dimension and label
+        if self.norm_cb.isChecked():
+            self.axes.set_ylim(0, 1.05)
+            self.axes.set_ylabel('Normalized Flux')
+        else:
+            self.axes.set_ylabel('Flux')
         
         self.canvas.draw()        
         
