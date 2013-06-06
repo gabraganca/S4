@@ -337,6 +337,14 @@ class Widget(QtGui.QWidget):
             self.axes.set_ylabel('Normalized Flux')
         else:
             self.axes.set_ylabel('Flux')
+
+        # add title
+        title  = 'teff = {}, logg = {}, '.format(self.teff, self.logg) + \
+                     r'$\xi$ = {}, '.format(self.parameters['vturb']) + \
+                     r' vrot = {}, '.format(self.parameters['vrot']) + \
+                     r'$\zeta$ = {}, '.format(self.parameters['vmac_rt']) + \
+                     r'$\epsilon$ = {}'.format(self.parameters['abund'])
+        self.axes.set_title(title) 
         
         self.canvas.draw()        
         
