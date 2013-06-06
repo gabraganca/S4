@@ -21,6 +21,7 @@ from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as Naviga
 import numpy as np
 import json
 import re
+from periodic import element
 import s4
 
 
@@ -33,6 +34,7 @@ FRAME_HEIGHT = 480
 
 HOME_PATH = os.getenv('HOME') + '/'
 CONFIG_FILE = HOME_PATH + '.s4_config.json'
+ELEMENTS = [element('He'), element('Si')]
 
 
 #==============================================================================
@@ -61,9 +63,10 @@ class Widget(QtGui.QWidget):
             # set up a basic configuration
             self.teff = "20000"
             self.logg = "4"
+            self.syn_path = None
             self.parameters = dict(wstart = "4460", wend = "4480", rv = "0",
                                    vrot = "0", vturb = "0", vmac_rt = "0", 
-                                   relative = "1", scale = "1", syn_path = None)
+                                   relative = "1", scale = "1")
         
         # set text boxes              
         self.teff_textbox.setText(self.teff) 
@@ -87,7 +90,7 @@ class Widget(QtGui.QWidget):
             self.norm_cb.setChecked(True)   
             
         # check abundances
-        self.abundance_to_textbox()    
+        #self.abundance_to_textbox()    
         
         self.synplot()
         
@@ -203,12 +206,8 @@ class Widget(QtGui.QWidget):
         self.norm_cb.setToolTip("If checked, plot normalized spectrum.")
         # Abundance
         self.abund_label = QtGui.QLabel("Abundance")
-        # Helium
-        self.he_label = QtGui.QLabel('He')
-        self.he_textbox = self.add_text_input('Helium abundance') 
-        # Silicon
-        self.si_label = QtGui.QLabel('Si')
-        self.si_textbox = self.add_text_input('Silicon abundance')            
+        self.abund_array = {self.abund_controls(el)[0] : self.abund_controls(el)[1] 
+                            for el in ELEMENTS}
         
         # observation file
         # label
@@ -281,10 +280,10 @@ class Widget(QtGui.QWidget):
         # Define fourth row
         grid.addWidget(self.abund_label, 3, 1, 1, 2)
         # Define fifth row
-        grid.addWidget(self.he_label, 4, 1)
-        grid.addWidget(self.he_textbox, 4, 2)
-        grid.addWidget(self.si_label, 4, 3)
-        grid.addWidget(self.si_textbox, 4, 4)        
+        grid.addWidget(self.abund_array[2][0], 4, 1)
+        grid.addWidget(self.abund_array[2][1], 4, 2)
+        grid.addWidget(self.abund_array[14][0], 4, 3)
+        grid.addWidget(self.abund_array[14][1], 4, 4)        
         # Define sixth row
         grid.addWidget(self.obs_label, 5, 1, 1, 3)        
         # Define seventh row
@@ -382,6 +381,12 @@ class Widget(QtGui.QWidget):
         self.synspec_textbox.setText(fname + '/')
         self.syn_path = fname + '/'
         
+    def abund_controls(self, element):
+        """Return the abundance GUI controls """
+        return element.atomic, [QtGui.QLabel(element.symbol), 
+                self.add_text_input(element.name + 'abundance')]
+            
+        
     def textbox_to_abundance(self):
         """Get abundance from textbox and put on synplot format"""
         # Helium
@@ -397,6 +402,7 @@ class Widget(QtGui.QWidget):
         # reshape
         broken_abund = broken_abund.reshape([len(broken_abund) / 3, 3])
         for a in broken_abund:
+            
             if a[0] == '2':
                 self.he_textbox.setText(a[-1])
             if a[0] == '14':
