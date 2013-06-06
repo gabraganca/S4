@@ -66,7 +66,7 @@ class Widget(QtGui.QWidget):
             self.syn_path = None
             self.parameters = dict(wstart = "4460", wend = "4480", rv = "0",
                                    vrot = "0", vturb = "0", vmac_rt = "0", 
-                                   relative = "1", scale = "1")
+                                   relative = "1", scale = "1", abund = '[]')
         
         # set text boxes              
         self.teff_textbox.setText(self.teff) 
@@ -90,7 +90,7 @@ class Widget(QtGui.QWidget):
             self.norm_cb.setChecked(True)   
             
         # check abundances
-        #self.abundance_to_textbox()    
+        self.abundance_to_textbox()    
         
         self.synplot()
         
@@ -125,7 +125,10 @@ class Widget(QtGui.QWidget):
         if self.norm_cb.isChecked():
             self.parameters['relative'] = "1"
         else:
-            self.parameters['relative'] = "0"    
+            self.parameters['relative'] = "0"
+            
+        # check abundance
+        self.check_abundance()        
             
         # run synplot
         self.syn = s4.synthesis.Synplot(self.teff, self.logg, 
@@ -385,29 +388,32 @@ class Widget(QtGui.QWidget):
         """Return the abundance GUI controls """
         return element.atomic, [QtGui.QLabel(element.symbol), 
                 self.add_text_input(element.name + 'abundance')]
+                
+    def check_abundance(self):
+        """Check if abudance is defined"""
+        for el, controls in self.abund_array.iteritems():
+            if controls[-1].text != '':
+                self.textbox_to_abundance()
+                break
             
-        
     def textbox_to_abundance(self):
         """Get abundance from textbox and put on synplot format"""
-        # Helium
-        helium = '2, 2, {}'.format(self.he_textbox.text()) 
-        # Silicon
-        silicon = '14, 14, {}'.format(self.si_textbox.text()) 
-        self.abund = '[{}, {}]'.format(helium, silicon)                 
+        abund = []
+        for el, controls in self.abund_array.iteritems():
+            text = controls[-1].text()
+            if text != '':
+                abund.append('{}, {}, {}'.format(el, el, text))
+        
+        self.parameters['abund'] = '[' + ', '.join(abund) + ']'               
         
     def abundance_to_textbox(self):
         """Get abundance and write on textbox"""   
         ptrn = '\d+(?:(?=[,\s])|\.\d+)'
-        broken_abund = np.array(re.findall(ptrn, self.abund))
+        broken_abund = np.array(re.findall(ptrn, self.parameters['abund']))
         # reshape
         broken_abund = broken_abund.reshape([len(broken_abund) / 3, 3])
-        for a in broken_abund:
-            
-            if a[0] == '2':
-                self.he_textbox.setText(a[-1])
-            if a[0] == '14':
-                self.si_textbox.setText(a[-1])
-        
+        for element in broken_abund:
+            self.abund_array[int(element[0])][-1].setText(element[-1])
         
     
     """    
