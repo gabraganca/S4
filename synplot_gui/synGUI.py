@@ -66,7 +66,8 @@ class Widget(QtGui.QWidget):
             self.syn_path = None
             self.parameters = dict(wstart = "4460", wend = "4480", rv = "0",
                                    vrot = "0", vturb = "0", vmac_rt = "0", 
-                                   relative = "1", scale = "1", abund = '[]')
+                                   relative = "1", scale = "1", 
+                                   abund = '[2, 2, 10.93]')
         
         # set text boxes              
         self.teff_textbox.setText(self.teff) 
@@ -135,7 +136,7 @@ class Widget(QtGui.QWidget):
                                         synplot_path = self.syn_path, 
                                         **self.parameters)
         self.syn.run()
-        # make corrections on synthsized spectrum
+        # make corrections on synthesized spectrum
         self.syn.apply_rvcorr()
         self.syn.apply_scale()
         # draw    
