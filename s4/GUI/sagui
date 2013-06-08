@@ -53,7 +53,7 @@ class MainWindow(QtGui.QMainWindow):
          # format the main window
         self.resize(FRAME_WIDTH, FRAME_HEIGHT)
         self.center()
-        self.setWindowTitle('synGUI')
+        self.setWindowTitle('Sagui')
 
         # show windows
         self.show()
@@ -66,10 +66,13 @@ class MainWindow(QtGui.QMainWindow):
         self.move(qr.topLeft())        
 
     def about(self):
-        QtGui.QMessageBox.about(self, self.tr("About synGUI"),
-            self.tr("A Graphical User Interface for Synspec.\n" +\
+        QtGui.QMessageBox.about(self, self.tr("About Sagui"),
+            self.tr("SAGUI\n" +\
+                    "stellar spectral Synthesis Achieves a Graphical User "+\
+                    "Interface\n\nSagui is a family of New World monkeys, "+\
+                    "very common on Brazil.\n\n"
                      u"Created by Gustavo Bragança\n" +\
-                     "ga.braganca@gmail.com"))
+                     "ga.braganca at gmail dot com"))
 
     def createActions(self):
         self.exitAct = QtGui.QAction(self.tr("E&xit"), self)
@@ -113,7 +116,7 @@ class Widget(QtGui.QWidget):
         # Frame setup
         #self.resize(FRAME_WIDTH, FRAME_HEIGHT)
         #self.center()
-        #self.setWindowTitle('synGUI')
+        #self.setWindowTitle('sagui')
 
         self.create_frame()
        
