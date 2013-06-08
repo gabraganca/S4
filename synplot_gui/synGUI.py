@@ -39,6 +39,67 @@ ELEMENTS = [element('He'), element('Si')]
 
 #==============================================================================
 
+class MainWindow(QtGui.QMainWindow):
+    def __init__(self):
+        QtGui.QMainWindow.__init__(self)
+
+        # create stuff
+        self.wdg = Widget()
+        self.setCentralWidget(self.wdg)
+        self.createActions()
+        self.createMenus()
+        #self.createStatusBar()
+
+         # format the main window
+        self.resize(FRAME_WIDTH, FRAME_HEIGHT)
+        self.center()
+        self.setWindowTitle('synGUI')
+
+        # show windows
+        self.show()
+        self.wdg.show()
+        
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QtGui.QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())        
+
+    def about(self):
+        QtGui.QMessageBox.about(self, self.tr("About synGUI"),
+            self.tr("A Graphical User Interface for Synspec.\n" +\
+                     u"Created by Gustavo Bragança\n" +\
+                     "ga.braganca@gmail.com"))
+
+    def createActions(self):
+        self.exitAct = QtGui.QAction(self.tr("E&xit"), self)
+        self.exitAct.setShortcut(self.tr("Ctrl+Q"))
+        self.exitAct.setStatusTip(self.tr("Exit the application"))
+        self.connect(self.exitAct, QtCore.SIGNAL("triggered()"), self, QtCore.SLOT("close()"))
+
+        self.aboutAct = QtGui.QAction(self.tr("&About"), self)
+        self.aboutAct.setStatusTip(self.tr("Show the application's About box"))
+        self.connect(self.aboutAct, QtCore.SIGNAL("triggered()"), self.about)
+
+        self.aboutQtAct = QtGui.QAction(self.tr("About &Qt"), self)
+        self.aboutQtAct.setStatusTip(self.tr("Show the Qt library's About box"))
+        self.connect(self.aboutQtAct, QtCore.SIGNAL("triggered()"), QtGui.qApp, QtCore.SLOT("aboutQt()"))
+
+    def createMenus(self):
+        self.fileMenu = self.menuBar().addMenu(self.tr("&File"))
+        self.fileMenu.addAction(self.exitAct)
+
+        self.helpMenu = self.menuBar().addMenu(self.tr("&Help"))
+        self.helpMenu.addAction(self.aboutAct)
+        self.helpMenu.addAction(self.aboutQtAct)
+
+    """
+    def createStatusBar(self):
+        sb = QtGui.QStatusBar()
+        sb.setFixedHeight(18)
+        self.setStatusBar(sb)
+        self.statusBar().showMessage(self.tr("Ready"))    
+    """
 #==============================================================================
 # 
 class Widget(QtGui.QWidget):
@@ -50,9 +111,9 @@ class Widget(QtGui.QWidget):
         QtGui.QToolTip.setFont(QtGui.QFont('SansSerif', 10))
 
         # Frame setup
-        self.resize(FRAME_WIDTH, FRAME_HEIGHT)
-        self.center()
-        self.setWindowTitle('synGUI')
+        #self.resize(FRAME_WIDTH, FRAME_HEIGHT)
+        #self.center()
+        #self.setWindowTitle('synGUI')
 
         self.create_frame()
        
@@ -94,14 +155,6 @@ class Widget(QtGui.QWidget):
         self.abundance_to_textbox()    
         
         self.synplot()
-        
-    # About    
-    def on_about(self):
-        msg = """ A GUI for synplot
-        
-         * describe using ReST
-        """
-        QtGui.QMessageBox.about(self, "About synGUI", msg.strip())        
 
     #=========================================================================
     # Core modules
@@ -473,7 +526,8 @@ class Widget(QtGui.QWidget):
 def main():
     
     app = QtGui.QApplication(sys.argv)
-    wdg = Widget()
+    #wdg = Widget()
+    mw = MainWindow()
     sys.exit(app.exec_()) 
 #==============================================================================
 
