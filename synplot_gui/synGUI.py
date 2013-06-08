@@ -75,15 +75,15 @@ class MainWindow(QtGui.QMainWindow):
         self.exitAct = QtGui.QAction(self.tr("E&xit"), self)
         self.exitAct.setShortcut(self.tr("Ctrl+Q"))
         self.exitAct.setStatusTip(self.tr("Exit the application"))
-        self.connect(self.exitAct, QtCore.SIGNAL("triggered()"), self, QtCore.SLOT("close()"))
+        self.exitAct.triggered.connect(self.close)
 
         self.aboutAct = QtGui.QAction(self.tr("&About"), self)
         self.aboutAct.setStatusTip(self.tr("Show the application's About box"))
-        self.connect(self.aboutAct, QtCore.SIGNAL("triggered()"), self.about)
+        self.aboutAct.triggered.connect(self.about)
 
         self.aboutQtAct = QtGui.QAction(self.tr("About &Qt"), self)
         self.aboutQtAct.setStatusTip(self.tr("Show the Qt library's About box"))
-        self.connect(self.aboutQtAct, QtCore.SIGNAL("triggered()"), QtGui.qApp, QtCore.SLOT("aboutQt()"))
+        self.aboutQtAct.triggered.connect(QtGui.qApp.aboutQt)
 
     def createMenus(self):
         self.fileMenu = self.menuBar().addMenu(self.tr("&File"))
@@ -420,7 +420,7 @@ class Widget(QtGui.QWidget):
             text_input.setToolTip(tip)
         text_input.setMaximumWidth(55) 
         # run synplot if return is pressed
-        self.connect(text_input, QtCore.SIGNAL("returnPressed()"), self.synplot)    
+        text_input.returnPressed.connect(self.synplot)
         return text_input
         
     def load_config(self):
