@@ -365,7 +365,9 @@ class Widget(QtGui.QWidget):
         text_input = QtGui.QLineEdit()
         if tip is not None:
             text_input.setToolTip(tip)
-        text_input.setMaximumWidth(55)     
+        text_input.setMaximumWidth(55) 
+        # run synplot if return is pressed
+        self.connect(text_input, QtCore.SIGNAL("returnPressed()"), self.synplot)    
         return text_input
         
     def load_config(self):
