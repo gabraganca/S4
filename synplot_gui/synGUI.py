@@ -256,10 +256,10 @@ class Widget(QtGui.QWidget):
         #grid.setSpacing(10)
         
         #set matplotlib canvas
-        grid.addWidget(self.canvas, 0, 0, 11, 1)
-        grid.addWidget(self.mpl_toolbar, 12, 0, 1, 1)
+        grid.addWidget(self.canvas, 0, 0, 12, 1)
+        grid.addWidget(self.mpl_toolbar, 12, 0)
 
-        # Define first row
+        # row 01
         grid.addWidget(self.teff_label, 0, 1)
         grid.addWidget(self.teff_textbox, 0, 2)
         grid.addWidget(self.logg_label, 0, 3)
@@ -268,7 +268,7 @@ class Widget(QtGui.QWidget):
         grid.addWidget(self.wstart_textbox, 0, 6)
         grid.addWidget(self.wend_label, 0, 7)
         grid.addWidget(self.wend_textbox, 0, 8)          
-        # Define second row  
+        # row 02
         grid.addWidget(self.rv_label, 1, 1)
         grid.addWidget(self.rv_textbox, 1, 2)        
         grid.addWidget(self.vrot_label, 1, 3)
@@ -277,28 +277,28 @@ class Widget(QtGui.QWidget):
         grid.addWidget(self.vturb_textbox, 1, 6)
         grid.addWidget(self.vmac_label, 1, 7)
         grid.addWidget(self.vmac_textbox, 1, 8)
-        # Define third row
+        # row 03
         grid.addWidget(self.scale_label, 2, 1)
         grid.addWidget(self.scale_textbox, 2, 2)        
         grid.addWidget(self.norm_cb, 2, 3, 1, 3)
-        # Define fourth row
+        # row 04
         grid.addWidget(self.abund_label, 3, 1, 1, 2)
-        # Define fifth row
+        # row 05
         grid.addWidget(self.abund_array[2][0], 4, 1)
         grid.addWidget(self.abund_array[2][1], 4, 2)
         grid.addWidget(self.abund_array[14][0], 4, 3)
-        grid.addWidget(self.abund_array[14][1], 4, 4)        
-        # Define sixth row
-        grid.addWidget(self.obs_label, 5, 1, 1, 3)        
-        # Define seventh row
-        grid.addWidget(self.obs_textbox, 6, 1, 1, 7)
-        grid.addWidget(self.obs_button, 6, 8)
-        # Define eigth row
-        grid.addWidget(self.synspec_label, 7, 1, 1, 3)              
-        # Define ninth row
-        grid.addWidget(self.synspec_textbox, 8, 1, 1, 7)
-        grid.addWidget(self.synspec_button, 8, 8)        
-        # Define eleventh row        
+        grid.addWidget(self.abund_array[14][1], 4, 4)
+        # row 09
+        grid.addWidget(self.obs_label, 8, 1, 1, 3)        
+        # row 10
+        grid.addWidget(self.obs_textbox, 9, 1, 1, 7)
+        grid.addWidget(self.obs_button, 9, 8)
+        # row 11
+        grid.addWidget(self.synspec_label, 10, 1, 1, 3)              
+        # row 12
+        grid.addWidget(self.synspec_textbox, 11, 1, 1, 7)
+        grid.addWidget(self.synspec_button, 11, 8, 1, 1)        
+        # row 13        
         grid.addWidget(self.run_button, 12, 8)
         # set grid  
         self.setLayout(grid) 
