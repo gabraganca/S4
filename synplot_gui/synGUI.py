@@ -344,7 +344,7 @@ class Widget(QtGui.QWidget):
                      r' vrot = {}, '.format(self.parameters['vrot']) + \
                      r'$\zeta$ = {}, '.format(self.parameters['vmac_rt']) + \
                      r'$\epsilon$ = {}'.format(self.parameters['abund'])
-        self.axes.set_title(title) 
+        self.axes.set_title(title, fontsize= 'medium') 
         
         self.canvas.draw()        
         
