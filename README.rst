@@ -20,3 +20,5 @@ Dependencies
 - Scipy
 
 - `Lineid_plot <https://github.com/phn/lineid_plot>`_
+
+- `Periodic <http://pythonhosted.org/periodic/>`_

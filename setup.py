@@ -53,6 +53,7 @@ MAINTAINER = "Gustavo de Almeida Braganca"
 MAINTAINER_EMAIL = "ga.braganca@gmail.com"
 DOWNLOAD_URL = 'http://github.com/gabraganca/S4'
 LICENSE = 'BSD'
+SCRIPTS = ["s4/GUI/sagui"]
 
 import s4
 
@@ -65,6 +66,7 @@ setup(name=NAME,
       maintainer_email=MAINTAINER_EMAIL,
       download_url=DOWNLOAD_URL,
       license=LICENSE,
+      scripts=SCRIPTS,
       packages=['s4',
                 's4.spectra',
                 's4.idlwrapper',
