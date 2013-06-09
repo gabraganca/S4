@@ -2,11 +2,10 @@
 # -*- coding: utf-8 -*-
 
 """
-Create and interactive synplot.
+SAGUI
+stellar spectral Synthesis Achieves a Graphical User Interface.
 
-I am following the tutorial found at http://zetcode.com/tutorials/pyqt4/
-and example from here
-http://eli.thegreenplace.net/2009/01/20/matplotlib-with-pyqt-guis/
+Created by Gustavo Bragança (ga dot braganca at gmail dot com)
 """
 #==============================================================================
 
