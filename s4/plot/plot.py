@@ -7,7 +7,6 @@ Plot modules.
 import numpy as np
 import matplotlib.pyplot as plt
 from decimal import Decimal
-import scipy.stats as st
 from ..spectra import spectra
 #from ..synthesis.synplotwrapper import synplot
 from matplotlib.widgets import SpanSelector, Cursor
@@ -93,31 +92,40 @@ def choose_windows(spectrum, min_wl, max_wl):
 #=============================================================================
 # 
 def contour_plot(array3d, **kwargs):
-    """Do the contour plot of a X, Y, Z vector. """
-    print  'Plotting the countour plot'
-    x = st.itemfreq(array3d[:, 0])[:, 0]
-    y = st.itemfreq(array3d[:, 1])[:, 0]
+    """Do the contour plot of a 3D array. 
     
-    X, Y = np.meshgrid(x, y)
+    Parameters
+    ----------
     
-    Z = np.zeros([len(y), len(x)], float)
-    
-    for i in range(len(X)):
-        for j in range(len(X[0])):
-            for k in array3d:
-                if X[i, j] == k[0] and                                        \
-                np.round(Y[i, j], 2) == np.round(k[1], 2):
-                    Z[i, j] = k[2]
-   
-    #Apply scale, if defined
-    if kwargs.has_key('scale') and kwargs['scale'] == 'log':
-        Z = np.log(Z)
+    array3d : arra,
+        3 dimensional array vector
         
+    Optional:
+        contour : bool,
+            If True, add contours.
+        map_name : str,
+            Color map name
+        xlabel : str,
+            label for x-axis.
+        ylabel : str,
+            label for y-axis.
+        title : str,
+            Title for plot.
+        save_name : str,
+            Name for saved file.
+          
+    """
+    n_x = len(np.unique(array3d[:, 0]))
+    n_y = len(np.unique(array3d[:, 1]))
+    
+    X = np.reshape(array3d[:, 0], (n_x, n_y)) 
+    Y = np.reshape(array3d[:, 1], (n_x, n_y))
+    Z = np.reshape(array3d[:, 2], (n_x, n_y))
+    
     #Do contour plot
     plt.figure()
     CS = plt.contour(X, Y, Z)
-    plt.clabel(CS, inline=1, fontsize=10)
-    plt.axis([15000, 29000, 3.5, 4.5])
+    plt.clabel(CS, inline = 1, fontsize = 10)
     if kwargs.has_key('xlabel'): 
         plt.xlabel(kwargs['xlabel'])
     if kwargs.has_key('ylabel'):
