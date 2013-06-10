@@ -124,39 +124,11 @@ class Widget(QtGui.QWidget):
             self.load_config()
         except IOError:
             # set up a basic configuration
-            self.teff = "20000"
-            self.logg = "4"
-            self.syn_path = None
-            self.parameters = dict(wstart = "4460", wend = "4480", rv = "0",
-                                   vrot = "0", vturb = "0", vmac_rt = "0", 
-                                   relative = "1", scale = "1", 
-                                   abund = '[2, 2, 10.93]')
+            self.set_default()
         
         # set text boxes              
-        self.teff_textbox.setText(self.teff) 
-        self.logg_textbox.setText(self.logg) 
-        self.wstart_textbox.setText(self.parameters['wstart']) 
-        self.wend_textbox.setText(self.parameters['wend']) 
-        self.rv_textbox.setText(self.parameters['rv'])        
-        self.vrot_textbox.setText(self.parameters['vrot'])
-        self.vturb_textbox.setText(self.parameters['vturb'])
-        self.vmac_textbox.setText(self.parameters['vmac_rt'])
-        self.scale_textbox.setText(self.parameters['scale'])
-        if 'observ' in self.parameters:
-            self.obs_textbox.setText(self.parameters['observ'])
-        if self.syn_path is not None:
-            self.synspec_textbox.setText(self.syn_path)            
-
-        # set check boxes status
-        if self.parameters["relative"] == "0":
-            self.norm_cb.setChecked(False)
-        else:                                             
-            self.norm_cb.setChecked(True)   
-            
-        # check abundances
-        self.abundance_to_textbox()    
         
-        self.synplot()
+        
 
     #=========================================================================
     # Core modules
@@ -301,6 +273,13 @@ class Widget(QtGui.QWidget):
         self.run_button.setToolTip('Press to run <b>synplot</b>')
         #self.run_button.resize(self.run_button.sizeHint())
         self.run_button.setMaximumWidth(50)
+
+        # reset button 
+        self.reset_button = QtGui.QPushButton('Reset', self)
+        self.reset_button.clicked.connect(self.set_default)
+        self.reset_button.setToolTip('Reset to default')
+        #self.reset_button.resize(self.run_button.sizeHint())
+        self.reset_button.setMaximumWidth(50)
         
 
         #
@@ -354,6 +333,7 @@ class Widget(QtGui.QWidget):
         grid.addWidget(self.synspec_textbox, 11, 1, 1, 7)
         grid.addWidget(self.synspec_button, 11, 8, 1, 1)        
         # row 13        
+        grid.addWidget(self.reset_button, 12, 7)
         grid.addWidget(self.run_button, 12, 8)
         # set grid  
         self.setLayout(grid) 
@@ -432,6 +412,9 @@ class Widget(QtGui.QWidget):
         self.logg = self.parameters.pop('logg')
         if 'syn_path' in  self.parameters: 
             self.syn_path = self.parameters.pop('syn_path')
+
+        self.fill_textbox()
+        self.synplot()
         
     def save_config(self):
         """Save configuration file"""
@@ -440,7 +423,46 @@ class Widget(QtGui.QWidget):
             spam.update(dict(teff= str(self.teff), logg= str(self.logg), 
                              syn_path = self.syn_path))
             json.dump(spam, f, sort_keys = True, indent = 4, 
-                      separators=(',', ':'))        
+                      separators=(',', ':'))
+
+    def set_default(self):
+        """Load default configuration"""
+        self.teff = "20000"
+        self.logg = "4"
+        self.syn_path = None
+        self.parameters = dict(wstart = "4460", wend = "4480", rv = "0",
+                               vrot = "0", vturb = "0", vmac_rt = "0", 
+                               relative = "1", scale = "1", 
+                               abund = '[2, 2, 10.93]')
+        self.save_config()
+        self.fill_textbox()
+        self.synplot()
+
+    def fill_textbox(self):
+        """Fill textboxs"""
+        self.teff_textbox.setText(self.teff) 
+        self.logg_textbox.setText(self.logg) 
+        self.wstart_textbox.setText(self.parameters['wstart']) 
+        self.wend_textbox.setText(self.parameters['wend']) 
+        self.rv_textbox.setText(self.parameters['rv'])        
+        self.vrot_textbox.setText(self.parameters['vrot'])
+        self.vturb_textbox.setText(self.parameters['vturb'])
+        self.vmac_textbox.setText(self.parameters['vmac_rt'])
+        self.scale_textbox.setText(self.parameters['scale'])
+        if 'observ' in self.parameters:
+            self.obs_textbox.setText(self.parameters['observ'])
+        if self.syn_path is not None:
+            self.synspec_textbox.setText(self.syn_path)            
+
+        # set check boxes status
+        if self.parameters["relative"] == "0":
+            self.norm_cb.setChecked(False)
+        else:                                             
+            self.norm_cb.setChecked(True)   
+            
+        # check abundances
+        self.abundance_to_textbox()         
+  
         
     def obs_file_dialog(self):
         """Open a file dialog to open observation file"""
