@@ -13,7 +13,6 @@ Created by Gustavo Bragança (ga dot braganca at gmail dot com)
 import os
 import sys
 from PyQt4 import QtGui, QtCore
-import matplotlib
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
@@ -22,7 +21,6 @@ import json
 import re
 from periodic import element
 import s4
-
 
 #==============================================================================
 
@@ -112,11 +110,6 @@ class Widget(QtGui.QWidget):
         # set font for tips
         QtGui.QToolTip.setFont(QtGui.QFont('SansSerif', 10))
 
-        # Frame setup
-        #self.resize(FRAME_WIDTH, FRAME_HEIGHT)
-        #self.center()
-        #self.setWindowTitle('sagui')
-
         self.create_frame()
        
         # load config
@@ -127,8 +120,6 @@ class Widget(QtGui.QWidget):
             self.set_default()
         
         # set text boxes              
-        
-        
 
     #=========================================================================
     # Core modules
@@ -338,8 +329,6 @@ class Widget(QtGui.QWidget):
         # set grid  
         self.setLayout(grid) 
         
-        #self.setCentralWidget(self.main_frame)
-       
         self.show()
 
     # Draw canvas        
@@ -541,8 +530,6 @@ class Widget(QtGui.QWidget):
         return action
     
     """    
-    def test(self):
-        print 'this is a test' 
     #=========================================================================    
         
 #==============================================================================
@@ -552,7 +539,6 @@ class Widget(QtGui.QWidget):
 def main():
     
     app = QtGui.QApplication(sys.argv)
-    #wdg = Widget()
     mw = MainWindow()
     sys.exit(app.exec_()) 
 #==============================================================================
