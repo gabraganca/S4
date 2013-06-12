@@ -7,7 +7,6 @@ Plot modules.
 import numpy as np
 import matplotlib.pyplot as plt
 from decimal import Decimal
-import scipy.stats as st
 from ..spectra import spectra
 #from ..synthesis.synplotwrapper import synplot
 from matplotlib.widgets import SpanSelector, Cursor
@@ -93,31 +92,40 @@ def choose_windows(spectrum, min_wl, max_wl):
 #=============================================================================
 # 
 def contour_plot(array3d, **kwargs):
-    """Do the contour plot of a X, Y, Z vector. """
-    print  'Plotting the countour plot'
-    x = st.itemfreq(array3d[:, 0])[:, 0]
-    y = st.itemfreq(array3d[:, 1])[:, 0]
+    """Do the contour plot of a 3D array. 
     
-    X, Y = np.meshgrid(x, y)
+    Parameters
+    ----------
     
-    Z = np.zeros([len(y), len(x)], float)
-    
-    for i in range(len(X)):
-        for j in range(len(X[0])):
-            for k in array3d:
-                if X[i, j] == k[0] and                                        \
-                np.round(Y[i, j], 2) == np.round(k[1], 2):
-                    Z[i, j] = k[2]
-   
-    #Apply scale, if defined
-    if kwargs.has_key('scale') and kwargs['scale'] == 'log':
-        Z = np.log(Z)
+    array3d : arra,
+        3 dimensional array vector
         
+    Optional:
+        contour : bool,
+            If True, add contours.
+        map_name : str,
+            Color map name
+        xlabel : str,
+            label for x-axis.
+        ylabel : str,
+            label for y-axis.
+        title : str,
+            Title for plot.
+        save_name : str,
+            Name for saved file.
+          
+    """
+    n_x = len(np.unique(array3d[:, 0]))
+    n_y = len(np.unique(array3d[:, 1]))
+    
+    X = np.reshape(array3d[:, 0], (n_x, n_y)) 
+    Y = np.reshape(array3d[:, 1], (n_x, n_y))
+    Z = np.reshape(array3d[:, 2], (n_x, n_y))
+    
     #Do contour plot
     plt.figure()
     CS = plt.contour(X, Y, Z)
-    plt.clabel(CS, inline=1, fontsize=10)
-    plt.axis([15000, 29000, 3.5, 4.5])
+    plt.clabel(CS, inline = 1, fontsize = 10)
     if kwargs.has_key('xlabel'): 
         plt.xlabel(kwargs['xlabel'])
     if kwargs.has_key('ylabel'):
@@ -134,38 +142,46 @@ def contour_plot(array3d, **kwargs):
     
 #=============================================================================
 # 
-def color_map_plot(X_vector, Y_vector, Z_vector, **kwargs):
+def color_map_plot(X_vector, Y_vector, Z_vector, num = 100, **kwargs):
     """
     Do a color map of a X, Y, Z vector. 
     
     Parameters
     ----------
     
-    X_vector : 
-    Y_vector : 
-    Z_vector : 
+    X_vector : list,
+        x-axis vector
+    Y_vector : list,
+        y-axis vector
+    Z_vector :
+        color-axis vector
+    num : int, optional
+        Number of samples to generate. Default is 100.        
         
     Optional:
-        scale : Can be 'log'.
-        contour : if True, add contours.
-        map_name : Color map name
-        xlabel : label for x-axis.
-        ylabel : label for y-axis.
-        title : Title for plot.
-        save_name : Name for saved file.
+        contour : bool,
+            If True, add contours.
+        map_name : str,
+            Color map name
+        xlabel : str,
+            label for x-axis.
+        ylabel : str,
+            label for y-axis.
+        bar_label : str,
+            label for color bar
+        title : str,
+            Title for plot.
+        save_name : str,
+            Name for saved file.
       
         
     Adapted from Anderson Ribeiro code.
     """
 
-    xi = np.linspace(min(X_vector), max(X_vector), 10 * len(X_vector))    
-    yi = np.linspace(min(Y_vector), max(Y_vector), 10 * len(Y_vector))
+    xi = np.linspace(min(X_vector), max(X_vector), num)    
+    yi = np.linspace(min(Y_vector), max(Y_vector), num)
     zi = griddata(X_vector, Y_vector, Z_vector, xi, yi)
 
-    #Apply scale, if defined
-    if kwargs.has_key('scale') and kwargs['scale'] == 'log':
-        zi = np.log(zi)
-        
     #Do contour plot
     if 'contour' in kwargs:        
         plt.contour(xi, yi, zi, linewidths = 0.5, colors = 'k')
@@ -173,8 +189,11 @@ def color_map_plot(X_vector, Y_vector, Z_vector, **kwargs):
         map_id = plt.get_cmap(kwargs['map_name'])
     else:
         map_id = None
+        
     plt.pcolormesh(xi, yi, zi, cmap = map_id)
-    plt.colorbar() 
+    cbar = plt.colorbar() 
+    cbar.set_label(kwargs['bar_label'])
+    
     if kwargs.has_key('xlabel'): 
         plt.xlabel(kwargs['xlabel'])
     if kwargs.has_key('ylabel'):
@@ -185,7 +204,7 @@ def color_map_plot(X_vector, Y_vector, Z_vector, **kwargs):
     if kwargs.has_key('save_name'):
         plt.savefig(kwargs['save_name'])
     else:        
-        plt.savefig('contour.pdf')
+        plt.savefig('color_map.pdf')
     plt.clf()
 #=============================================================================    
     
