@@ -366,12 +366,14 @@ class Widget(QtGui.QWidget):
             self.axes.set_ylabel('Flux')
 
         # add title
-        title  = 'teff = {}, logg = {}, '.format(self.teff, self.logg) + \
-                     r'$\xi$ = {}, '.format(self.params.dic['vturb']) + \
-                     r' vrot = {}, '.format(self.params.dic['vrot']) + \
-                     r'$\zeta$ = {}, '.format(self.params.dic['vmac_rt']) + \
-                     r'$\epsilon$ = {}'.format(self.params.dic['abund'])
-        self.axes.set_title(title, fontsize= 'medium') 
+        title  = r'$T_{eff}$ = ' + str(self.teff) +' K, ' + \
+                 r'$\log g$ = {}, '.format(self.logg) + \
+                 r'$\xi$ = {} km/s, '.format(self.params.dic['vturb']) + \
+                 r'$v\sin i$ = {} km/s, '.format(self.params.dic['vrot']) + \
+                 r'$\zeta$ = {} km/s, '.format(self.params.dic['vmac_rt']) + \
+                 r'$\epsilon$ = {}'.format(self.params.dic['abund'])
+
+        self.axes.set_title(title, fontsize= 'small') 
         
         self.canvas.draw()        
         
