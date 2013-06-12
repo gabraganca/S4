@@ -111,6 +111,9 @@ class Widget(QtGui.QWidget):
         QtGui.QToolTip.setFont(QtGui.QFont('SansSerif', 10))
 
         self.create_frame()
+        
+        # start JSON dictionary that will hold params.dic
+        self.params = s4.utils.JSON(CONFIG_FILE)
        
         # load config
         try:
@@ -126,25 +129,25 @@ class Widget(QtGui.QWidget):
     # synplotmodule    
     def synplot(self):
         global teff, logg
-        # Get and update parameters
-        self.teff = self.teff_textbox.text()
+        # Get and update params.dic
+        self.teff = int(self.teff_textbox.text())
         self.logg = float(self.logg_textbox.text())
-        self.parameters['wstart'] = self.wstart_textbox.text()
-        self.parameters['wend'] = self.wend_textbox.text()
-        self.parameters['vrot'] = self.vrot_textbox.text()
-        self.parameters['vturb'] = self.vturb_textbox.text()
-        self.parameters['vmac_rt'] = self.vmac_textbox.text()
-        self.parameters['rv'] = float(self.rv_textbox.text())
-        self.parameters['scale'] = float(self.scale_textbox.text())
+        self.params.dic['wstart'] = int(self.wstart_textbox.text())
+        self.params.dic['wend'] = int(self.wend_textbox.text())
+        self.params.dic['vrot'] = float(self.vrot_textbox.text())
+        self.params.dic['vturb'] = float(self.vturb_textbox.text())
+        self.params.dic['vmac_rt'] = float(self.vmac_textbox.text())
+        self.params.dic['rv'] = float(self.rv_textbox.text())
+        self.params.dic['scale'] = float(self.scale_textbox.text())
         if self.obs_textbox.text() != '':
-            self.parameters['observ'] = str(self.obs_textbox.text())
+            self.params.dic['observ'] = str(self.obs_textbox.text())
         else:
-            self.parameters.pop('observ', None)
+            self.params.dic.pop('observ', None)
                 
         if self.norm_cb.isChecked():
-            self.parameters['relative'] = "1"
+            self.params.dic['relative'] = "1"
         else:
-            self.parameters['relative'] = "0"
+            self.params.dic['relative'] = "0"
             
         # check abundance
         self.check_abundance()        
@@ -152,7 +155,7 @@ class Widget(QtGui.QWidget):
         # run synplot
         self.syn = s4.synthesis.Synplot(self.teff, self.logg, 
                                         synplot_path = self.syn_path, 
-                                        **self.parameters)
+                                        **self.params.dic)
         self.syn.run()
         # make corrections on synthesized spectrum
         self.syn.apply_rvcorr()
@@ -343,15 +346,15 @@ class Widget(QtGui.QWidget):
             self.syn.spectrum[:, 0], 
             self.syn.spectrum[:, 1], label = "Synthetic")
         # plot observation, if availabe
-        if 'observ' in self.parameters:
+        if 'observ' in self.params.dic:
             self.axes.plot(
                 self.syn.observation[:, 0],     
                 self.syn.observation[:, 1], label = "Observation")                
             self.axes.legend(fancybox = True, loc = 'lower right') 
         
         # set x dimension and label
-        xmin = float(self.parameters['wstart'])
-        xmax = float(self.parameters['wend'])
+        xmin = float(self.params.dic['wstart'])
+        xmax = float(self.params.dic['wend'])
         self.axes.set_xlim(xmin, xmax)
         self.axes.set_xlabel(r'Wavelength $(\AA)$')
 
@@ -364,10 +367,10 @@ class Widget(QtGui.QWidget):
 
         # add title
         title  = 'teff = {}, logg = {}, '.format(self.teff, self.logg) + \
-                     r'$\xi$ = {}, '.format(self.parameters['vturb']) + \
-                     r' vrot = {}, '.format(self.parameters['vrot']) + \
-                     r'$\zeta$ = {}, '.format(self.parameters['vmac_rt']) + \
-                     r'$\epsilon$ = {}'.format(self.parameters['abund'])
+                     r'$\xi$ = {}, '.format(self.params.dic['vturb']) + \
+                     r' vrot = {}, '.format(self.params.dic['vrot']) + \
+                     r'$\zeta$ = {}, '.format(self.params.dic['vmac_rt']) + \
+                     r'$\epsilon$ = {}'.format(self.params.dic['abund'])
         self.axes.set_title(title, fontsize= 'medium') 
         
         self.canvas.draw()        
@@ -396,55 +399,55 @@ class Widget(QtGui.QWidget):
         
     def load_config(self):
         """Load the configuration file"""
-        self.parameters = json.load(open(CONFIG_FILE))
-        self.teff = self.parameters.pop('teff')
-        self.logg = self.parameters.pop('logg')
-        if 'syn_path' in  self.parameters: 
-            self.syn_path = self.parameters.pop('syn_path')
+        self.params.load()
+        self.teff = self.params.dic.pop('teff')
+        self.logg = self.params.dic.pop('logg')
+        if 'syn_path' in  self.params.dic: 
+            self.syn_path = self.params.dic.pop('syn_path')
 
         self.fill_textbox()
         self.synplot()
         
     def save_config(self):
         """Save configuration file"""
-        with open(CONFIG_FILE, 'w') as f:
-            spam = {key : str(value) for key, value in self.parameters.iteritems()}
-            spam.update(dict(teff= str(self.teff), logg= str(self.logg), 
-                             syn_path = self.syn_path))
-            json.dump(spam, f, sort_keys = True, indent = 4, 
-                      separators=(',', ':'))
+        spam = dict(teff = self.teff, logg = self.logg, 
+                    syn_path = self.syn_path)
+        self.params.dic.update(spam)
+        self.params.save()
+        for k in spam:
+            self.params.dic.pop(k, None)
 
     def set_default(self):
         """Load default configuration"""
-        self.teff = "20000"
-        self.logg = "4"
+        self.teff = 20000
+        self.logg = 4
         self.syn_path = None
-        self.parameters = dict(wstart = "4460", wend = "4480", rv = "0",
-                               vrot = "0", vturb = "0", vmac_rt = "0", 
-                               relative = "1", scale = "1", 
-                               abund = '[2, 2, 10.93]')
+        self.params.dic.update(dict(wstart = 4460, wend = 4480, rv = 0,
+                               vrot = 0.0, vturb = 0.0, vmac_rt = 0.0, 
+                               relative = "1", scale = 1.0, 
+                               abund = '[2, 2, 10.93]'))
         self.save_config()
         self.fill_textbox()
         self.synplot()
 
     def fill_textbox(self):
         """Fill textboxs"""
-        self.teff_textbox.setText(self.teff) 
-        self.logg_textbox.setText(self.logg) 
-        self.wstart_textbox.setText(self.parameters['wstart']) 
-        self.wend_textbox.setText(self.parameters['wend']) 
-        self.rv_textbox.setText(self.parameters['rv'])        
-        self.vrot_textbox.setText(self.parameters['vrot'])
-        self.vturb_textbox.setText(self.parameters['vturb'])
-        self.vmac_textbox.setText(self.parameters['vmac_rt'])
-        self.scale_textbox.setText(self.parameters['scale'])
-        if 'observ' in self.parameters:
-            self.obs_textbox.setText(self.parameters['observ'])
+        self.teff_textbox.setText(str(self.teff))
+        self.logg_textbox.setText(str(self.logg)) 
+        self.wstart_textbox.setText(str(self.params.dic['wstart']))
+        self.wend_textbox.setText(str(self.params.dic['wend']))
+        self.rv_textbox.setText(str(self.params.dic['rv']))    
+        self.vrot_textbox.setText(str(self.params.dic['vrot']))
+        self.vturb_textbox.setText(str(self.params.dic['vturb']))
+        self.vmac_textbox.setText(str(self.params.dic['vmac_rt']))
+        self.scale_textbox.setText(str(self.params.dic['scale']))
+        if 'observ' in self.params.dic:
+            self.obs_textbox.setText(self.params.dic['observ'])
         if self.syn_path is not None:
             self.synspec_textbox.setText(self.syn_path)            
 
         # set check boxes status
-        if self.parameters["relative"] == "0":
+        if self.params.dic["relative"] == "0":
             self.norm_cb.setChecked(False)
         else:                                             
             self.norm_cb.setChecked(True)   
@@ -491,12 +494,12 @@ class Widget(QtGui.QWidget):
             if text != '':
                 abund.append('{}, {}, {}'.format(el, el, text))
         
-        self.parameters['abund'] = '[' + ', '.join(abund) + ']'               
+        self.params.dic['abund'] = '[' + ', '.join(abund) + ']'               
         
     def abundance_to_textbox(self):
         """Get abundance and write on textbox"""   
         ptrn = '\d+(?:(?=[,\s])|\.\d+)'
-        broken_abund = np.array(re.findall(ptrn, self.parameters['abund']))
+        broken_abund = np.array(re.findall(ptrn, self.params.dic['abund']))
         # reshape
         broken_abund = broken_abund.reshape([len(broken_abund) / 3, 3])
         for element in broken_abund:
