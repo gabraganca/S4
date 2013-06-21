@@ -28,3 +28,24 @@ def run_gdl(inp, do_log = False):
         gdl.communicate(inp)
         print '######## Quitting gdl ############'    
 #=============================================================================
+
+#=============================================================================        
+def run_gdl_alt(inp, do_log = False):
+    #An alternative way
+    
+    import pidly
+    
+    gdl = pidly.IDL('gdl', idl_prompt='GDL> ')
+    
+    if do_log:        
+        with open('gdl.log', 'w') as log:
+            spam = gdl(inp, print_output = False, ret = True)
+            log.write(spam)
+    else:
+        print '########### GDL ##################'
+        gdl(inp)
+        print '######## Quitting GDL ############'
+        
+    gdl.close()    
+      
+#=============================================================================
