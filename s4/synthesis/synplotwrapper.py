@@ -6,8 +6,7 @@ import matplotlib.pyplot as plt
 import re
 import lineid_plot
 from ..spectra import rvcorr
-from ..idlwrapper import idlwrapper
-from ..utils import handling
+from ..utils import *
 from ..plot import *
 from ..io import fits
 #=============================================================================
