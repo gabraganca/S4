@@ -108,7 +108,8 @@ class Synplot:
             
         # make a copy of array        
         spectrum_copy = self.spectrum.copy()
-        observation_copy = self.observation.copy()
+        if hasattr(self, 'observation'):
+            observation_copy = self.observation.copy()
         
         # Apply scale and radial velocity if needed
         if 'rv' in  self.parameters:
