@@ -108,10 +108,12 @@ class Synplot:
             
         # make a copy of array        
         spectrum_copy = self.spectrum.copy()
+        if hasattr(self, 'observation'):
+            observation_copy = self.observation.copy()
         
         # Apply scale and radial velocity if needed
         if 'rv' in  self.parameters:
-            spectrum_copy[:, 0] *= rvcorr(self.parameters['rv'])
+            observation_copy[:, 0] *= rvcorr(self.parameters['rv'])
             
         if 'scale' in self.parameters:
             spectrum_copy[:, 1] *= self.parameters['scale']
@@ -135,7 +137,7 @@ class Synplot:
         
         # If a observation spectra is available, plot it  
         if hasattr(self, 'observation'):
-            ax.plot(self.observation[:, 0], self.observation[:, 1], 
+            ax.plot(observation_copy[:, 0], observation_copy[:, 1], 
                     label = 'Observation')
                     
         # If windows were set, plot it
@@ -217,13 +219,5 @@ class Synplot:
     def apply_scale(self):
         """ Apply scale. """
         self.spectrum[:, 1] *= self.parameters['scale']
-                 
-    #=========================================================================
-    
-    #=========================================================================
-    #Apply scale
-    def apply_rvcorr(self):
-        """ Apply raidal velocity correction. """
-        self.spectrum[:, 0] *= rvcorr(self.parameters['rv'])
                  
     #=========================================================================
