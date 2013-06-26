@@ -157,8 +157,7 @@ class Widget(QtGui.QWidget):
                                         synplot_path = self.syn_path, 
                                         **self.params.dic)
         self.syn.run()
-        # make corrections on synthesized spectrum
-        self.syn.apply_rvcorr()
+        # Apply scale on synthesized spectrum
         self.syn.apply_scale()
         # draw    
         self.on_draw()
@@ -348,7 +347,7 @@ class Widget(QtGui.QWidget):
         # plot observation, if availabe
         if 'observ' in self.params.dic:
             self.axes.plot(
-                self.syn.observation[:, 0],     
+                self.syn.observation[:, 0] * s4.spectra.rvcorr(self.params.dic['vrot']),     
                 self.syn.observation[:, 1], label = "Observation")                
             self.axes.legend(fancybox = True, loc = 'lower right') 
         
