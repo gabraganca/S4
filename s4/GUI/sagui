@@ -347,7 +347,7 @@ class Widget(QtGui.QWidget):
         # plot observation, if availabe
         if 'observ' in self.params.dic:
             self.axes.plot(
-                self.syn.observation[:, 0] * s4.spectra.rvcorr(self.params.dic['vrot']),     
+                self.syn.observation[:, 0] * s4.spectra.rvcorr(self.params.dic['rv']),
                 self.syn.observation[:, 1], label = "Observation")                
             self.axes.legend(fancybox = True, loc = 'lower right') 
         
