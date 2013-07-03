@@ -2,7 +2,7 @@
 In this module we have the methods regarding Input/Output.
 """
 import numpy as np
-from astropy.io import fits
+from astropy.io import fits as pyfits
 
 
 def get_wstart(ref, wave_ref, wave_per_pixel):
@@ -75,7 +75,7 @@ def load_spectrum(fname):
     """
 
     # Load spectrum
-    spec_FITS = fits.open(fname)
+    spec_FITS = pyfits.open(fname)
     #Load flux
     flux = spec_FITS[0].data
 
