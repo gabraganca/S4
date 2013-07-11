@@ -6,8 +6,8 @@ from distutils.core import setup
 from distutils.spawn import find_executable
 import subprocess as sp
 from glob import glob
-import os  
-from pwd import getpwnam  
+import os
+from pwd import getpwnam
 
 
 # Compiling Synspec and Rotin3 if compiler ios available
@@ -16,10 +16,10 @@ if find_executable('g77'):
     sp.check_call(['g77', '-fno-automatic', '-o',                            \
                    's4/synthesis/synplot/synspec49',                         \
                    's4/synthesis/synplot/synspec49.f'])
-    print 'Compiling Rotin3'               
+    print 'Compiling Rotin3'
     sp.check_call(['g77', '-fno-automatic', '-o',                            \
                    's4/synthesis/synplot/rotin3',                            \
-                   's4/synthesis/synplot/rotin3.f'])               
+                   's4/synthesis/synplot/rotin3.f'])
 elif find_executable('ifort'):
     print 'ifort available.\nCompiling Synspec49.'
     sp.check_call(['ifort', '-save', '-o',                                   \
@@ -73,10 +73,11 @@ setup(name=NAME,
                 's4.plot',
                 's4.synthesis',
                 's4.utils',
+                's4.io',
                 's4'],
       data_files=[(path+'/synthesis/atdata', atdata),
                   (path+'/synthesis/bstar2006', bstar2006),
-                  (path+'/synthesis/synplot', synplot)],  
+                  (path+'/synthesis/synplot', synplot)],
       classifiers=[
         'Development Status :: Alpha',
         'Environment :: Console',
@@ -88,7 +89,7 @@ setup(name=NAME,
     )
 
 #Change ownership of data _files from root to user, recursevely
-for root, dirs, files in os.walk(path):  
+for root, dirs, files in os.walk(path):
     for momo in dirs:
         os.chown(os.path.join(root, momo), getpwnam(user).pw_uid,            \
                  getpwnam(user).pw_gid)
