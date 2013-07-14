@@ -85,13 +85,13 @@ class Synplot:
         cmd = "CD, '"+self.path+"' & synplot, "+ \
                         ', '.join(synplot_command)
 
-        return self.software + '-quiet -e "' + cmd + '"'
+        return self.software + ' -e "' + cmd + '"'
     #=========================================================================
 
     #=========================================================================
     # Run synplot and return the computed spectra
     def run(self):
-        '''Run synplot and store the computed spectra'''
+        """Run synplot and store the computed spectra"""
 
         wrappers.run_command(self.synplot_input(), do_log = True)
 
