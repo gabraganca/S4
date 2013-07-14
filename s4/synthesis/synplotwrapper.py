@@ -8,7 +8,7 @@ import lineid_plot
 from ..spectra import rvcorr
 from ..utils import *
 from ..plot import *
-from ..io import fits
+from ..io import fits, wrappers
 #=============================================================================
 
 
@@ -16,11 +16,18 @@ from ..io import fits
 class Synplot:
     """Add docstring"""
 
-    def __init__(self, teff, logg, synplot_path = None, **kwargs):
+    def __init__(self, teff, logg, synplot_path = None, idl = True,
+                 **kwargs):
         if synplot_path is None:
             self.path = getenv('HOME')+'/.s4/synthesis/synplot/'
         else:
             self.path = synplot_path
+
+        # Set software to run Synplot.pro
+        if idl:
+            self.software = 'idl'
+        else:
+            self.software = 'gdl'
 
         # Setting teff and logg on the dictionary
         kwargs['teff'] = teff
@@ -70,13 +77,15 @@ class Synplot:
     #=========================================================================
     #
     def synplot_input(self):
-        """Build the synplot command to IDL."""
+        """Build the synplot command to IDL/GDL."""
 
         synplot_command = [key+' = '+str(value)                              \
                            for key, value in self.parameters.iteritems()]
 
-        return "CD, '"+self.path+"' & synplot, "+ \
+        cmd = "CD, '"+self.path+"' & synplot, "+ \
                         ', '.join(synplot_command)
+
+        return self.software + '-quiet -e "' + cmd + '"'
     #=========================================================================
 
     #=========================================================================
@@ -84,7 +93,7 @@ class Synplot:
     def run(self):
         '''Run synplot and store the computed spectra'''
 
-        idlwrapper.run_idl(self.synplot_input(), do_log = True)
+        wrappers.run_command(self.synplot_input(), do_log = True)
 
         #load synthetized spectra
         self.spectrum = np.loadtxt(self.path + 'fort.11')
