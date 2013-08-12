@@ -2,6 +2,9 @@
 *~
 *.py[cod]
 
+#build
+/build
+
 #Synspec rules
 
 #Plots, logs and temp files
