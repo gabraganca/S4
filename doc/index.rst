@@ -11,6 +11,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   s4.spectra.spectra.rst
 
 
 Indices and tables

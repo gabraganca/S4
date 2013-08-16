@@ -1,0 +1,8 @@
+Spectra tools
+=============
+
+
+.. automodule:: s4.spectra.spectra
+   :members:
+   :show-inheritance:
+
