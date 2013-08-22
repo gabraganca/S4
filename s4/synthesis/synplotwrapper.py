@@ -5,7 +5,7 @@ from os import getenv
 import matplotlib.pyplot as plt
 import re
 import lineid_plot
-from ..spectra import rvcorr
+from ..spectools import rvcorr
 from ..utils import *
 from ..plottools import *
 from ..io import fits, wrappers
