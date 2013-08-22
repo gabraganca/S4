@@ -2,28 +2,26 @@
 Tools to handle spectra.
 """
 
-#=============================================================================
-# Modules
 import numpy as np
 from scipy.constants import c
-#=============================================================================
 
-#=============================================================================
-# Function that corrects for radial velocity, putting the shifted spectrum
-# at rest reference
 def rvcorr(rad_vel):
-    '''rvcorr(float) -> float\n
+    '''
     Correction for radial velocity.\n
-    When wavelength array is multiplied by RVCORR, the array is dislocated
+
+    When  a wavelength array is multiplied by RVCORR, the array is dislocated
     to the standard rest frame.
+
+    Parameters
+    ----------
+
+    rad_vel: float, int;
+        Radial velocity.
     '''
 
     return 1-rad_vel/(c/1000)
-    #return 1+rad_vel/(c/1000)
-#=============================================================================
 
-#=============================================================================
-# Obtain the position of the line center
+
 def line_position(spec, line_center, res = 0.1, mode = 'absorption'):
     """Obtain the poition of the line center"""
 
@@ -40,10 +38,8 @@ def line_position(spec, line_center, res = 0.1, mode = 'absorption'):
         line_pos = spec2[np.argsort(spec2[:, 1])[-1]]
 
     return line_pos
-#=============================================================================
 
-#=============================================================================
-# Subselect the observed array to fit [min_wl,max_wl]
+
 def subselect_spectra(spec, min_wl, max_wl, rad_vel = 0):
     """Subselect the observed array to fit [min_wl,max_wl]"""
 
@@ -55,10 +51,8 @@ def subselect_spectra(spec, min_wl, max_wl, rad_vel = 0):
                  spec[wstart_arg:wend_arg+1, 1]])
 
     return cut_spec
-#=============================================================================
 
-#==============================================================================
-# Obtain FWHM of a spectral line
+
 def get_fwhm(spec, line_center):
     """Obtain FWHM of a spectral line"""
 
@@ -79,11 +73,11 @@ def get_fwhm(spec, line_center):
             right_values.append(spec[i, 0])
 
     return (np.mean(right_values) - np.mean(left_values))
-#==============================================================================
 
-def get_EW(spectrum_flux):
+
+def get_equiv_width(spectrum_flux):
     """
-    Obtain the Equivalent Width.
+    Obtain the equivalent width.
 
     Parameters
     ----------
@@ -97,4 +91,5 @@ def get_EW(spectrum_flux):
     ew: float;
         Equivalent Width
     """
+
     return np.sum(1 - spectrum_flux)
