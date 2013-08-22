@@ -1,13 +1,13 @@
 #=============================================================================
 # Modules
 import numpy as np
-from os import getenv
+import os
 import matplotlib.pyplot as plt
 import re
 import lineid_plot
-from ..spectra import rvcorr
+from ..spectools import rvcorr
 from ..utils import *
-from ..plot import *
+from ..plottools import *
 from ..io import fits, wrappers
 #=============================================================================
 
@@ -19,9 +19,9 @@ class Synplot:
     def __init__(self, teff, logg, synplot_path = None, idl = True,
                  **kwargs):
         if synplot_path is None:
-            self.path = getenv('HOME')+'/.s4/synthesis/synplot/'
+            self.spath = getenv('HOME')+'/.s4/synthesis/synplot/'
         else:
-            self.path = synplot_path
+            self.spath = synplot_path
 
         # Set software to run Synplot.pro
         if idl:
@@ -35,13 +35,13 @@ class Synplot:
 
         #Check if some params were defined
         if 'wstart' not in kwargs.keys():
-            kwargs['wstart'] = float(handling.File(self.path + 'fort.19').\
+            kwargs['wstart'] = float(handling.File(self.spath + 'fort.19').\
                                head()[0].split()[0]) * 10
             print 'wstart not defined.'
             print 'Setting as {:.2f} Angstrons.\n'.format(kwargs['wstart'])
 
         if 'wend' not in kwargs.keys():
-            kwargs['wend'] = float(handling.File(self.path + 'fort.19').\
+            kwargs['wend'] = float(handling.File(self.spath + 'fort.19').\
                                tail()[0].split()[0]) * 10
             print 'wend not defined.'
             print 'Setting as {:.2f} Angstrons.\n'.format(kwargs['wend'])
@@ -82,7 +82,7 @@ class Synplot:
         synplot_command = [key+' = '+str(value)                              \
                            for key, value in self.parameters.iteritems()]
 
-        cmd = "CD, '"+self.path+"' & synplot, "+ \
+        cmd = "CD, '"+self.spath+"' & synplot, "+ \
                         ', '.join(synplot_command)
 
         return self.software + ' -e "' + cmd + '"'
@@ -92,11 +92,22 @@ class Synplot:
     # Run synplot and return the computed spectra
     def run(self):
         """Run synplot and store the computed spectra"""
-
+        
+        # remove old calculated spectrum
+        # Stack Overflow #10840533
+        try:
+            os.remove((self.spath + 'fort.11'))
+        except OSError:
+            pass
+        
         wrappers.run_command(self.synplot_input(), do_log = True)
 
         #load synthetized spectra
-        self.spectrum = np.loadtxt(self.path + 'fort.11')
+        try:
+            self.spectrum = np.loadtxt(self.spath + 'fort.11')
+        except IOError:
+            raise IOError('Calculated spectrum is not available. Check if ' + 
+                'syn(spec|plot) ran correctly.')
     #=========================================================================
 
     #=========================================================================
@@ -123,11 +134,11 @@ class Synplot:
         spectrum_copy = self.spectrum.copy()
         if hasattr(self, 'observation'):
             observation_copy = self.observation.copy()
+            #Apply radial velocity correction if needed.
+            if 'rv' in self.parameters:
+                observation_copy[:, 0] *= rvcorr(self.parameters['rv'])
 
-        # Apply scale and radial velocity if needed
-        if 'rv' in  self.parameters:
-            observation_copy[:, 0] *= rvcorr(self.parameters['rv'])
-
+        # Apply scale correction needed
         if 'scale' in self.parameters:
             spectrum_copy[:, 1] *= self.parameters['scale']
 
@@ -208,8 +219,8 @@ class Synplot:
     def lineid_select(self):
         """Identify lines to be plot by lineid_plot"""
         # List of chemical elements
-        table = open(self.path + 'fort.12').read() +                         \
-                open(self.path + 'fort.14').read()
+        table = open(self.spath + 'fort.12').read() +                         \
+                open(self.spath + 'fort.14').read()
 
         # Pattern for regex
         ptrn = r'(\d{4}\.\d{3})\s+(\w{1,2}\s+I*V*I*).+(\b\d+\.\d)\s+(\*+)'

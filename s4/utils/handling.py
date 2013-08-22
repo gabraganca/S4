@@ -2,8 +2,6 @@
 This module holds functions to help handling files.
 """
 
-import json
-
 class File(file):
     """ An helper class for file reading """
     #created by fdb@stackoverflow
@@ -51,21 +49,3 @@ class File(file):
                 if rows and last_row:
                     yield last_row
         yield last_row
-
-class JSON:
-    """JSON handling"""
-    
-    def __init__(self, filename, dic = {}):
-        self.file = filename
-        self.dic = dic
-    
-    def save(self):
-        """Save file in JSON format"""
-        with open(self.file, 'w') as f:
-            json.dump(self.dic, f, sort_keys = True, indent = 4, 
-                      separators=(',', ':'))        
-    
-    def load(self):
-        """Load a JSON file into a dictionary"""
-        self.dic =  json.load(open(self.file))
-
