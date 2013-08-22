@@ -123,11 +123,11 @@ class Synplot:
         spectrum_copy = self.spectrum.copy()
         if hasattr(self, 'observation'):
             observation_copy = self.observation.copy()
+            #Apply radial velocity correction if needed.
+            if 'rv' in self.parameters:
+                observation_copy[:, 0] *= rvcorr(self.parameters['rv'])
 
-        # Apply scale and radial velocity if needed
-        if 'rv' in  self.parameters:
-            observation_copy[:, 0] *= rvcorr(self.parameters['rv'])
-
+        # Apply scale correction needed
         if 'scale' in self.parameters:
             spectrum_copy[:, 1] *= self.parameters['scale']
 
