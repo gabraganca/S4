@@ -7,7 +7,7 @@ import re
 import lineid_plot
 from ..spectra import rvcorr
 from ..utils import *
-from ..plot import *
+from ..plottools import *
 from ..io import fits, wrappers
 #=============================================================================
 

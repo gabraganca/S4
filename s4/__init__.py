@@ -1,5 +1,5 @@
 import spectra
-import plot
+import plottools
 import synthesis
 import utils
 import io
