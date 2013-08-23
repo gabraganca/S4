@@ -1,1 +1,1 @@
-from handling import File, JSON
+from handling import File
