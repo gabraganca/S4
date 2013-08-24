@@ -345,9 +345,10 @@ class Widget(QtGui.QWidget):
             self.syn.spectrum[:, 1], label = "Synthetic")
         # plot observation, if availabe
         if 'observ' in self.params.dic:
+            rad_vel = self.params.dic['rv']
             self.axes.plot(
-                self.syn.observation[:, 0] * s4.spectra.rvcorr(self.params.dic['rv']),
-                self.syn.observation[:, 1], label = "Observation")                
+                self.syn.observation[:, 0] * s4.spectools.rvcorr(rad_vel),
+                self.syn.observation[:, 1], label = "Observation")
             self.axes.legend(fancybox = True, loc = 'lower right') 
         
         # set x dimension and label
