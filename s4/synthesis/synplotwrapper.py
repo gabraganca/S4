@@ -19,7 +19,7 @@ class Synplot:
     def __init__(self, teff, logg, synplot_path = None, idl = True,
                  **kwargs):
         if synplot_path is None:
-            self.spath = getenv('HOME')+'/.s4/synthesis/synplot/'
+            self.spath = os.getenv('HOME')+'/.s4/synthesis/synplot/'
         else:
             self.spath = synplot_path
 
@@ -92,21 +92,21 @@ class Synplot:
     # Run synplot and return the computed spectra
     def run(self):
         """Run synplot and store the computed spectra"""
-        
+
         # remove old calculated spectrum
         # Stack Overflow #10840533
         try:
             os.remove((self.spath + 'fort.11'))
         except OSError:
             pass
-        
+
         wrappers.run_command(self.synplot_input(), do_log = True)
 
         #load synthetized spectra
         try:
             self.spectrum = np.loadtxt(self.spath + 'fort.11')
         except IOError:
-            raise IOError('Calculated spectrum is not available. Check if ' + 
+            raise IOError('Calculated spectrum is not available. Check if ' +
                 'syn(spec|plot) ran correctly.')
     #=========================================================================
 
