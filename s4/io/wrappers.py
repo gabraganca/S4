@@ -1,7 +1,8 @@
 """
-Wrapper to some other softwares, like IDL and GDL.
+A series of wrappers.
 """
 
+import json
 import subprocess as sp
 
 def run_command(cmd, do_log = False):
@@ -36,3 +37,24 @@ def run_command(cmd, do_log = False):
             out.write('{}\n{}'.format(stdout, stderr))
     else:
         return stdout, stderr
+
+
+class JsonHandling:
+    """
+    This module contains the `JSON` class that allows to load and save `.json`
+    files in a pre-defined format.
+    """
+
+    def __init__(self, filename):
+        self.file = filename
+        self.dic = {}
+
+    def dic2json(self):
+        """Save file in JSON format"""
+        with open(self.file, 'w') as filename:
+            json.dump(self.dic, filename, sort_keys = True, indent = 4,
+                      separators=(',', ':'))
+
+    def json2dic(self):
+        """Load a JSON file into a dictionary"""
+        self.dic =  json.load(open(self.file))

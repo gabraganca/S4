@@ -17,7 +17,6 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
 import numpy as np
-import json
 import re
 from periodic import element
 import s4
@@ -113,7 +112,7 @@ class Widget(QtGui.QWidget):
         self.create_frame()
         
         # start JSON dictionary that will hold params.dic
-        self.params = s4.utils.JSON(CONFIG_FILE)
+        self.params = s4.io.JsonHandling(CONFIG_FILE)
        
         # load config
         try:
@@ -400,7 +399,7 @@ class Widget(QtGui.QWidget):
         
     def load_config(self):
         """Load the configuration file"""
-        self.params.load()
+        self.params.json2dic()
         self.teff = self.params.dic.pop('teff')
         self.logg = self.params.dic.pop('logg')
         if 'syn_path' in  self.params.dic: 
@@ -414,7 +413,7 @@ class Widget(QtGui.QWidget):
         spam = dict(teff = self.teff, logg = self.logg, 
                     syn_path = self.syn_path)
         self.params.dic.update(spam)
-        self.params.save()
+        self.params.dic2json()
         for k in spam:
             self.params.dic.pop(k, None)
 
