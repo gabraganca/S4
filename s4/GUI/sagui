@@ -459,9 +459,13 @@ class Widget(QtGui.QWidget):
         
     def obs_file_dialog(self):
         """Open a file dialog to open observation file"""
-        #self.fileDialog = QtGui.QFileDialog(self)
-        #self.fileDialog.show()
-        fname = str(QtGui.QFileDialog.getOpenFileName(self,"Open File"))
+
+        if 'observ' in self.params.dic:
+            file_path = self.params.dic['observ']
+        else:
+            file_path = HOME_PATH
+        fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open File", 
+                                                      file_path))
         if fname != '':
             self.obs_textbox.setText(fname)
         
