@@ -464,20 +464,24 @@ class Widget(QtGui.QWidget):
             file_path = self.params.dic['observ']
         else:
             file_path = HOME_PATH
-        fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open File", 
-                                                      file_path))
-        if fname != '':
-            self.obs_textbox.setText(fname)
+        fname = QtGui.QFileDialog.getOpenFileName(self, "Open File", 
+                                                      file_path)
+        if fname:
+            self.obs_textbox.setText(str(fname))
         
     def synspec_file_dialog(self):
         """Open a file dialog to get sysnpec _path"""
-        #self.fileDialog = QtGui.QFileDialog(self)
-        #self.fileDialog.show()
-        fname = str(QtGui.QFileDialog.getExistingDirectory(self, 
-                                                           "Select Directory"))
-        if fname != '':
-            self.synspec_textbox.setText(fname + '/')
-            self.syn_path = fname + '/'
+
+        if self.syn_path is None:
+            folder_path = HOME_PATH
+        else:
+            folder_path = self.syn_path
+        fpath = QtGui.QFileDialog.getExistingDirectory(self, 
+                                                           "Select Directory", 
+                                                           folder_path)
+        if fpath:
+            self.synspec_textbox.setText(str(fpath) + '/')
+            self.syn_path = str(fpath) + '/'
         
     def abund_controls(self, element):
         """Return the abundance GUI controls """
