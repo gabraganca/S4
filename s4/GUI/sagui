@@ -54,7 +54,7 @@ class MainWindow(QtGui.QMainWindow):
         # show windows
         self.show()
         self.wdg.show()
-        
+
     def center(self):
         qr = self.frameGeometry()
         cp = QtGui.QDesktopWidget().availableGeometry().center()
@@ -113,15 +113,17 @@ class Widget(QtGui.QWidget):
         
         # start JSON dictionary that will hold params.dic
         self.params = s4.io.JsonHandling(CONFIG_FILE)
-       
-        # load config
-        try:
-            self.load_config()
-        except IOError:
-            # set up a basic configuration
-            self.set_default()
         
-        # set text boxes              
+        #Set initial parameters
+        self.teff = 20000
+        self.logg = 4.0
+        self.syn_path = None
+        self.params.dic.update(dict(wstart = 4460, wend = 4480, rv = 0.0,
+                               vrot = 0.0, vturb = 0.0, vmac_rt = 0.0, 
+                               relative = "1", scale = 1.0, 
+                               abund = '[2, 2, 10.93]'))
+        self.fill_textbox()
+        self.synplot()
 
     #=========================================================================
     # Core modules
@@ -160,8 +162,6 @@ class Widget(QtGui.QWidget):
         self.syn.apply_scale()
         # draw    
         self.on_draw()
-        # save configuration file
-        self.save_config()
 
     #=========================================================================
     
@@ -266,13 +266,19 @@ class Widget(QtGui.QWidget):
         #self.run_button.resize(self.run_button.sizeHint())
         self.run_button.setMaximumWidth(50)
 
-        # reset button 
-        self.reset_button = QtGui.QPushButton('Reset', self)
-        self.reset_button.clicked.connect(self.set_default)
-        self.reset_button.setToolTip('Reset to default')
-        #self.reset_button.resize(self.run_button.sizeHint())
-        self.reset_button.setMaximumWidth(50)
-        
+        # open button 
+        self.open_button = QtGui.QPushButton('Open', self)
+        self.open_button.clicked.connect(self.open_config)
+        self.open_button.setToolTip('Open configuration.')
+        #self.open_button.resize(self.run_button.sizeHint())
+        self.open_button.setMaximumWidth(50)
+
+        # save button 
+        self.save_button = QtGui.QPushButton('Save', self)
+        self.save_button.clicked.connect(self.save_config)
+        self.save_button.setToolTip('Save configuration.')
+        #self.save_button.resize(self.run_button.sizeHint())
+        self.save_button.setMaximumWidth(50)
 
         #
         # Layout with box sizers
@@ -325,7 +331,8 @@ class Widget(QtGui.QWidget):
         grid.addWidget(self.synspec_textbox, 11, 1, 1, 7)
         grid.addWidget(self.synspec_button, 11, 8, 1, 1)        
         # row 13        
-        grid.addWidget(self.reset_button, 12, 7)
+        grid.addWidget(self.open_button, 12, 6)
+        grid.addWidget(self.save_button, 12, 7)
         grid.addWidget(self.run_button, 12, 8)
         # set grid  
         self.setLayout(grid) 
@@ -398,8 +405,8 @@ class Widget(QtGui.QWidget):
         text_input.returnPressed.connect(self.synplot)
         return text_input
         
-    def load_config(self):
-        """Load the configuration file"""
+    def open_config(self):
+        """Open the configuration file"""
         self.params.json2dic()
         self.teff = self.params.dic.pop('teff')
         self.logg = self.params.dic.pop('logg')
@@ -407,7 +414,6 @@ class Widget(QtGui.QWidget):
             self.syn_path = self.params.dic.pop('syn_path')
 
         self.fill_textbox()
-        self.synplot()
         
     def save_config(self):
         """Save configuration file"""
@@ -417,19 +423,6 @@ class Widget(QtGui.QWidget):
         self.params.dic2json()
         for k in spam:
             self.params.dic.pop(k, None)
-
-    def set_default(self):
-        """Load default configuration"""
-        self.teff = 20000
-        self.logg = 4
-        self.syn_path = None
-        self.params.dic.update(dict(wstart = 4460, wend = 4480, rv = 0,
-                               vrot = 0.0, vturb = 0.0, vmac_rt = 0.0, 
-                               relative = "1", scale = 1.0, 
-                               abund = '[2, 2, 10.93]'))
-        self.save_config()
-        self.fill_textbox()
-        self.synplot()
 
     def fill_textbox(self):
         """Fill textboxs"""
