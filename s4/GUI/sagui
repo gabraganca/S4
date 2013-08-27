@@ -30,7 +30,7 @@ FRAME_HEIGHT = 480
 
 HOME_PATH = os.getenv('HOME') + '/'
 CONFIG_FILE = HOME_PATH + '.sagui_config.json'
-ELEMENTS = [element('He'), element('Si')]
+ELEMENTS = [element('He'), element('O'), element('Si')]
 
 
 #==============================================================================
@@ -318,8 +318,10 @@ class Widget(QtGui.QWidget):
         # row 05
         grid.addWidget(self.abund_array[2][0], 4, 1)
         grid.addWidget(self.abund_array[2][1], 4, 2)
-        grid.addWidget(self.abund_array[14][0], 4, 3)
-        grid.addWidget(self.abund_array[14][1], 4, 4)
+        grid.addWidget(self.abund_array[8][0], 4, 3)
+        grid.addWidget(self.abund_array[8][1], 4, 4)
+        grid.addWidget(self.abund_array[14][0], 4, 5)
+        grid.addWidget(self.abund_array[14][1], 4, 6)
         # row 09
         grid.addWidget(self.obs_label, 8, 1, 1, 3)        
         # row 10
