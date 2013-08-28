@@ -123,11 +123,8 @@ class Synplot:
             Numpy.savetxt arguments.
         """
         
-        # Check if spectra were calculated
-        #if 'self.spectra' not in globals():
-        if not hasattr(self, 'spectrum'):
-            self.run()
-
+        self.check_if_run()
+        
         np.savetxt(file_name, self.spectrum, *args)
 
     # Plot
@@ -147,10 +144,7 @@ class Synplot:
             Name of the file to be saved.
         """
 
-        # Check if spectra were calculated
-        #if 'self.spectra' not in globals():
-        if not hasattr(self, 'spectrum'):
-            self.run()
+        self.check_if_run()
 
         # make a copy of array
         spectrum_copy = self.spectrum.copy()
@@ -266,4 +260,11 @@ class Synplot:
         """ Apply scale. """
         self.spectrum[:, 1] *= self.parameters['scale']
 
-    #=========================================================================
+    
+    def check_if_run(self):
+        """
+        Check if spectrum was already calculated. If not, calculate it.
+        """
+
+        if not hasattr(self, 'spectrum'):
+            self.run()
