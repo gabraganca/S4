@@ -108,11 +108,30 @@ class Synplot:
         except IOError:
             raise IOError('Calculated spectrum is not available. Check if ' +
                 'syn(spec|plot) ran correctly.')
-    #=========================================================================
 
-    #=========================================================================
+    def savetxt(self, file_name, *args):
+        """
+        Save spectrum fo a file.
+
+        Parameters
+        ----------
+
+        file_name: str;
+            Name of the file to be saved.
+
+        args:
+            Numpy.savetxt arguments.
+        """
+        
+        # Check if spectra were calculated
+        #if 'self.spectra' not in globals():
+        if not hasattr(self, 'spectrum'):
+            self.run()
+
+        np.savetxt(file_name, self.spectrum, *args)
+
     # Plot
-    def plot(self, ymin = None, ymax = None, windows = None, save_name = None,
+    def plot(self, ymin = None, ymax = None, windows = None, file_name = None,
              title = None):
         """
         Plot the synthetic spectra.
@@ -123,6 +142,9 @@ class Synplot:
 
         ymin : lower limit on y-axis
         ymax : upper limit on y-axis
+
+        file_name: str;
+            Name of the file to be saved.
         """
 
         # Check if spectra were calculated
@@ -209,8 +231,8 @@ class Synplot:
             fig.canvas.draw()
 
         # Save file
-        if save_name is not None:
-            plt.savefig(save_name, dpi = 100)
+        if file_name is not None:
+            plt.savefig(file_name, dpi = 100)
 
     #=========================================================================
 
