@@ -48,13 +48,9 @@ class Synplot:
 
         self.parameters = kwargs
 
-        # Check if a observation spectra is available
+        # Check if a observation spectrum is available
         if 'observ' in self.parameters:
-            if self.parameters['observ'][-4:] == 'fits':
-                self.observation = \
-                                  fits.load_spectrum(self.parameters['observ'])
-            else:
-                self.observation = np.loadtxt(self.parameters['observ'])
+            self.observation = fits.load_spectrum(self.parameters['observ'])
             #Delete entry to not input in IDL
             del self.parameters['observ']
 
