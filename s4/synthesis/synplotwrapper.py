@@ -8,7 +8,7 @@ import lineid_plot
 from ..spectools import rvcorr
 from ..utils import *
 from ..plottools import *
-from ..io import fits, wrappers
+from ..io import specio, wrappers
 #=============================================================================
 
 
@@ -50,7 +50,7 @@ class Synplot:
 
         # Check if a observation spectrum is available
         if 'observ' in self.parameters:
-            self.observation = fits.load_spectrum(self.parameters['observ'])
+            self.observation = specio.load_spectrum(self.parameters['observ'])
             #Delete entry to not input in IDL
             del self.parameters['observ']
 
@@ -118,9 +118,9 @@ class Synplot:
         args:
             Numpy.savetxt arguments.
         """
-        
+
         self.check_if_run()
-        
+
         np.savetxt(file_name, self.spectrum, *args)
 
     # Plot
@@ -256,7 +256,7 @@ class Synplot:
         """ Apply scale. """
         self.spectrum[:, 1] *= self.parameters['scale']
 
-    
+
     def check_if_run(self):
         """
         Check if spectrum was already calculated. If not, calculate it.

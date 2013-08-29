@@ -1,2 +1,2 @@
-from fits import *
+from specio import *
 from wrappers import *
