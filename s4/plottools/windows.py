@@ -73,5 +73,7 @@ def choose_windows(spectrum, wstart, wend):
 
     plt.show()
     plt.clf()
+    
+    return windows
 
 
