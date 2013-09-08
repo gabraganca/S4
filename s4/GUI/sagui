@@ -7,12 +7,12 @@ stellar spectral Synthesis Achieves a Graphical User Interface.
 
 Created by Gustavo Bragança (ga dot braganca at gmail dot com)
 """
-#==============================================================================
+
 
 # Import Modules
 import os
 import sys
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtGui
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
@@ -39,24 +39,26 @@ class MainWindow(QtGui.QMainWindow):
         # create stuff
         self.wdg = Widget()
         self.setCentralWidget(self.wdg)
-        self.createActions()
-        self.createMenus()
-        #self.createStatusBar()
+        self.create_actions()
+        self.create_menus()
 
-        # format the main window
         self.resize(FRAME_WIDTH, FRAME_HEIGHT)
-        self.center()
         self.setWindowTitle('Sagui')
+
+        # Centralize frame
+        qr = self.frameGeometry()
+        cp = QtGui.QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
 
         # show windows
         self.show()
         self.wdg.show()
 
-    def center(self):
-        qr = self.frameGeometry()
-        cp = QtGui.QDesktopWidget().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())        
+        #initialize null avriable to be redefined elsewhere
+        self.exit_act = None
+        self.about_act = None 
+        self.about_qt_act = None 
 
     def about(self):
         QtGui.QMessageBox.about(self, self.tr("About Sagui"),
@@ -67,27 +69,27 @@ class MainWindow(QtGui.QMainWindow):
                      u"Created by Gustavo Bragança\n" +\
                      "ga.braganca at gmail dot com"))
 
-    def createActions(self):
-        self.exitAct = QtGui.QAction(self.tr("E&xit"), self)
-        self.exitAct.setShortcut(self.tr("Ctrl+Q"))
-        self.exitAct.setStatusTip(self.tr("Exit the application"))
-        self.exitAct.triggered.connect(self.close)
+    def create_actions(self):
+        self.exit_act = QtGui.QAction(self.tr("E&xit"), self)
+        self.exit_act.setShortcut(self.tr("Ctrl+Q"))
+        self.exit_act.setStatusTip(self.tr("Exit the application"))
+        self.exit_act.triggered.connect(self.close)
 
-        self.aboutAct = QtGui.QAction(self.tr("&About"), self)
-        self.aboutAct.setStatusTip(self.tr("Show the application's About box"))
-        self.aboutAct.triggered.connect(self.about)
+        self.about_act = QtGui.QAction(self.tr("&About"), self)
+        self.about_act.setStatusTip(self.tr("Application's About box"))
+        self.about_act.triggered.connect(self.about)
 
-        self.aboutQtAct = QtGui.QAction(self.tr("About &Qt"), self)
-        self.aboutQtAct.setStatusTip(self.tr("Show the Qt library's About box"))
-        self.aboutQtAct.triggered.connect(QtGui.qApp.aboutQt)
+        self.about_qt_act = QtGui.QAction(self.tr("About &Qt"), self)
+        self.about_qt_act.setStatusTip(self.tr("Qt library's About box"))
+        self.about_qt_act.triggered.connect(QtGui.qApp.aboutQt)
 
-    def createMenus(self):
-        self.fileMenu = self.menuBar().addMenu(self.tr("&File"))
-        self.fileMenu.addAction(self.exitAct)
+    def create_menus(self):
+        self.file_menu = self.menuBar().addMenu(self.tr("&File"))
+        self.file_menu.addAction(self.exit_act)
 
-        self.helpMenu = self.menuBar().addMenu(self.tr("&Help"))
-        self.helpMenu.addAction(self.aboutAct)
-        self.helpMenu.addAction(self.aboutQtAct)
+        self.help_menu = self.menuBar().addMenu(self.tr("&Help"))
+        self.help_menu.addAction(self.about_act)
+        self.help_menu.addAction(self.about_qt_act)
 
 
 class Widget(QtGui.QWidget):
