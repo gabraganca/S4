@@ -57,6 +57,8 @@ class MainWindow(QtGui.QMainWindow):
         self.wdg.show()
 
         #initialize null avriable to be redefined elsewhere
+        self.open_act = None
+        self.save_act = None
         self.exit_act = None
         self.about_act = None 
         self.about_qt_act = None 
@@ -75,6 +77,17 @@ class MainWindow(QtGui.QMainWindow):
 
     def create_actions(self):
         """Create function to the menu"""
+
+        self.open_act = QtGui.QAction(self.tr("&Open"), self)
+        self.open_act.setShortcut(self.tr("Ctrl+O"))
+        self.open_act.setStatusTip(self.tr("Open saved parameters."))
+        self.open_act.triggered.connect(self.wdg.open_config)
+
+        self.save_act = QtGui.QAction(self.tr("&Save"), self)
+        self.save_act.setShortcut(self.tr("Ctrl+S"))
+        self.save_act.setStatusTip(self.tr("Save parameters."))
+        self.save_act.triggered.connect(self.wdg.save_config)
+
         self.exit_act = QtGui.QAction(self.tr("E&xit"), self)
         self.exit_act.setShortcut(self.tr("Ctrl+Q"))
         self.exit_act.setStatusTip(self.tr("Exit the application"))
@@ -91,6 +104,8 @@ class MainWindow(QtGui.QMainWindow):
     def create_menus(self):
         """Create the menu itens"""
         self.file_menu = self.menuBar().addMenu(self.tr("&File"))
+        self.file_menu.addAction(self.open_act)
+        self.file_menu.addAction(self.save_act)
         self.file_menu.addAction(self.exit_act)
 
         self.help_menu = self.menuBar().addMenu(self.tr("&Help"))
@@ -372,13 +387,6 @@ class Widget(QtGui.QWidget):
         
         self.canvas.draw()        
         
-    # Set window to center of desktop
-    def center(self):
-        
-        qr = self.frameGeometry()
-        cp = QtGui.QDesktopWidget().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())        
         
     # Support Modules
     
