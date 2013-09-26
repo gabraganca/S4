@@ -45,9 +45,12 @@ class JsonHandling:
     files in a pre-defined format.
     """
 
-    def __init__(self, filename):
+    def __init__(self, filename, dic = None):
         self.file = filename
-        self.dic = {}
+        if dic is None:
+            self.dic = {}
+        else:
+            self.dic = dic
 
     def dic2json(self):
         """Save file in JSON format"""
