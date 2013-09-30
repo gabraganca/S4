@@ -79,8 +79,7 @@ def main(v_param, values, wstart, wend, spath = None):
     # the video can be embedded in html5.  You may need to adjust this for
     # your system: for more information, see
     # http://matplotlib.sourceforge.net/api/animation_api.html
-#    anim.save('basic_animation.mp4', fps=30, extra_args=['-vcodec', 'libx264'])
-
+    anim.save('basic_animation.mp4', fps=30, extra_args=['-vcodec', 'libx264'])
     plt.show()
 
 
