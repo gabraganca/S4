@@ -10,6 +10,31 @@ spectra.
 
 The spectral synthesis are done with Tlusty/Synspec (Hubeny & Lanz et al.)
 
+How to get it?
+--------------
+
+You can get the latest stable version `here <https://github.com/gabraganca/S4/releases>`_.
+Unpack it, go into the directory and the run the following commands. I recommend having `pip` 
+installed. It makes installation and uninstallation a lot easier.
+
+::
+
+    python setup.py build
+    pip install .
+
+If you have any problems, check if all dependencies are installed. The dependencies can be seen 
+below.
+
+Also, if you want the bleeding edge version, you can clone the repository, and then run the 
+above commands inside the ``S4`` directory. If you are unfamiliar to `git <http://git-scm.com/>`_, 
+just type:
+
+::
+
+     git clone git@github.com:gabraganca/S4.git
+     
+
+
 SAGUI
 -----
 
@@ -19,6 +44,7 @@ SAGUI stands for stellar spectral **S**\ynthesis **A**\chieves a **G**\raphical
 Sagui is a family of New World monkey very common on Brazil.
 
 To use it, simply type *sagui* on your console.
+
 
 Sensi_line
 ----------
