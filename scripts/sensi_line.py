@@ -1,6 +1,15 @@
+#!/usr/bin/python
+# -*- coding: latin-1 -*-
 """
 The purpose of this sciprt is to make a nimated plot of how a stellar
 parameter change on a spectral line or wavelength coverage.
+
+author: Gustavo Bragança
+e-mail: ga.braganca@gmail.com
+Please feel free to use and modify this, but keep the above information. Thanks!
+
+Based on the Basic Animation basic_animation.py from
+http://jakevdp.github.io/blog/2012/08/18/matplotlib-animation-tutorial/
 """
 
 import sys
@@ -27,26 +36,52 @@ def main(v_param, values, wstart, wend, spath = None):
         Ending wavelength.
     """
 
+    # First set up the figure, the axis, and the plot element we want to animate
+    fig = plt.figure()
+    ax = plt.axes(xlim=(wstart, wend), ylim=(0, 1.05))
+    line, = ax.plot([], [], lw=2)
+
+    # initialization function: plot the background of each frame
+    def init():
+        line.set_data([], [])
+        return line,
+
     # set basic stellar parameters params
     params = dict(wstart=wstart, wend=wend, relative=1)
 
-    # check if v_param is teff or logg
-    if v_param == 'teff':
-        teff = values[0]
-        logg = 4.0
-    elif v_param == 'logg':
-        teff = 20000
-        logg = values[0]
-    else:
-        teff = 20000
-        logg = 4.0
-        params[v_param] = values[0]
-
     #print teff, logg, params
     #synthesize
-    syn = s4.synthesis.Synplot(teff, logg, **params)
-    syn.run()
-    syn.plot()
+    def syn(i):
+         # check if v_param is teff or logg
+        if v_param == 'teff':
+            teff = values[i]
+            logg = 4.0
+        elif v_param == 'logg':
+            teff = 20000
+            logg = values[i]
+        else:
+            teff = 20000
+            logg = 4.0
+            params[v_param] = values[i]
+
+        syn = s4.synthesis.Synplot(teff, logg, **params)
+        syn.run()
+        line.set_data(syn.spectrum[:, 0], syn.spectrum[:, 1])
+        return line,
+
+    # call the animator.  blit=True means only re-draw the parts that have
+    #changed.
+    anim = animation.FuncAnimation(fig, syn, init_func=init,
+                                   frames=len(values), interval=20, blit=True)
+
+    # save the animation as an mp4.  This requires ffmpeg or mencoder to be
+    # installed.  The extra_args ensure that the x264 codec is used, so that
+    # the video can be embedded in html5.  You may need to adjust this for
+    # your system: for more information, see
+    # http://matplotlib.sourceforge.net/api/animation_api.html
+#    anim.save('basic_animation.mp4', fps=30, extra_args=['-vcodec', 'libx264'])
+
+    plt.show()
 
 
 if __name__ == '__main__':
