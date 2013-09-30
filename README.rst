@@ -4,7 +4,7 @@ Stellar Spectral Synthesis Suite
 Introduction
 ------------
 
-A Stellar Spectral Synthesis Suite (S4, for short). This is a suit that holds
+The Stellar Spectral Synthesis Suite (S4, for short). This is a suit that holds
 python modules that are aimed to spectral synthesis reduction of observed
 spectra.
 
@@ -15,7 +15,7 @@ How to get it?
 --------------
 
 You can get the latest stable version `here <https://github.com/gabraganca/S4/releases>`_.
-Unpack it, go into the directory and the run the following commands. I recommend having `pip` 
+Unpack it, go into the directory and then run the below commands. I recommend having `pip` 
 installed. It makes installation and uninstallation a lot easier.
 
 ::
