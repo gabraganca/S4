@@ -13,8 +13,8 @@ The spectral synthesis are done with Tlusty/Synspec (Hubeny & Lanz et al.)
 SAGUI
 -----
 
-SAGUI stands for stellar spectral **S**ynthesis **A**chieves a **G**raphical
-**U**ser **I**nterface. It is a Qt GUI to syntesize spectra using Synspec.
+SAGUI stands for stellar spectral **S**\ynthesis **A**\chieves a **G**\raphical
+**U**\ser **I**\nterface. It is a Qt GUI to syntesize spectra using Synspec.
 
 Sagui is a family of New World monkey very common on Brazil.
 
