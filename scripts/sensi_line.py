@@ -39,12 +39,16 @@ def main(v_param, values, wstart, wend, spath = None):
     # First set up the figure, the axis, and the plot element we want to animate
     fig = plt.figure()
     ax = plt.axes(xlim=(wstart, wend), ylim=(0, 1.05))
+    ax.set_xlabel('Wavelength ($\AA$)')
+    ax.set_ylabel('Normalized Flux')
+    param_text = ax.text(0.8, 0.05, '', transform=ax.transAxes)
     line, = ax.plot([], [], lw=2)
 
     # initialization function: plot the background of each frame
     def init():
         line.set_data([], [])
-        return line,
+        param_text.set_text('')
+        return line, param_text
 
     # set basic stellar parameters params
     params = dict(wstart=wstart, wend=wend, relative=1)
@@ -67,7 +71,8 @@ def main(v_param, values, wstart, wend, spath = None):
         syn = s4.synthesis.Synplot(teff, logg, **params)
         syn.run()
         line.set_data(syn.spectrum[:, 0], syn.spectrum[:, 1])
-        return line,
+        param_text.set_text('{}={}'.format(v_param, values[i]))
+        return line, param_text
 
     # call the animator.  blit=True means only re-draw the parts that have
     #changed.
