@@ -34,6 +34,9 @@ def main(v_param, values, wstart, wend, spath = None):
 
     wend: float;
         Ending wavelength.
+
+    spath: str;
+        Path to synplot. If not set, it will use the S4 default.
     """
 
     # First set up the figure, the axis, and the plot element we want to animate
@@ -68,7 +71,7 @@ def main(v_param, values, wstart, wend, spath = None):
             logg = 4.0
             params[v_param] = values[i]
 
-        syn = s4.synthesis.Synplot(teff, logg, **params)
+        syn = s4.synthesis.Synplot(teff, logg, spath, **params)
         syn.run()
         line.set_data(syn.spectrum[:, 0], syn.spectrum[:, 1])
         param_text.set_text('{}={}'.format(v_param, values[i]))
@@ -95,12 +98,9 @@ if __name__ == '__main__':
     VALUES = map(float, re.findall('\-?\d+(?:\.\d+)*', sys.argv[2]))
     WSTART = float(sys.argv[3])
     WEND = float(sys.argv[4])
+    if len(sys.argv) == 6:
+        SPATH = sys.argv[5] # Synplot path
+    else:
+        SPATH = None
 
-    ### Test ###
-   # print v_param, type(v_param)
-   # print values, type(values)
-   # print wstart, type(wstart)
-   # print wend, type(wend)
-    ### End Test ###
-
-    main(V_PARAM, VALUES, WSTART, WEND)
+    main(V_PARAM, VALUES, WSTART, WEND, SPATH)
