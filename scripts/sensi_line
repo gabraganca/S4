@@ -13,6 +13,8 @@ http://jakevdp.github.io/blog/2012/08/18/matplotlib-animation-tutorial/
 """
 
 import sys
+import matplotlib as mpl
+mpl.use( "qt4agg" )
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import re
@@ -87,8 +89,8 @@ def main(v_param, values, wstart, wend, spath = None):
     # the video can be embedded in html5.  You may need to adjust this for
     # your system: for more information, see
     # http://matplotlib.sourceforge.net/api/animation_api.html
-    anim.save('synthesis_animation.mp4', fps=30, extra_args=['-vcodec',
-              'libx264'])
+    anim.save('synthesis_animation.mp4', fps= 1, 
+              extra_args=['-vcodec', 'libx264'])
     plt.show()
 
 
