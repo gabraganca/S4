@@ -206,7 +206,7 @@ class Synplot:
         plt.legend(fancybox = True, loc = 'lower right')
 
         if title is not None:
-            plt.title(title)
+            plt.title(title, verticalalignment = 'baseline')
 
         # Plot figure
         if not fig_exists:
