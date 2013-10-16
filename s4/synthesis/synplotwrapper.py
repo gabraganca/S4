@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 import re
 import lineid_plot
 from ..spectools import rvcorr
-from ..utils import *
-from ..plottools import *
+from ..utils import File
+from ..plottools import plot_windows
 from ..io import specio, wrappers
 #=============================================================================
 
@@ -35,13 +35,13 @@ class Synplot:
 
         #Check if some params were defined
         if 'wstart' not in kwargs.keys():
-            kwargs['wstart'] = float(handling.File(self.spath + 'fort.19').\
+            kwargs['wstart'] = float(File(self.spath + 'fort.19').\
                                head()[0].split()[0]) * 10
             print 'wstart not defined.'
             print 'Setting as {:.2f} Angstrons.\n'.format(kwargs['wstart'])
 
         if 'wend' not in kwargs.keys():
-            kwargs['wend'] = float(handling.File(self.spath + 'fort.19').\
+            kwargs['wend'] = float(File(self.spath + 'fort.19').\
                                tail()[0].split()[0]) * 10
             print 'wend not defined.'
             print 'Setting as {:.2f} Angstrons.\n'.format(kwargs['wend'])
@@ -60,15 +60,6 @@ class Synplot:
         # check for normalization
         if 'relative' not in self.parameters:
             self.parameters['relative'] = 0
-
-        # Check if line identification is required
-        if 'ident' in self.parameters:
-            # Tells Synplot to not identify lines
-            self.line_id = self.parameters['ident']
-            self.parameters['ident'] = '0'
-
-        else:
-            self.line_id = False
 
     #=========================================================================
     #
@@ -125,7 +116,7 @@ class Synplot:
 
     # Plot
     def plot(self, ymin = None, ymax = None, windows = None, file_name = None,
-             title = None):
+             title = None, ident = False):
         """
         Plot the synthetic spectra.
         If the synthetic spectra were not calculated, it will calculate.
@@ -163,11 +154,14 @@ class Synplot:
         # Plot
         fig = plt.figure(num = 1)
 
-        # Identify lines, if required
-        if self.line_id is not False:
+        # Set axes.
+        # If identification of the linesis requiredm set different size to axes
+        if ident:
             ax = fig.add_axes([0.1, 0.1, 0.85, 0.6])
         else:
             ax = fig.gca()
+
+        # Plot synthetuc spectrum
         ax.plot(spectrum_copy[:, 0], spectrum_copy[:, 1],
                 label = 'Synthetic')
 
@@ -178,7 +172,7 @@ class Synplot:
 
         # If windows were set, plot it
         if windows is not None:
-            plot.plot_windows(windows)
+            plot_windows(windows)
 
         # set labels
         plt.xlabel(r'Wavelength $(\AA)$')
@@ -200,9 +194,9 @@ class Synplot:
 
 
         # Identify lines, if required
-        if self.line_id is not False:
+        if ident:
             # Obtain the spectral line wavelength and identification
-            line_wave, line_label = self.lineid_select()
+            line_wave, line_label = self.lineid_select(ident)
             lineid_plot.plot_line_ids(spectrum_copy[:, 0],
                                       spectrum_copy[:, 1],
                                       line_wave, line_label, label1_size = 10,
@@ -228,7 +222,7 @@ class Synplot:
 
     #=========================================================================
     # Select lines to line identification
-    def lineid_select(self):
+    def lineid_select(self, ident):
         """Identify lines to be plot by lineid_plot"""
         # List of chemical elements
         table = open(self.spath + 'fort.12').read() +                         \
@@ -242,10 +236,10 @@ class Synplot:
 
         # Parse table
         wavelengths = [float(line[0]) for line in regex_table
-                       if float(line[2]) >= self.line_id]
+                       if float(line[2]) >= ident]
         chem_elements = [line[1] + ' ' + line[0] + '  ' + line[2]
                          for line in regex_table
-                         if float(line[2]) >= self.line_id]
+                         if float(line[2]) >= ident]
 
         return wavelengths, chem_elements
     #=========================================================================
