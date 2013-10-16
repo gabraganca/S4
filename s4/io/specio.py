@@ -1,6 +1,7 @@
 """
 In this module we have the methods regarding Input/Output.
 """
+import os
 import numpy as np
 from astropy.io import fits as pyfits
 
@@ -73,24 +74,27 @@ def load_spectrum(fname):
     spectrum: ndarray,
         Spectrum array with wavelength and flux.
     """
-    
+
+    #Get real path of spectrum
+    fname = os.path.realpath(fname)
+
     # Load spectrum
     if fname.split('.')[1] == 'fits':
         spec_FITS = pyfits.open(fname)
         #Load flux
         flux = spec_FITS[0].data
-    
+
         #Obtain parameters for wavelength determination from header
         ref_pixel = spec_FITS[0].header['CRPIX1']        # Reference pixel
         coord_ref_pixel = spec_FITS[0].header['CRVAL1']  # Wavelength at ref. pixel
         wave_pixel = spec_FITS[0].header['CDELT1']       # Wavelength per pixel
-    
+
         #Get starting wavelength
         wstart = get_wstart(ref_pixel, coord_ref_pixel, wave_pixel)
-    
+
         #Obtain array of wavelength
         wave = get_wavelength(wstart, wave_pixel, len(flux))
-    
+
         return np.dstack((wave, flux))[0]
     else:
         return np.loadtxt(fname)
