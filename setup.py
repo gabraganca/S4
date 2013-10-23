@@ -11,27 +11,28 @@ from pwd import getpwnam
 
 
 # Compiling Synspec and Rotin3 if compiler ios available
-if find_executable('g77'):
-    print 'g77 available.\nCompiling Synspec49.'
-    sp.check_call(['g77', '-fno-automatic', '-o',                            \
-                   's4/synthesis/synplot/synspec49',                         \
-                   's4/synthesis/synplot/synspec49.f'])
-    print 'Compiling Rotin3'
-    sp.check_call(['g77', '-fno-automatic', '-o',                            \
-                   's4/synthesis/synplot/rotin3',                            \
-                   's4/synthesis/synplot/rotin3.f'])
-elif find_executable('ifort'):
-    print 'ifort available.\nCompiling Synspec49.'
-    sp.check_call(['ifort', '-save', '-o',                                   \
-                   's4/synthesis/synplot/synspec49',                         \
-                   's4/synthesis/synplot/synspec49.f'])
-    print 'Compiling Rotin3'
-    sp.check_call(['ifort', '-save', '-o',                                   \
-                   's4/synthesis/synplot/rotin3',                            \
-                   's4/synthesis/synplot/rotin3.f'])
-else:
-    print 'g77 and ifort are not available. ' +\
-          'Synspec and Rotin will not be compiled.'
+if glob('s4/synthesis/synplot/synspec49') == []:
+    if find_executable('g77'):
+        print 'g77 available.\nCompiling Synspec49.'
+        sp.check_call(['g77', '-fno-automatic', '-o',                         \
+                       's4/synthesis/synplot/synspec49',                      \
+                       's4/synthesis/synplot/synspec49.f'])
+        print 'Compiling Rotin3'
+        sp.check_call(['g77', '-fno-automatic', '-o',                         \
+                       's4/synthesis/synplot/rotin3',                         \
+                       's4/synthesis/synplot/rotin3.f'])
+    elif find_executable('ifort'):
+        print 'ifort available.\nCompiling Synspec49.'
+        sp.check_call(['ifort', '-save', '-o',                                \
+                       's4/synthesis/synplot/synspec49',                      \
+                       's4/synthesis/synplot/synspec49.f'])
+        print 'Compiling Rotin3'
+        sp.check_call(['ifort', '-save', '-o',                                   \
+                       's4/synthesis/synplot/rotin3',                            \
+                       's4/synthesis/synplot/rotin3.f'])
+    else:
+        print 'g77 and ifort are not available. ' +\
+              'Synspec and Rotin will not be compiled.'
 
 #Make list of data files
 atdata = glob('s4/synthesis/atdata/*')
