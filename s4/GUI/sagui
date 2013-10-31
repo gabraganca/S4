@@ -18,7 +18,6 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
 import numpy as np
 import re
-from periodic import element
 import s4
 
 
@@ -28,8 +27,9 @@ FRAME_HEIGHT = 480
 
 HOME_PATH = os.getenv('HOME') + '/'
 CONFIG_FILE = HOME_PATH + '.sagui_config.json'
-ELEMENTS = [element('He'), element('O'), element('Si')]
-
+ELEMENTS = {'Helium':{'symbol':'He', 'atomic_n':2}, 
+            'Oxygen':{'symbol':'O',  'atomic_n':8}, 
+            'Silicon':{'symbol':'Si', 'atomic_n':14}}
 
 class MainWindow(QtGui.QMainWindow):
     """Main app window"""
@@ -472,8 +472,11 @@ class Widget(QtGui.QWidget):
         
     def abund_controls(self, element):
         """Return the abundance GUI controls """
-        return element.atomic, [QtGui.QLabel(element.symbol), 
-                self.add_text_input(element.name + 'abundance')]
+        atomic_number = ELEMENTS[element]['atomic_n']
+        symbol = ELEMENTS[element]['symbol']
+
+        return atomic_number, [QtGui.QLabel(symbol), 
+                self.add_text_input(element + ' abundance')]
                 
     def check_abundance(self):
         """Check if abudance is defined"""

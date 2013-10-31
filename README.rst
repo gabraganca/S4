@@ -18,7 +18,7 @@ How to get it?
 
 You can get the latest stable version
 `here <https://github.com/gabraganca/S4/releases>`_. Unpack it, go into the
-directory and then run the below commands. I recommend having 
+directory and then run the below commands. I recommend having
 `pip <https://pypi.python.org/pypi/pip>`_ installed.
 It makes installation and uninstallation a lot easier.
 
@@ -44,8 +44,8 @@ Dependencies
 
 - ITT's IDL. There is also an option to run with GDL, but the Synplot version
   shipped with S4 do not support GDL.
-  
-- ``Intel Fortran Compiler`` or ``f77`` are needed to compile 
+
+- ``Intel Fortran Compiler`` or ``f77`` are needed to compile
   ``Synspec`` and ``Rotins``
 
 - `Numpy <http://www.numpy.org/>`_
@@ -55,8 +55,6 @@ Dependencies
 - `Scipy <http://www.scipy.org/>`_
 
 - `Lineid_plot <https://github.com/phn/lineid_plot>`_
-
-- `Periodic <http://pythonhosted.org/periodic/>`_
 
 
 SAGUI
