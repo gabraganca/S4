@@ -84,3 +84,9 @@ of 2500K. You simply have to type on your console:
 First you should call the script with the following parameters: the parameter
 you want to vary, an array of values for that parameter, the beginning and
 ending wavelength.
+
+
+.. image:: https://d2weczhvl823v0.cloudfront.net/gabraganca/s4/trend.png
+   :alt: Bitdeli badge
+   :target: https://bitdeli.com/free
+
