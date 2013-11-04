@@ -161,14 +161,14 @@ class Synplot:
         else:
             ax = fig.gca()
 
-        # Plot synthetuc spectrum
-        ax.plot(spectrum_copy[:, 0], spectrum_copy[:, 1],
-                label = 'Synthetic')
-
         # If a observation spectra is available, plot it
         if hasattr(self, 'observation'):
-            ax.plot(observation_copy[:, 0], observation_copy[:, 1],
+            ax.plot(observation_copy[:, 0], observation_copy[:, 1], c='#377eb8',
                     label = 'Observation')
+
+        # Plot synthetuc spectrum
+        ax.plot(spectrum_copy[:, 0], spectrum_copy[:, 1], c='#e41a1c',
+                label = 'Synthetic')
 
         # If windows were set, plot it
         if windows is not None:
