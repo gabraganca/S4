@@ -48,6 +48,7 @@ user = home.split('/')[-1]
 DESCRIPTION = "Stellar Spectral Synthesis Suite"
 LONG_DESCRIPTION = open('README.rst').read()
 NAME = "S4"
+VERSION = 'v1.0-dev'
 AUTHOR = "Gustavo de Almeida Braganca"
 AUTHOR_EMAIL = "ga.braganca@gmail.com"
 MAINTAINER = "Gustavo de Almeida Braganca"
