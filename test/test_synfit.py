@@ -1,5 +1,5 @@
 """
-Test suite for Synfit
+Test suite for Synfit and complementary functions.
 """
 
 import os
@@ -7,6 +7,30 @@ import numpy as np
 import s4
 from s4.synthesis import Synplot
 from s4.fitting import Synfit
+from s4.fitting.synfit import iterator
+from s4.fitting.synfit import synplot_abund
+
+
+def test_synplot_abund():
+    """Test the `synplot_abund` function."""
+
+    assert synplot_abund({'Si':7.5}) == '[14, 14, 7.50]'
+    assert synplot_abund({'Si':7.5, 'O':8.5}) == '[8, 8, 8.50, 14, 14, 7.50]'
+
+
+def test_iterator():
+    """Test the iterator function."""
+
+    # One argument
+    itera = iterator(np.arange(0, 10, 2))
+
+    assert np.all([i == j for i, j in zip(itera, np.arange(0, 10, 2))])
+
+    # Two arguments
+    itera = iterator(np.arange(0, 10, 5), np.arange(20, 15, -3))
+
+    assert np.all([i == j for i, j in zip(itera, [(0, 20), (0, 17), (5, 20),
+                                                  (5, 17)])])
 
 
 def test_synfit_one():
