@@ -339,3 +339,46 @@ class Synfit:
                            for param, fitted_value
                            in zip(self.iter_params.keys(), best_fit[:-1])}
         self.best_fit['chisq'] = fitted_vals[0][-1]
+
+
+    def best_plot(self, title=None):
+        """
+        Plot the observed spectrum and the synthetic using the best values
+        found.
+
+        Parameters
+        ----------
+
+        title: str (optional);
+            A title for the plot. If the string 'default' is passed, it will
+            contain the parameters fitted with the best values found.
+        """
+
+        # Set parameters for synplot
+        synplot_params = self.syn_params.copy()
+        best_fit = self.best_fit.copy()
+        chisq = best_fit.pop('chisq')
+
+        #make plot title before removing teff and logg
+        if title == 'default':
+            title = r'$\chi^2$=' + '{:.4f}: '.format(chisq)
+            title += ', '.join(['{}={}'.format(key, val)
+                                    for key, val in best_fit.iteritems()])
+
+        ## Replace parameters for best value
+        if 'teff' in best_fit:
+            self.teff = best_fit.pop('teff')
+
+        if 'logg' in best_fit:
+            self.logg = best_fit.pop('logg')
+
+        for key, value in best_fit.iteritems():
+            synplot_params[key] = value
+
+        # Synthesize spectrum
+        synthesis = Synplot(self.teff, self.logg, self.synplot_path,
+                            self.idl, **synplot_params)
+
+
+
+        synthesis.plot(title=title, windows=self.windows)
