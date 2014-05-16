@@ -191,8 +191,13 @@ class Synfit:
         the chemical elements to a parameter accepted by `Synplot`.
         """
 
+        #Test if the parameter were given properly.
         for key in self.fit_params:
-            assert len(self.fit_params[key]) == 3
+            # Test if the parameters were inserted correctly.
+            if not (isinstance(self.fit_params[key], list) and
+                    len(self.fit_params[key]) == 3):
+                raise Exception("Value of '{}' must be a list ".format(key)+\
+                                "with three values.")
 
             min_value = float(self.fit_params[key][0])
             max_value = float(self.fit_params[key][1])
