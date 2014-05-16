@@ -302,8 +302,7 @@ class Synfit:
             if 'scale' in self.synthesis.parameters:
                 self.synthesis.apply_scale()
 
-            if 'rv' in self.synthesis.parameters:
-                self.synthesis.observation[:, 0] *= rvcorr(self.rad_vel)
+            self.synthesis.observation[:, 0] *= rvcorr(self.rad_vel)
 
             #Do an interpolation
 
