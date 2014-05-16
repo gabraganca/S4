@@ -114,8 +114,11 @@ class Synfit:
         # Fixed parameters
         self.syn_params = syn_params.copy()
         ##########
+
         # Creates the values in which each parameter will be fitted
+        self.iter_params = {}
         self.sample_params()
+
         # Get the name of the parameters to be fitted
         # I use the iter_params variable in order to obtain 'abund'
         # instead of the chemical elements.
@@ -178,14 +181,15 @@ class Synfit:
         if 'logg' in self.syn_params:
             self.logg = self.syn_params.pop('logg')
 
+        # Initialize variable to store the best fit values
+        self.best_fit = {}
+
 
     def sample_params(self):
         """
         Creates the values to fit for each parameter. It also merge
         the chemical elements to a parameter accepted by `Synplot`.
         """
-
-        self.iter_params = {}
 
         for key in self.fit_params:
             assert len(self.fit_params[key]) == 3
