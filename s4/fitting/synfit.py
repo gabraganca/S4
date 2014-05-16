@@ -295,9 +295,6 @@ class Synfit:
 
             self.synthesis.run()
 
-            if self.noplot == False:
-                self.synthesis.plot(title=plot_title, windows=self.windows)
-
             # Apply scale and radial velocity if needed
             if 'scale' in self.synthesis.parameters:
                 self.synthesis.apply_scale()
@@ -325,6 +322,20 @@ class Synfit:
                 for j, value in enumerate(self.iter_params):
                     self.chisq_values[value][n] = it[j]
             self.chisq_values['chisquare'][n] = chisq
+
+            # Plot, if desired
+            if self.noplot == False:
+                # The synthetic spectrum was corrected by scale and the
+                #observed one by radial velocity. The plot function in Synplot
+                #also does that, so we need to set those parameters to 1 and 0,
+                # respectively.
+                self.synthesis.parameters['scale'] = 1
+                self.synthesis.parameters['rv'] = 0
+
+                # Adds the value of chisquare to the title
+                plot_title += r'$\chi^2$='+'{:.06f}'.format(chisq)
+                self.synthesis.plot(title=plot_title, windows=self.windows)
+
 
         # Find the best value
         self.find_best_fit()
