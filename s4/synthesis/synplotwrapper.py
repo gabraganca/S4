@@ -1,5 +1,6 @@
 #=============================================================================
 # Modules
+import shutil
 import numpy as np
 import os
 import matplotlib.pyplot as plt
@@ -61,6 +62,15 @@ class Synplot:
         if 'relative' not in self.parameters:
             self.parameters['relative'] = 0
 
+        # Check for line list
+        if 'linlist' in self.parameters:
+            abspath = os.path.abspath(self.parameters['linlist'])
+            if os.path.isfile(abspath):
+                self.parameters['linlist'] = r"'{}'".format(abspath)
+            else:
+                raise IOError("File '{}' does not exist.".format(abspath))
+
+
     #=========================================================================
     #
     def synplot_input(self):
@@ -87,7 +97,22 @@ class Synplot:
         except OSError:
             pass
 
+
+        # Synplot erases the fort.19 (line list) if parameter `linlist` has
+        # been set.
+        # Thus, we will need to do a backup of the original and restore it
+        # after.
+
+        if 'linlist' in self.parameters:
+            ## Make a backup of the original line list
+            shutil.copyfile(self.spath + '/fort.19', '/tmp/fort.19')
+
+
         wrappers.run_command(self.synplot_input(), do_log = True)
+
+        if 'linlist' in self.parameters:
+            ## Make a backup of the original line list
+            shutil.copyfile('/tmp/fort.19', self.spath + '/fort.19')
 
         #load synthetized spectra
         try:
