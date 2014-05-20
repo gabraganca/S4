@@ -9,6 +9,7 @@ from glob import glob
 import os
 from pwd import getpwnam
 
+VERSION = '0.3.dev'
 
 # Compiling Synspec and Rotin3 if compiler ios available
 if glob('s4/synthesis/synplot/synspec49') == []:
@@ -60,6 +61,7 @@ SCRIPTS = ["s4/GUI/sagui", 'scripts/sensi_line']
 import s4
 
 setup(name=NAME,
+      version=VERSION,
       description=DESCRIPTION,
       long_description=LONG_DESCRIPTION,
       author=AUTHOR,
