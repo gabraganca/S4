@@ -9,7 +9,7 @@ from glob import glob
 import os
 from pwd import getpwnam
 
-VERSION = '0.2.3'
+VERSION = '0.3.dev'
 
 # Compiling Synspec and Rotin3 if compiler ios available
 if glob('s4/synthesis/synplot/synspec49') == []:
