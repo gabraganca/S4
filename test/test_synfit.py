@@ -11,6 +11,19 @@ from s4.fitting.synfit import iterator
 from s4.fitting.synfit import synplot_abund
 
 
+def test_sample_params_error():
+    """
+    Test if the Synfit.sample_params is throwing an error
+    for the wrong parameters.
+    """
+    params = dict(teff=20000, logg=4)
+
+    try:
+        fit = Synfit({'vrot':[10, 20, 2, 5]}, params)
+    except Exception:
+        pass
+
+
 def test_synplot_abund():
     """Test the `synplot_abund` function."""
 

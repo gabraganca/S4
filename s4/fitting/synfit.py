@@ -199,19 +199,20 @@ class Synfit:
         #Test if the parameter were given properly.
         for key in self.fit_params:
             # Test if the parameters were inserted correctly.
-            if not (isinstance(self.fit_params[key], list) and
-                    len(self.fit_params[key]) == 3):
+            try:
+                assert len(self.fit_params[key]) == 3
+
+                min_value = float(self.fit_params[key][0])
+                max_value = float(self.fit_params[key][1])
+
+                step = float(self.fit_params[key][2])
+                n_values = np.rint((max_value - min_value)/step + 1)
+                vector = np.linspace(min_value, max_value, n_values)
+
+                self.iter_params[key] = vector
+            except:
                 raise Exception("Value of '{}' must be a list ".format(key)+\
                                 "with three values.")
-
-            min_value = float(self.fit_params[key][0])
-            max_value = float(self.fit_params[key][1])
-
-            step = float(self.fit_params[key][2])
-            n_values = np.rint((max_value - min_value)/step + 1)
-            vector = np.linspace(min_value, max_value, n_values)
-
-            self.iter_params[key] = vector
 
         # Loads the chemical elements and their atomic numbers
         periodic = json.load(open(os.path.dirname(__file__)+\
