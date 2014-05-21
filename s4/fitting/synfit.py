@@ -106,6 +106,10 @@ class Synfit:
         All Synplot parameters desired to be use, including `teff`,
         `logg`, `synplot_path`, `idl`, `noplot`.
 
+        windows: list (optional);
+            Spectral region in which the chi-sqaure will be calculated. At
+            this point, it only accept a single window, i.e., the list should
+            contains only two values: the lower and the upper wavelength.
     """
 
     def __init__(self, fit_params, syn_params):
@@ -162,6 +166,7 @@ class Synfit:
             self.noplot = False
 
         if 'windows' in self.syn_params:
+            assert len(self.syn_params['windows']) == 2
             index_lower = obs_spec[:,0] > self.syn_params['windows'][0]
             index_upper = obs_spec[:,0] < self.syn_params['windows'][1]
             compound_index = index_lower & index_upper
