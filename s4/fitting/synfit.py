@@ -140,13 +140,14 @@ class Synfit:
 
         # Check if there is a an observed spectrum.
         # If not quit.
-        if 'observ' not in self.syn_params:
-            raise IOError('There is not any observed spectrum.')
-        else:
+        try:
             # If there is, load it to calculate the weights
             obs_spec = specio.load_spectrum(self.syn_params['observ'])
             # Correct for radial velocity
             obs_spec[:,0] *= rvcorr(self.rad_vel)
+        except IOError:
+            raise IOError('There is not any observed spectrum.')
+
 
         #Prepare kwargs
         if 'synplot_path' in self.syn_params:
