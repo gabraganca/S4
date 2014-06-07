@@ -265,7 +265,7 @@ class Synfit:
 
         shape = np.shape(self.iter_values)
 
-        self.chisq_values = np.ones([shape[0], 1], dtype=mdtype)
+        self.chisq_values = np.ones(shape[0], dtype=mdtype)
         ######
 
         # Loop it!
@@ -356,12 +356,12 @@ class Synfit:
         """
         fitted_vals = self.chisq_values[np.argmin(
                                         self.chisq_values['chisquare'])]
-        best_fit = list(fitted_vals[0])
+        #best_fit = list(fitted_vals[0])
 
         self.best_fit = {param:fitted_value
                            for param, fitted_value
-                           in zip(self.iter_params.keys(), best_fit[:-1])}
-        self.best_fit['chisq'] = fitted_vals[0][-1]
+                           in zip(self.iter_params.keys(), fitted_vals)}
+        self.best_fit['chisq'] = fitted_vals[-1]
 
 
     def best_plot(self, title=None):
@@ -423,7 +423,7 @@ class Synfit:
         ax = fig.add_subplot(111)
 
         ax.plot(self.iter_params[param],
-                np.hstack(self.chisq_values['chisquare']), **kwargs)
+                self.chisq_values['chisquare'], **kwargs)
 
         ax.set_xlabel(param)
         ax.set_ylabel(r'$\chi^2$')
