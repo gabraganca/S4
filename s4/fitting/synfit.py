@@ -16,6 +16,7 @@ It is also possible to select a subregion of the spectrum by using the
 import os
 import json
 import numpy as np
+import matplotlib.pyplot as plt
 from itertools import product
 from ..io import specio
 from ..synthesis import Synplot
@@ -404,3 +405,25 @@ class Synfit:
 
 
         synthesis.plot(title=title, windows=self.windows)
+
+    def plot_chisquare_one(self, param, **kwargs):
+        """
+        Plot the distribution of chi-square for one given parameter.
+        Parameters
+        ----------
+
+        param: str;
+            Parameter to be plotted.
+
+        kwargs;
+            Matplotlib.pyplot.plot kwargs.
+        """
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+
+        ax.plot(self.iter_params[param],
+                np.hstack(self.chisq_values['chisquare']), **kwargs)
+
+        ax.set_xlabel(param)
+        ax.set_ylabel(r'$\chi^2$')
