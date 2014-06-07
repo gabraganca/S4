@@ -19,7 +19,7 @@ def test_sample_params_error():
     params = dict(teff=20000, logg=4)
 
     try:
-        fit = Synfit({'vrot':[10, 20, 2, 5]}, params)
+        fit = Synfit({'vrot':[10, 20, 2, 5]}, **params)
     except Exception:
         pass
 
@@ -69,7 +69,7 @@ def test_synfit_one():
     del params_copy['vrot']
 
     fit = Synfit({'vrot':[10, 20, 2]},
-                 params_copy)
+                 **params_copy)
     fit.fit()
 
     # Remove synthetic spectrum
@@ -113,7 +113,7 @@ def test_synfit_rv():
     params_copy['rv'] = rad_vel
 
     fit = Synfit({'vrot':[10, 20, 2]},
-                 params_copy)
+                 **params_copy)
     fit.fit()
 
     # Remove synthetic spectrum
@@ -151,7 +151,7 @@ def test_synfit_two():
 
 
     fit = Synfit({'vrot': [10, 20, 2], 'vmac_rt':[0, 10, 5]},
-                 params_copy)
+                 **params_copy)
     fit.fit()
 
     # Remove synthetic spectrum
@@ -190,7 +190,7 @@ def test_synfit_three():
 
     fit = Synfit({'vrot':[10, 20, 2], 'vmac_rt':[0, 10, 5],
                   'teff':[19000, 22000, 1000]},
-                 params_copy)
+                 **params_copy)
     fit.fit()
 
     # Remove synthetic spectrum
@@ -226,7 +226,7 @@ def test_synfit_abund():
     del params_copy['abund']
 
     fit = Synfit({'He':[10.90, 11.0, 0.02]},
-                 params_copy)
+                 **params_copy)
     fit.fit()
 
     # Remove synthetic spectrum
@@ -264,7 +264,7 @@ def test_synfit_four():
 
     fit = Synfit({'vrot':[10, 20, 2], 'vmac_rt':[0, 10, 5],
                   'teff':[19000, 22000, 1000], 'He':[10.90, 11.0, 0.02]},
-                 params_copy)
+                 **params_copy)
     fit.fit()
 
     # Remove synthetic spectrum
@@ -304,7 +304,7 @@ def test_synfit_windows():
     params_copy['windows'] = [4465, 4475]
 
     fit = Synfit({'vrot':[10, 20, 2]},
-                 params_copy)
+                 **params_copy)
     fit.fit()
 
     # Remove synthetic spectrum

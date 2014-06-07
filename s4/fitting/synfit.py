@@ -102,7 +102,7 @@ class Synfit:
         element to be fitted. The values should be list with three
         elements: the initial and findal values and the step.
 
-    syn_params: dic;
+    kwargs;
         All Synplot parameters desired to be use, including `teff`,
         `logg`, `synplot_path`, `idl`, `noplot`.
 
@@ -112,11 +112,11 @@ class Synfit:
             contains only two values: the lower and the upper wavelength.
     """
 
-    def __init__(self, fit_params, syn_params):
+    def __init__(self, fit_params, **kwargs):
         # Parameters to be fitted
         self.fit_params = fit_params.copy()
         # Fixed parameters
-        self.syn_params = syn_params.copy()
+        self.syn_params = kwargs.copy()
         ##########
 
         # Creates the values in which each parameter will be fitted
