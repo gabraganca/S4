@@ -468,6 +468,8 @@ class Synfit:
         elif len(self.fit_keys) == 2:
             from scipy.interpolate import griddata
 
+            number_params = len(self.fit_keys)
+
             # Transform the chisquare array in a proper array
             #and not an array of tuples
             chisq_values = self.chisq_values.copy()
@@ -483,21 +485,31 @@ class Synfit:
             chisquare_arr = np.array([list(i)
                                       for i in chisq_values]).astype(float)
 
-            # Edges of the plot
-            edges = (min(chisquare_arr[:,0]), max(chisquare_arr[:,0]),
-                     min(chisquare_arr[:,1]), max(chisquare_arr[:,1]))
+            edges = np.hstack([(min(param_vector), max(param_vector))
+                               for param_vector in chisquare_arr.T[:-1]])
 
-            grid_x, grid_y = np.mgrid[edges[0]:edges[1]:200j,
-                                      edges[2]:edges[3]:200j]
+            # Points in wich the grid will be calculated
+            grid_points = [np.linspace(edges[i], edges[i+1], 200)
+                           for i in np.arange(0, 2*number_params, 2)]
 
-            # Grid the chisquare with interpolation
-            Z = griddata(chisquare_arr[:,:2],  chisquare_arr[:,-1],
-                         (grid_x, grid_y), method='linear')
+            # Makes a mesh grid to griddata
+            try:
+                # More than one parameter
+                grid_params = np.meshgrid(*grid_points)
+            except ValueError:
+                # Just one parameter
+                grid_params = grid_points
+
+            grid_params = tuple([i for i in grid_params])
+
+            # Grid the data
+            Z = griddata(chisquare_arr[:,:number_params], chisquare_arr[:,-1],
+                         grid_params, method='linear')
             # Get the log to increase the contrast between limits
             Z = np.log(Z)
 
             # Plot
-            cax = ax.imshow(Z.T, aspect='auto', extent=edges,
+            cax = ax.imshow(Z, aspect='auto', extent=edges,
                             origin='lower', **kwargs)
 
             # Set labels
