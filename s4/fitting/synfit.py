@@ -459,55 +459,54 @@ class Synfit:
         fig = plt.figure()
         ax = fig.add_subplot(111)
 
-        try:
-            if len(self.fit_keys) == 1:
-                ax.plot(self.iter_params[self.fit_keys[0]],
-                        self.chisq_values['chisquare'], **kwargs)
+        if len(self.fit_keys) == 1:
+            ax.plot(self.iter_params[self.fit_keys[0]],
+                    self.chisq_values['chisquare'], **kwargs)
 
-                ax.set_xlabel(self.fit_keys[0])
-                ax.set_ylabel(r'$\chi^2$')
-            else:
-                from scipy.interpolate import griddata
+            ax.set_xlabel(self.fit_keys[0])
+            ax.set_ylabel(r'$\chi^2$')
+        elif len(self.fit_keys) == 2:
+            from scipy.interpolate import griddata
 
-                # Transform the chisquare array in a proper array
-                #and not an array of tuples
-                chisq_values = self.chisq_values.copy()
+            # Transform the chisquare array in a proper array
+            #and not an array of tuples
+            chisq_values = self.chisq_values.copy()
 
-                ## Check for abundance
-                if 'abund' in self.chisq_values.dtype.names:
-                    elem = [param for param in self.fit_params.keys()
-                            if param in PERIODIC][0]
+            ## Check for abundance
+            if 'abund' in self.chisq_values.dtype.names:
+                elem = [param for param in self.fit_params.keys()
+                        if param in PERIODIC][0]
 
-                    chisq_values['abund'] = [elem_abund(abund, elem)
-                                             for abund in chisq_values['abund']]
+                chisq_values['abund'] = [elem_abund(abund, elem)
+                                         for abund in chisq_values['abund']]
 
-                chisquare_arr = np.array([list(i)
-                                          for i in chisq_values]).astype(float)
+            chisquare_arr = np.array([list(i)
+                                      for i in chisq_values]).astype(float)
 
-                # Edges of the plot
-                edges = (min(chisquare_arr[:,0]), max(chisquare_arr[:,0]),
-                         min(chisquare_arr[:,1]), max(chisquare_arr[:,1]))
+            # Edges of the plot
+            edges = (min(chisquare_arr[:,0]), max(chisquare_arr[:,0]),
+                     min(chisquare_arr[:,1]), max(chisquare_arr[:,1]))
 
-                grid_x, grid_y = np.mgrid[edges[0]:edges[1]:200j,
-                                          edges[2]:edges[3]:200j]
+            grid_x, grid_y = np.mgrid[edges[0]:edges[1]:200j,
+                                      edges[2]:edges[3]:200j]
 
-                # Grid the chisquare with interpolation
-                Z = griddata(chisquare_arr[:,:2],  chisquare_arr[:,-1],
-                             (grid_x, grid_y), method='linear')
-                # Get the log to increase the contrast between limits
-                Z = np.log(Z)
+            # Grid the chisquare with interpolation
+            Z = griddata(chisquare_arr[:,:2],  chisquare_arr[:,-1],
+                         (grid_x, grid_y), method='linear')
+            # Get the log to increase the contrast between limits
+            Z = np.log(Z)
 
-                # Plot
-                cax = ax.imshow(Z.T, aspect='auto', extent=edges,
-                                origin='lower', **kwargs)
+            # Plot
+            cax = ax.imshow(Z.T, aspect='auto', extent=edges,
+                            origin='lower', **kwargs)
 
-                # Set labels
-                ax.set_xlabel(self.fit_keys[0])
-                ax.set_ylabel(self.fit_keys[1])
+            # Set labels
+            ax.set_xlabel(self.fit_keys[0])
+            ax.set_ylabel(self.fit_keys[1])
 
-                # Add colorbar
-                cbar = fig.colorbar(cax)
-                cbar.ax.set_ylabel(r'$\log(\chi^2)$')
+            # Add colorbar
+            cbar = fig.colorbar(cax)
+            cbar.ax.set_ylabel(r'$\log(\chi^2)$')
 
-        except (ValueError, AttributeError):
+        else:
             raise ValueError('The number of parameters is greater than 2.')
