@@ -406,24 +406,61 @@ class Synfit:
 
         synthesis.plot(title=title, windows=self.windows)
 
-    def plot_chisquare_one(self, param, **kwargs):
+    def plot_chisquare(self, **kwargs):
         """
         Plot the distribution of chi-square for one given parameter.
+        It obly works if the number of parameters to be fitted are one or two.
+
         Parameters
         ----------
-
-        param: str;
-            Parameter to be plotted.
 
         kwargs;
             Matplotlib.pyplot.plot kwargs.
         """
-
         fig = plt.figure()
         ax = fig.add_subplot(111)
 
-        ax.plot(self.iter_params[param],
-                self.chisq_values['chisquare'], **kwargs)
+        try:
+            if len(self.fit_keys) == 1:
+                ax.plot(self.iter_params[self.fit_keys[0]],
+                        self.chisq_values['chisquare'], **kwargs)
 
-        ax.set_xlabel(param)
-        ax.set_ylabel(r'$\chi^2$')
+                ax.set_xlabel(self.fit_keys[0])
+                ax.set_ylabel(r'$\chi^2$')
+            else:
+                from scipy.interpolate import griddata
+
+                # Transform the chisquare array in a proper array
+                #and not an array of tuples
+                chisquare_array = np.array([list(i)
+                                            for i in self.chisq_values])
+
+                # Edges of the plot
+                edges = (min(self.iter_params[self.fit_keys[0]]),
+                         max(self.iter_params[self.fit_keys[0]]),
+                         min(self.iter_params[self.fit_keys[1]]),
+                         max(self.iter_params[self.fit_keys[1]]))
+
+                grid_x, grid_y = np.mgrid[edges[0]:edges[1]:200j,
+                                          edges[2]:edges[3]:200j]
+
+                # Grid the chisquare with interpolation
+                Z = griddata(chisquare_array[:,:2],  chisquare_array[:,-1],
+                             (grid_x, grid_y), method='cubic')
+                # Get the log to increase the contrast between limits
+                Z = np.log(Z)
+
+                # Plot
+                cax = ax.imshow(Z.T, aspect='auto', extent=edges,
+                                origin='lower', **kwargs)
+
+                # Set labels
+                ax.set_xlabel(self.fit_keys[0])
+                ax.set_ylabel(self.fit_keys[1])
+
+                # Add colorbar
+                cbar = fig.colorbar(cax)
+                cbar.ax.set_ylabel(r'$\log(\chi^2)$')
+
+        except (ValueError, AttributeError):
+            raise ValueError('The number of parameters is greater than 2.')
