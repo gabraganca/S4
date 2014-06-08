@@ -14,6 +14,7 @@ It is also possible to select a subregion of the spectrum by using the
 `windows` argument.
 """
 import os
+import re
 import json
 import numpy as np
 import matplotlib.pyplot as plt
@@ -21,6 +22,10 @@ from itertools import product
 from ..io import specio
 from ..synthesis import Synplot
 from ..spectools import rvcorr
+
+# Loads the chemical elements and their atomic numbers
+PERIODIC = json.load(open(os.path.dirname(__file__)+\
+                          '/chemical_elements.json'))
 
 def synplot_abund(abund_dic):
     """
@@ -43,12 +48,9 @@ def synplot_abund(abund_dic):
 
     # If the chemical element is identified with its symbol, swap to the
     #atomic number
-    periodic = json.load(open(os.path.dirname(__file__)+\
-                              '/chemical_elements.json'))
-
     for key in abund_dic:
-        if key in periodic:
-            abund_dic[periodic[key]] = abund_dic.pop(key)
+        if key in PERIODIC:
+            abund_dic[PERIODIC[key]] = abund_dic.pop(key)
 
     # Writes a list with each chemical element and its abundance
     elements = ['{0}, {0}, {1:.2f}'.format(key, val)
@@ -59,6 +61,46 @@ def synplot_abund(abund_dic):
     synplot_format = '[' + ', '.join(elements)+ ']'
 
     return synplot_format
+
+
+def elem_abund(syn_abund, elem):
+    """
+    Gets the abudnance of a desired chemical element from a string of abundances
+    in the SYNPLOT format.
+
+    Parameters
+    ----------
+
+    syn_abund: str;
+        String of abundances in the SYNPLOT format, i.e.,
+        '[8, 8, 8.81, 14, 14, 7.33]'.
+
+    elem: int, str;
+        Chemical element. Can be its symbol or its atomic number.
+
+    Returns
+    -------
+
+    The abundance of the desired chemical element as a float.
+    """
+
+    if type(elem) == int:
+        atom_n = str(elem)
+    elif type(elem) == str:
+        atom_n = str(PERIODIC[elem])
+    else:
+        raise TypeError('The variable `elem` should be a string or integer.')
+
+
+    # Gets abundance
+    abund = re.findall(atom_n + r',\s?' + atom_n + r',\s?(\d+(?:\.\d+)?)',
+                       syn_abund)
+
+    if len(abund) == 0:
+        raise IndexError('The element does not have abundance in the input ' +\
+                         'value.')
+    else:
+        return float(abund[0])
 
 
 def iterator(*args):
@@ -216,15 +258,12 @@ class Synfit:
                 raise Exception("Value of '{}' must be a list ".format(key)+\
                                 "with three values.")
 
-        # Loads the chemical elements and their atomic numbers
-        periodic = json.load(open(os.path.dirname(__file__)+\
-                                  '/chemical_elements.json'))
 
         # Gets chemical elements and their values and transform
         #to Synplot format.
         abund = {}
         for key in self.fit_params:
-            if key in periodic.keys():
+            if key in PERIODIC.keys():
                 abund[key] = self.iter_params[key]
                 del self.iter_params[key]
 
@@ -432,20 +471,28 @@ class Synfit:
 
                 # Transform the chisquare array in a proper array
                 #and not an array of tuples
-                chisquare_array = np.array([list(i)
-                                            for i in self.chisq_values])
+                chisq_values = self.chisq_values.copy()
+
+                ## Check for abundance
+                if 'abund' in self.chisq_values.dtype.names:
+                    elem = [param for param in self.fit_params.keys()
+                            if param in PERIODIC][0]
+
+                    chisq_values['abund'] = [elem_abund(abund, elem)
+                                             for abund in chisq_values['abund']]
+
+                chisquare_arr = np.array([list(i)
+                                          for i in chisq_values]).astype(float)
 
                 # Edges of the plot
-                edges = (min(self.iter_params[self.fit_keys[0]]),
-                         max(self.iter_params[self.fit_keys[0]]),
-                         min(self.iter_params[self.fit_keys[1]]),
-                         max(self.iter_params[self.fit_keys[1]]))
+                edges = (min(chisquare_arr[:,0]), max(chisquare_arr[:,0]),
+                         min(chisquare_arr[:,1]), max(chisquare_arr[:,1]))
 
                 grid_x, grid_y = np.mgrid[edges[0]:edges[1]:200j,
                                           edges[2]:edges[3]:200j]
 
                 # Grid the chisquare with interpolation
-                Z = griddata(chisquare_array[:,:2],  chisquare_array[:,-1],
+                Z = griddata(chisquare_arr[:,:2],  chisquare_arr[:,-1],
                              (grid_x, grid_y), method='linear')
                 # Get the log to increase the contrast between limits
                 Z = np.log(Z)
