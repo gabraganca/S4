@@ -446,7 +446,7 @@ class Synfit:
 
                 # Grid the chisquare with interpolation
                 Z = griddata(chisquare_array[:,:2],  chisquare_array[:,-1],
-                             (grid_x, grid_y), method='cubic')
+                             (grid_x, grid_y), method='linear')
                 # Get the log to increase the contrast between limits
                 Z = np.log(Z)
 
