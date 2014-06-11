@@ -85,3 +85,11 @@ First you should call the script with the following parameters: the parameter
 you want to vary, an array of values for that parameter, the beginning and
 ending wavelength.
 
+
+Citation
+--------
+
+If you use this software please cite as:
+
+Bragança, Gustavo (2014): Stellar Spectral Synthesis Suite (S4). figshare.
+http://dx.doi.org/10.6084/m9.figshare.1051627
