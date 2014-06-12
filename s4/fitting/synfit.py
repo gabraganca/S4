@@ -466,19 +466,20 @@ class Synfit:
         kwargs;
             Matplotlib.pyplot.plot kwargs.
         """
+        # Number of parameters fitted.
+        number_params = len(self.fit_keys)
+
         fig = plt.figure()
         ax = fig.add_subplot(111)
 
-        if len(self.fit_keys) == 1:
+        if number_params == 1:
             ax.plot(self.iter_params[self.fit_keys[0]],
                     self.chisq_values['chisquare'], **kwargs)
 
             ax.set_xlabel(self.fit_keys[0])
             ax.set_ylabel(r'$\chi^2$')
-        elif len(self.fit_keys) == 2:
+        elif number_params == 2:
             from scipy.interpolate import griddata
-
-            number_params = len(self.fit_keys)
 
             # Transform the chisquare array in a proper array
             #and not an array of tuples
@@ -503,13 +504,7 @@ class Synfit:
                            for i in np.arange(0, 2*number_params, 2)]
 
             # Makes a mesh grid to griddata
-            try:
-                # More than one parameter
-                grid_params = np.meshgrid(*grid_points)
-            except ValueError:
-                # Just one parameter
-                grid_params = grid_points
-
+            grid_params = np.meshgrid(*grid_points)
             grid_params = tuple([i for i in grid_params])
 
             # Grid the data
