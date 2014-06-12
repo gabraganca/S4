@@ -445,7 +445,7 @@ class Synfit:
 
         synthesis.plot(title=title, windows=self.windows)
 
-    def plot_chisquare(self, interpolation='linear', **kwargs):
+    def plot_chisquare(self, interpolation='linear', log=False, **kwargs):
         """
         Plot the distribution of chi-square for one given parameter.
         It obly works if the number of parameters to be fitted are one or two.
@@ -453,12 +453,15 @@ class Synfit:
         Parameters
         ----------
 
-        interpolation: str;
+        interpolation: str (optional);
             Type of interpolation for the color plot when fitting two
             parameters. One of ['nearest', 'linear', 'cubic']. More explanation
             here:
 
             http://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.griddata.html
+
+        scale: boolean (optional):
+            If set to True, it will plot the logarithmic of the chi-square.
 
         kwargs;
             Matplotlib.pyplot.plot kwargs.
@@ -512,8 +515,12 @@ class Synfit:
             # Grid the data
             Z = griddata(chisquare_arr[:,:number_params], chisquare_arr[:,-1],
                          grid_params, method=interpolation)
-            # Get the log to increase the contrast between limits
-            Z = np.log(Z)
+
+            if log:
+                # Get the log to increase the contrast between limits
+                from matplotlib.colors import LogNorm
+                kwargs['norm'] = LogNorm()
+
 
             # Plot
             cax = ax.imshow(Z, aspect='auto', extent=edges,
@@ -525,7 +532,7 @@ class Synfit:
 
             # Add colorbar
             cbar = fig.colorbar(cax)
-            cbar.ax.set_ylabel(r'$\log(\chi^2)$')
+            cbar.ax.set_ylabel(r'$\chi^2$')
 
         else:
             raise ValueError('The number of parameters is greater than 2.')
