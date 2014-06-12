@@ -278,6 +278,14 @@ class Synfit:
                                                               itera)})
                                          for itera in iterator(*abund.values())]
 
+        # Adds fixed abundances if defined by user
+        if ('abund' in self.syn_params) and ('abund' in self.iter_params):
+            tmp = self.syn_params['abund'][1:]
+            self.iter_params['abund'] = [it_abund[:-1] + ', ' + tmp
+                                         for it_abund in
+                                         self.iter_params['abund']]
+            del self.syn_params['abund']
+
 
     def fit(self):
         r"""
