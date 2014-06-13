@@ -1,3 +1,6 @@
+"""
+Test if the class Synplot_abund is working.
+"""
 import numpy as np
 from s4.synthesis.synplot_abund import Synplot_abund
 
