@@ -10,6 +10,7 @@ from ..spectools import rvcorr
 from ..utils import File
 from ..plottools import plot_windows
 from ..io import specio, wrappers
+from synplot_abund import Synplot_abund
 #=============================================================================
 
 
