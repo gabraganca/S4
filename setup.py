@@ -2,7 +2,7 @@
 Install package.
 """
 
-from distutils.core import setup
+from distutils.core import setup, Command
 from distutils.spawn import find_executable
 import subprocess as sp
 from glob import glob
@@ -60,6 +60,21 @@ SCRIPTS = ["s4/GUI/sagui", 'scripts/sensi_line']
 
 import s4
 
+class PyTest(Command):
+    # Class for test purposes
+    user_options = []
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        import sys
+        errno = sp.call([sys.executable, 'tests/runtests.py'])
+        raise SystemExit(errno)
+
+
 setup(name=NAME,
       version=VERSION,
       description=DESCRIPTION,
@@ -89,6 +104,7 @@ setup(name=NAME,
         'Natural Language :: English',
         'Programming Language :: Python :: 2.7',
         'Topic :: Scientific/Engineering :: Astronomy'],
+      cmdclass = {'test': PyTest},
     )
 
 #Change ownership of data _files from root to user, recursevely
