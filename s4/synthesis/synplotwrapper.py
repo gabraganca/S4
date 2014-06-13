@@ -1,3 +1,13 @@
+"""
+Parameters
+---------
+
+abund: str, dic (optional);
+    Chemical abundance. It overrides the values set by Synspec.
+    It can be set as the Synplot format, e.g., '[2, 2, 10.93'] or as a
+    dictionary, e.g., {2:10.93}. As a dictionary, it also accepts the chemical
+    element symbol, i.e., {'He':10.93}.
+"""
 #=============================================================================
 # Modules
 import shutil
@@ -77,8 +87,14 @@ class Synplot:
     def synplot_input(self):
         """Build the synplot command to IDL/GDL."""
 
+        # Copy the parameters
+        parameters_copy = self.parameters.copy()
+        if 'abund' in parameters_copy:
+            abund = Synplot_abund(parameters_copy['abund'])
+            parameters_copy['abund'] = abund.to_synplot()
+
         synplot_command = [key+' = '+str(value)                              \
-                           for key, value in self.parameters.iteritems()]
+                           for key, value in parameters_copy.iteritems()]
 
         cmd = "CD, '"+self.spath+"' & synplot, "+ \
                         ', '.join(synplot_command)
