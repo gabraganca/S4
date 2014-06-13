@@ -39,6 +39,7 @@ PERIODIC = json.load(open(os.path.dirname(__file__)+\
                           '/chemical_elements.json'))
 
 
+
 class Synplot_abund():
     """
     This class facilitate the input/output of abundance values to SYNPLOT.
@@ -66,8 +67,10 @@ class Synplot_abund():
         Parameter
         ---------
 
-        elem: int, str;
-            Chemical element. Can be its symbol or its atomic number.
+        elem: int, str, list;
+            Chemical element. Can be its symbol or its atomic number. It also
+            accepts more than one chemical element. For that, input it as a
+            list.
 
     """
     def  __init__(self, abundance):
@@ -101,31 +104,39 @@ class Synplot_abund():
         Gets the abundance of a desired chemical element from a string of
         abundances in the SYNPLOT format.
         """
+        # Reverse the Periodica Table
+        reverse_periodic = {val:key for key, val in PERIODIC.iteritems()}
 
-        if type(element) == int:
-            atom_n = str(element)
-            element = [key for key, val in PERIODIC.iteritems()
-                       if val == atom_n][0]
-        elif type(element) == str:
-            atom_n = str(PERIODIC[element])
-        else:
-            raise TypeError('The variable `element` should be a string ' +\
-                            'or integer.')
+        # Check if `element` is a list. If not, turn it into one
+        if not isinstance(element, list):
+            element = [element]
+
+        atom_number = []
+        element_symbol = []
+
+        for elem in element:
+            # Check type of element
+            if isinstance(elem, int):
+                # It is an atomic number
+                atom_number.append(str(elem))
+                element_symbol.append(reverse_periodic[elem])
+            elif isinstance(elem, str):
+                # It is a chemical element symvol
+                atom_number.append(str(PERIODIC[elem]))
+                element_symbol.append(elem)
+            else:
+                raise TypeError('The variable `element` should be a string ' +\
+                                'or integer.')
 
         # Gets abundance
         abund = {}
-        pattern = re.compile(atom_n + r',\s?' + atom_n + r',\s?(\d+(?:\.\d+)?)')
-        match = pattern.search(self.abundance)
-        if match:
-            abund[element] = float(match.group(1))
-        else:
-            abund[element] = np.nan
+        for atom_n, element in zip(atom_number, element_symbol):
+            pattern = re.compile(atom_n + r',\s?' + atom_n + \
+                                 r',\s?(\d+(?:\.\d+)?)')
+            match = pattern.search(self.abundance)
+            if match:
+                abund[element] = float(match.group(1))
+            else:
+                abund[element] = np.nan
 
         return abund
-
-#        if len(abund) == 0:
-#            raise IndexError('The elementent does not have ' +\
-#                             'abundance in the input value.')
-#        else:
-#            return float(abund[0])
-
