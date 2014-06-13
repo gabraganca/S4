@@ -88,9 +88,14 @@ class Synplot_abund():
             if key in PERIODIC:
                 self.abundance[PERIODIC[key]] = self.abundance.pop(key)
 
-        # Writes a list with each chemical element and its abundance
-        elements = ['{0}, {0}, {1:.2f}'.format(key, val)
-                    for key, val in self.abundance.iteritems()]
+        try:
+            # Writes a list with each chemical element and its abundance
+            elements = ['{0}, {0}, {1:.2f}'.format(key, val)
+                        for key, val in self.abundance.iteritems()]
+        except AttributeError:
+            # abundance is already in Synplot format
+            return self.abundance
+
         assert len(elements) == len(self.abundance)
 
         # Put into SYNPLOT format
