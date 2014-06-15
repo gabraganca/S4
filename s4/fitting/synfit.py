@@ -276,6 +276,18 @@ class Synfit:
             if 'logg' in params:
                 self.logg = params.pop('logg')
 
+            # Join the abundances
+
+            ## Gets all chemical elements asked to be fit
+            abund = {key:it[key]
+                     for key in it.dtype.names
+                     if key in PERIODIC}
+            if abund:
+                params['abund'] = abund
+                ## delete the chemical elements parameters from the dictionary
+                for key in params['abund']:
+                    del params[key]
+
             # Set parameters for synplot
             synplot_params = self.syn_params.copy()
             synplot_params.update(params)
@@ -381,13 +393,22 @@ class Synfit:
         for key, value in best_fit.iteritems():
             synplot_params[key] = value
 
+        # Join the abundances
+
+        ## Gets all chemical elements asked to be fit
+        abund = {key:val
+                 for key, val in self.best_fit.iteritems()
+                 if key in PERIODIC}
+        if abund:
+            synplot_params['abund'] = abund
+            for key in synplot_params['abund']:
+                del synplot_params[key]
+
         # Synthesize spectrum
         synthesis = Synplot(self.teff, self.logg, self.synplot_path,
                             self.idl, **synplot_params)
-
-
-
         synthesis.plot(title=title, windows=self.windows)
+
 
     def plot_chisquare(self, interpolation='linear', log=False, **kwargs):
         """
@@ -437,8 +458,11 @@ class Synfit:
                 chisq_values['abund'] = [abund
                                          for abund in chisq_values['abund']]
 
-            chisquare_arr = np.array([list(i)
-                                      for i in chisq_values]).astype(float)
+            ## Removes data type
+            chisquare_arr = chisq_values.view((float, 3))
+            ## Guarantee that the format will be correct for any number of
+            ## parameters
+            chisquare_arr = chisquare_arr.reshape(len(chisq_values), -1)
 
             edges = np.hstack([(min(param_vector), max(param_vector))
                                for param_vector in chisquare_arr.T[:-1]])
