@@ -29,30 +29,6 @@ PERIODIC = json.load(open(os.path.dirname(__file__)+\
 
 REVERSE_PERIODIC = {val:key for key, val in PERIODIC.iteritems()}
 
-def iterator(*args):
-    """
-    Create the iterator vector.
-
-    Parameters
-    ----------
-
-    args: list;
-        One or more lists or arrays.
-
-    Returns
-    -------
-
-    If there is only one argument, this is returned.
-    If there is two or more, it returns the internal
-    product of these lists.
-    """
-
-#    if len(args) == 1:
-#        return list(*args)
-#    else:
-#        return list(product(*args))
-    return list(product(*args))
-
 
 class Synfit:
     """
@@ -110,7 +86,8 @@ class Synfit:
         self.fit_keys = self.iter_params.keys()
 
         # Create the iterator vector.
-        iter_values = iterator(*[self.iter_params[k] for k in self.fit_keys])
+        args = [self.iter_params[k] for k in self.fit_keys]
+        iter_values = list(product(*args))
 
         ## add the iterrating values to self as a numpy array
         data_type = [(key, float) for key in self.fit_keys]
