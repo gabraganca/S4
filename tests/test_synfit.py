@@ -185,8 +185,8 @@ def test_synfit_abund():
     # Test with synthetic spectrum
 
     ## Creates a fake spectrum
-    params = dict(teff=20000, logg=4, vrot=16, abund={'He': 10.93}, vmac_rt=5,
-                  wstart=4460, wend=4480, noplot=True, relative=1,
+    params = dict(teff=20000, logg=4, vrot=16, abund={'He': 10.93, 'S':7.12},
+                  wstart=4460, wend=4480, noplot=True, relative=1, vmac_rt=5,
                   observ='test_spectrum.dat')
 
 
@@ -199,7 +199,6 @@ def test_synfit_abund():
 
     ## Test with one parameter
     params_copy = params.copy()
-    del params_copy['abund']
 
     fit = Synfit({'He':[10.89, 10.95, 0.02]},
                  **params_copy)
@@ -209,6 +208,7 @@ def test_synfit_abund():
     os.remove(params['observ'])
 
     assert len(fit.best_fit.keys()) == 2
+    assert 'S' in fit.synthesis.parameters['abund']
     assert fit.best_fit['He'] == params['abund']['He']
     assert fit.best_fit['chisquare'] == 0 # chi^2
 
