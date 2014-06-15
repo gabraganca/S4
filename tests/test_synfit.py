@@ -28,7 +28,7 @@ def test_synfit_one():
     # Test with synthetic spectrum
 
     ## Creates a fake spectrum
-    params = dict(teff=20000, logg=4, vrot=16, abund='[2, 2, 10.96]', vmac_rt=5,
+    params = dict(teff=20000, logg=4, vrot=16, abund={'He': 10.93}, vmac_rt=5,
                   wstart=4460, wend=4480, noplot=True, relative=1,
                   observ='test_spectrum.dat')
 
@@ -53,7 +53,7 @@ def test_synfit_one():
 
     assert len(fit.best_fit.keys()) == 2
     assert fit.best_fit['vrot'] == params['vrot']
-    assert fit.best_fit['chisq'] == 0 # chi^2
+    assert fit.best_fit['chisquare'] == 0 # chi^2
 
 
 def test_synfit_rv():
@@ -66,7 +66,7 @@ def test_synfit_rv():
     # Test with synthetic spectrum
 
     ## Creates a fake spectrum
-    params = dict(teff=20000, logg=4, vrot=16, abund='[2, 2, 10.96]', vmac_rt=5,
+    params = dict(teff=20000, logg=4, vrot=16, abund={'He': 10.93}, vmac_rt=5,
                   wstart=4460, wend=4480, noplot=True, relative=1)
 
 
@@ -97,7 +97,7 @@ def test_synfit_rv():
 
     assert len(fit.best_fit.keys()) == 2
     assert fit.best_fit['vrot'] == params['vrot']
-    assert np.round(fit.best_fit['chisq'], 5) == 0 # chi^2
+    assert np.round(fit.best_fit['chisquare'], 5) == 0 # chi^2
 
 
 def test_synfit_two():
@@ -106,7 +106,7 @@ def test_synfit_two():
     # Test with synthetic spectrum
 
     ## Creates a fake spectrum
-    params = dict(teff=20000, logg=4, vrot=16, abund='[2, 2, 10.96]', vmac_rt=5,
+    params = dict(teff=20000, logg=4, vrot=16, abund={'He': 10.93}, vmac_rt=5,
                   wstart=4460, wend=4480, noplot=True, relative=1,
                   observ='test_spectrum.dat')
 
@@ -137,7 +137,7 @@ def test_synfit_two():
     assert len(fit.best_fit.keys()) == 3
     assert fit.best_fit['vrot'] == params['vrot']
     assert fit.best_fit['vmac_rt'] == params['vmac_rt']
-    assert fit.best_fit['chisq'] == 0 # chi^2
+    assert fit.best_fit['chisquare'] == 0 # chi^2
 
 
 def test_synfit_three():
@@ -146,7 +146,7 @@ def test_synfit_three():
     # Test with synthetic spectrum
 
     ## Creates a fake spectrum
-    params = dict(teff=20000, logg=4, vrot=16, abund='[2, 2, 10.96]', vmac_rt=5,
+    params = dict(teff=20000, logg=4, vrot=16, abund={'He': 10.93}, vmac_rt=5,
                   wstart=4460, wend=4480, noplot=True, relative=1,
                   observ='test_spectrum.dat')
 
@@ -176,7 +176,7 @@ def test_synfit_three():
     assert fit.best_fit['vrot'] == params['vrot']
     assert fit.best_fit['vmac_rt'] == params['vmac_rt']
     assert fit.best_fit['teff'] == params['teff']
-    assert fit.best_fit['chisq'] == 0 # chi^2
+    assert fit.best_fit['chisquare'] == 0 # chi^2
 
 
 def test_synfit_abund():
@@ -185,7 +185,7 @@ def test_synfit_abund():
     # Test with synthetic spectrum
 
     ## Creates a fake spectrum
-    params = dict(teff=20000, logg=4, vrot=16, abund='[2, 2, 10.96]', vmac_rt=5,
+    params = dict(teff=20000, logg=4, vrot=16, abund={'He': 10.93}, vmac_rt=5,
                   wstart=4460, wend=4480, noplot=True, relative=1,
                   observ='test_spectrum.dat')
 
@@ -201,7 +201,7 @@ def test_synfit_abund():
     params_copy = params.copy()
     del params_copy['abund']
 
-    fit = Synfit({'He':[10.90, 11.0, 0.02]},
+    fit = Synfit({'He':[10.89, 10.95, 0.02]},
                  **params_copy)
     fit.fit()
 
@@ -209,8 +209,8 @@ def test_synfit_abund():
     os.remove(params['observ'])
 
     assert len(fit.best_fit.keys()) == 2
-    assert fit.best_fit['abund'] == params['abund']
-    assert fit.best_fit['chisq'] == 0 # chi^2
+    assert fit.best_fit['He'] == params['abund']['He']
+    assert fit.best_fit['chisquare'] == 0 # chi^2
 
 
 def test_synfit_four():
@@ -219,7 +219,7 @@ def test_synfit_four():
     # Test with synthetic spectrum
 
     ## Creates a fake spectrum
-    params = dict(teff=20000, logg=4, vrot=16, abund='[2, 2, 10.96]', vmac_rt=5,
+    params = dict(teff=20000, logg=4, vrot=16, abund={'He': 10.93}, vmac_rt=5,
                   wstart=4460, wend=4480, noplot=True, relative=1,
                   observ='test_spectrum.dat')
 
@@ -239,7 +239,7 @@ def test_synfit_four():
     del params_copy['abund']
 
     fit = Synfit({'vrot':[10, 20, 2], 'vmac_rt':[0, 10, 5],
-                  'teff':[19000, 22000, 1000], 'He':[10.90, 11.0, 0.02]},
+                  'teff':[19000, 22000, 1000], 'He':[10.89, 10.95, 0.02]},
                  **params_copy)
     fit.fit()
 
@@ -250,7 +250,7 @@ def test_synfit_four():
     assert fit.best_fit['vrot'] == params['vrot']
     assert fit.best_fit['vmac_rt'] == params['vmac_rt']
     assert fit.best_fit['teff'] == params['teff']
-    assert fit.best_fit['abund'] == params['abund']
+    assert fit.best_fit['He'] == params['abund']['He']
 
 
 def test_synfit_windows():
@@ -262,7 +262,7 @@ def test_synfit_windows():
     # Test with synthetic spectrum
 
     ## Creates a fake spectrum
-    params = dict(teff=20000, logg=4, vrot=16, abund='[2, 2, 10.96]', vmac_rt=5,
+    params = dict(teff=20000, logg=4, vrot=16, abund={'He': 10.93}, vmac_rt=5,
                   wstart=4460, wend=4480, noplot=True, relative=1,
                   observ='test_spectrum.dat')
 
@@ -288,5 +288,4 @@ def test_synfit_windows():
 
     assert len(fit.best_fit.keys()) == 2
     assert fit.best_fit['vrot'] == params['vrot']
-    assert fit.best_fit['chisq'] == 0 # chi^2
-    assert fit.best_fit['chisq'] == 0 # chi^2
+    assert fit.best_fit['chisquare'] == 0 # chi^2
