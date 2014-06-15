@@ -45,10 +45,11 @@ def iterator(*args):
     product of these lists.
     """
 
-    if len(args) == 1:
-        return list(*args)
-    else:
-        return list(product(*args))
+#    if len(args) == 1:
+#        return list(*args)
+#    else:
+#        return list(product(*args))
+    return list(product(*args))
 
 
 class Synfit:
@@ -91,13 +92,14 @@ class Synfit:
         self.sample_params()
 
         # Get the name of the parameters to be fitted
-        # I use the iter_params variable in order to obtain 'abund'
-        # instead of the chemical elements.
         self.fit_keys = self.iter_params.keys()
-        # Create the iterator vector.
-        self.iter_values = iterator(*[self.iter_params[k]
-                                      for k in self.fit_keys])
 
+        # Create the iterator vector.
+        iter_values = iterator(*[self.iter_params[k] for k in self.fit_keys])
+
+        ## add the iterrating values to self as a numpy array
+        data_type = [(key, float) for key in self.fit_keys]
+        self.iter_values = np.array(iter_values, dtype=data_type)
 
         # Check for radial velocity
         if 'rv' in self.syn_params:
@@ -183,32 +185,29 @@ class Synfit:
                                 "with three values.")
 
 
-        # Gets chemical elements and their values and transform
-        #to Synplot format.
-        abund = {}
-        for key in self.fit_params:
-            if key in PERIODIC.keys():
-                abund[key] = self.iter_params[key]
-                del self.iter_params[key]
-
-        # Adds it back to the final dictionary
-        if len(abund.keys()) == 1:
-            elem = abund.keys()[0]
-            self.iter_params['abund'] = [synplot_abund({elem:val})
-                                         for val in abund[elem]]
-        elif len(abund.keys()) > 1:
-            self.iter_params['abund'] = [synplot_abund({k:v for k, v
-                                                       in zip(abund.keys(),
-                                                              itera)})
-                                         for itera in iterator(*abund.values())]
-
-        # Adds fixed abundances if defined by user
-        if ('abund' in self.syn_params) and ('abund' in self.iter_params):
-            tmp = self.syn_params['abund'][1:]
-            self.iter_params['abund'] = [it_abund[:-1] + ', ' + tmp
-                                         for it_abund in
-                                         self.iter_params['abund']]
-            del self.syn_params['abund']
+#        # Gets all chemical elements asked to be fit
+#        abund = {key:val
+#                 for key, val in self.iter_params.iteritems()
+#                 if key in PERIODIC}
+#        for key in abund:
+#            del self.iter_params[key]
+#
+#        # Adds it back to the final dictionary
+#        if len(abund.keys()) == 1:
+#            elem = abund.keys()[0]
+#            self.iter_params['abund'] = {elem:abund[elem]}
+#        elif len(abund.keys()) > 1:
+#            self.iter_params['abund'] = [{k:v for k, v
+#                                          in zip(abund.keys(), itera)}
+#                                         for itera in iterator(*abund.values())]
+#
+#        # Adds fixed abundances if defined by user
+#        if ('abund' in self.syn_params) and ('abund' in self.iter_params):
+#            tmp = self.syn_params['abund'][1:]
+#            self.iter_params['abund'] = [it_abund[:-1] + ', ' + tmp
+#                                         for it_abund in
+#                                         self.iter_params['abund']]
+#            del self.syn_params['abund']
 
 
     def fit(self):
@@ -225,18 +224,29 @@ class Synfit:
         n_params = len(self.fit_keys)
 
         ######
-        # array to store the values of each parameter and the chisquare
-        mdtype = []
-        for key in self.fit_keys:
-            if type(self.iter_params[key][0]) is type(''):
-                mdtype.append((key, 'S14'))
-            else:
-                mdtype.append((key, type(self.iter_params[key][0])))
-        mdtype.append(('chisquare', float))
+        # Array to store the values of each parameter and the chisquare
 
-        shape = np.shape(self.iter_values)
+        ## Create an array of NaN
+        chisquare = np.empty([len(self.iter_values), 1])
+        chisquare.fill(np.nan)
 
-        self.chisq_values = np.ones(shape[0], dtype=mdtype)
+        ## Create the array with the iteration avlues + NaN for the chisquare
+
+        ### Remove the data type of the iter_values array.
+        ### this is necessary in order to add the chisquare array
+        #### Removes data type
+        tmp_array = self.iter_values.view((float, n_params))
+        #### Guarantee that the format will be correct for any number of
+        #### parameters
+        tmp_array = tmp_array.reshape(len(self.iter_values), -1)
+
+        ### Join the arrays
+        self.chisq_values = np.hstack((tmp_array, chisquare))
+
+        ### Set the data type for the chisq_values array
+        data_type = [(key, float) for key in self.fit_keys]
+        data_type.append(('chisquare', float))
+        self.chisq_values.dtype = data_type
         ######
 
         # Loop it!
@@ -244,11 +254,13 @@ class Synfit:
 
             # Creates a dic with the parameters and values to be fitted
             #in this loop
-            if n_params == 1:
-                # this case correspond when it is fitting only one parameter
-                params = {self.fit_keys[0]:it}
-            else:
-                params = {key:val for key, val in zip(self.fit_keys, it)}
+#            if n_params == 1:
+#                # this case correspond when it is fitting only one parameter
+#                single_param = self.fit_keys[0]
+#                params = {single_param:it[single_param]}
+#            else:
+#                params = {key:val for key, val in zip(self.fit_keys, it)}
+            params = {key:val for key, val in zip(self.fit_keys, it)}
 
 
             #make plot title before removing teff and logg
@@ -295,11 +307,11 @@ class Synfit:
             #chisq = chisq * max(fobs)                 #????
 
             # store the values of the parameters
-            if n_params == 1:
-                self.chisq_values[self.iter_params.keys()[0]][n] = it
-            else:
-                for j, value in enumerate(self.iter_params):
-                    self.chisq_values[value][n] = it[j]
+#            if n_params == 1:
+#                self.chisq_values[self.iter_params.keys()[0]][n] = it
+#            else:
+#                for j, value in enumerate(self.iter_params):
+#                    self.chisq_values[value][n] = it[j]
             self.chisq_values['chisquare'][n] = chisq
 
             # Plot, if desired
@@ -329,10 +341,10 @@ class Synfit:
                                         self.chisq_values['chisquare'])]
         #best_fit = list(fitted_vals[0])
 
-        self.best_fit = {param:fitted_value
+        self.best_fit = {param:fitted_value[param]
                            for param, fitted_value
                            in zip(self.iter_params.keys(), fitted_vals)}
-        self.best_fit['chisq'] = fitted_vals[-1]
+        self.best_fit['chisquare'] = fitted_vals['chisquare'][0]
 
 
     def best_plot(self, title=None):
@@ -351,7 +363,7 @@ class Synfit:
         # Set parameters for synplot
         synplot_params = self.syn_params.copy()
         best_fit = self.best_fit.copy()
-        chisq = best_fit.pop('chisq')
+        chisq = best_fit.pop('chisquare')
 
         #make plot title before removing teff and logg
         if title == 'default':
@@ -422,7 +434,7 @@ class Synfit:
                 elem = [param for param in self.fit_params.keys()
                         if param in PERIODIC][0]
 
-                chisq_values['abund'] = [elem_abund(abund, elem)
+                chisq_values['abund'] = [abund
                                          for abund in chisq_values['abund']]
 
             chisquare_arr = np.array([list(i)
