@@ -177,31 +177,6 @@ class Synfit:
                                 "with three values.")
 
 
-#        # Gets all chemical elements asked to be fit
-#        abund = {key:val
-#                 for key, val in self.iter_params.iteritems()
-#                 if key in PERIODIC}
-#        for key in abund:
-#            del self.iter_params[key]
-#
-#        # Adds it back to the final dictionary
-#        if len(abund.keys()) == 1:
-#            elem = abund.keys()[0]
-#            self.iter_params['abund'] = {elem:abund[elem]}
-#        elif len(abund.keys()) > 1:
-#            self.iter_params['abund'] = [{k:v for k, v
-#                                          in zip(abund.keys(), itera)}
-#                                         for itera in iterator(*abund.values())]
-#
-#        # Adds fixed abundances if defined by user
-#        if ('abund' in self.syn_params) and ('abund' in self.iter_params):
-#            tmp = self.syn_params['abund'][1:]
-#            self.iter_params['abund'] = [it_abund[:-1] + ', ' + tmp
-#                                         for it_abund in
-#                                         self.iter_params['abund']]
-#            del self.syn_params['abund']
-
-
     def fit(self):
         r"""
         Fit a spectral line by iterating on user defined parameter
@@ -246,12 +221,6 @@ class Synfit:
 
             # Creates a dic with the parameters and values to be fitted
             #in this loop
-#            if n_params == 1:
-#                # this case correspond when it is fitting only one parameter
-#                single_param = self.fit_keys[0]
-#                params = {single_param:it[single_param]}
-#            else:
-#                params = {key:val for key, val in zip(self.fit_keys, it)}
             params = {key:val for key, val in zip(self.fit_keys, it)}
 
 
@@ -313,11 +282,6 @@ class Synfit:
             #chisq = chisq * max(fobs)                 #????
 
             # store the values of the parameters
-#            if n_params == 1:
-#                self.chisq_values[self.iter_params.keys()[0]][n] = it
-#            else:
-#                for j, value in enumerate(self.iter_params):
-#                    self.chisq_values[value][n] = it[j]
             self.chisq_values['chisquare'][n] = chisq
 
             # Plot, if desired
