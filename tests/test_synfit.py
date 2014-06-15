@@ -8,7 +8,6 @@ import s4
 from s4.synthesis import Synplot
 from s4.fitting import Synfit
 from s4.fitting.synfit import iterator
-from s4.fitting.synfit import synplot_abund
 
 
 def test_sample_params_error():
@@ -22,13 +21,6 @@ def test_sample_params_error():
         fit = Synfit({'vrot':[10, 20, 2, 5]}, **params)
     except Exception:
         pass
-
-
-def test_synplot_abund():
-    """Test the `synplot_abund` function."""
-
-    assert synplot_abund({'Si':7.5}) == '[14, 14, 7.50]'
-    assert synplot_abund({'Si':7.5, 'O':8.5}) == '[8, 8, 8.50, 14, 14, 7.50]'
 
 
 def test_iterator():
