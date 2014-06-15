@@ -307,17 +307,17 @@ class Synfit:
         Merge varying and fixed parameters. It change the `abund` and
         `synplot_params` in place.
         """
-        ## The abundance should be merged individually because it could be
-        ## a mix of fixed and varying abundances.
+        # The abundance should be merged individually because it could be
+        # a mix of fixed and varying abundances.
         if abund and 'abund' in synplot_params:
-            # Check for overlapping elements.
-            ## Transform all elements to its symbol
+            ## Check for overlapping elements.
+            ### Transform all elements to its symbol
             for key, val in abund.copy().iteritems():
                 try:
                     abund[REVERSE_PERIODIC[key]] = val
                     del abund[key]
                 except KeyError:
-                    # The chemical element is already as a symbol
+                    #### The chemical element is already as a symbol
                     pass
 
             for key, val in synplot_params['abund'].copy().iteritems():
@@ -325,14 +325,14 @@ class Synfit:
                     synplot_params['abund'][REVERSE_PERIODIC[key]] = val
                     del synplot_params['abund'][key]
                 except KeyError:
-                    # The chemical element is already as a symbol
+                    #### The chemical element is already as a symbol
                     pass
 
             ## Get the fixed abundances
             try:
-                abund.update({key:val
-                              for key, val in synplot_params['abund']
-                              if key not in abund.copy()})
+                abund.update({k:v
+                              for k, v in synplot_params['abund'].iteritems()
+                              if k not in abund.copy()})
             except ValueError:
                 # There no fixed abundance
                 pass
