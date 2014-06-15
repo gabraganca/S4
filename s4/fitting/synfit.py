@@ -27,6 +27,8 @@ from ..spectools import rvcorr
 PERIODIC = json.load(open(os.path.dirname(__file__)+\
                           '/chemical_elements.json'))
 
+REVERSE_PERIODIC = {val:key for key, val in PERIODIC.iteritems()}
+
 def iterator(*args):
     """
     Create the iterator vector.
@@ -294,7 +296,7 @@ class Synfit:
             ## Gets all chemical elements asked to be fit
             abund = {key:it[key]
                      for key in it.dtype.names
-                     if key in PERIODIC}
+                     if (key in PERIODIC) or (key in REVERSE_PERIODIC)}
             if abund:
                 ## delete the chemical elements parameters from the dictionary
                 for key in abund:
@@ -305,7 +307,34 @@ class Synfit:
             ## The abundance should be merged individually because it could be
             ## a mix of fixed and varying abundances.
             if abund and 'abund' in synplot_params:
-                synplot_params['abund'].update(abund)
+                # Check for overlapping elements.
+                ## Transform all elements to its symbol
+                for key, val in abund.copy().iteritems():
+                    try:
+                        abund[REVERSE_PERIODIC[key]] = val
+                        del abund[key]
+                    except KeyError:
+                        # The chemical element is already as a symbol
+                        pass
+
+                for key, val in synplot_params['abund'].copy().iteritems():
+                    try:
+                        synplot_params['abund'][REVERSE_PERIODIC[key]] = val
+                        del synplot_params['abund'][key]
+                    except KeyError:
+                        # The chemical element is already as a symbol
+                        pass
+
+                ## Get the fixed abundances
+                try:
+                    abund.update({key:val
+                                  for key, val in synplot_params['abund']
+                                  if key not in abund.copy()})
+                except ValueError:
+                    # There no fixed abundance
+                    pass
+
+                params['abund'] = abund
             if abund and 'abund' not in synplot_params:
                 params['abund'] = abund
 
@@ -415,7 +444,7 @@ class Synfit:
         ## Gets all chemical elements asked to be fit
         abund = {key:val
                  for key, val in self.best_fit.iteritems()
-                 if key in PERIODIC}
+                 if (key in PERIODIC) or (key in REVERSE_PERIODIC)}
         if abund:
             for key in abund:
                 del best_fit[key]
@@ -423,7 +452,35 @@ class Synfit:
         ## The abundance should be merged individually because it could be
         ## a mix of fixed and varying abundances.
         if abund and 'abund' in synplot_params:
-            synplot_params['abund'].update(abund)
+            # Check for overlapping elements.
+            ## Transform all elements to its symbol
+            for key, val in abund.copy().iteritems():
+                try:
+                    abund[REVERSE_PERIODIC[key]] = val
+                    del abund[key]
+                except KeyError:
+                    # The chemical element is already as a symbol
+                    pass
+
+            for key, val in synplot_params['abund'].copy().iteritems():
+                try:
+                    synplot_params['abund'][REVERSE_PERIODIC[key]] = val
+                    del synplot_params['abund'][key]
+                except KeyError:
+                    # The chemical element is already as a symbol
+                    pass
+
+            ## Get the fixed abundances
+            try:
+                abund.update({key:val
+                              for key, val in synplot_params['abund']
+                              if key not in abund.copy()})
+            except ValueError:
+                # There no fixed abundance
+                pass
+
+            ## Adds to the synplot_params dictionary
+            synplot_params['abund'] = abund
         if abund and 'abund' not in synplot_params:
             synplot_params['abund'] = abund
 
