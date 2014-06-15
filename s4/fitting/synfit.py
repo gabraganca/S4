@@ -304,41 +304,10 @@ class Synfit:
 
             # Set parameters for synplot
             synplot_params = self.syn_params.copy()
-            ## The abundance should be merged individually because it could be
-            ## a mix of fixed and varying abundances.
-            if abund and 'abund' in synplot_params:
-                # Check for overlapping elements.
-                ## Transform all elements to its symbol
-                for key, val in abund.copy().iteritems():
-                    try:
-                        abund[REVERSE_PERIODIC[key]] = val
-                        del abund[key]
-                    except KeyError:
-                        # The chemical element is already as a symbol
-                        pass
-
-                for key, val in synplot_params['abund'].copy().iteritems():
-                    try:
-                        synplot_params['abund'][REVERSE_PERIODIC[key]] = val
-                        del synplot_params['abund'][key]
-                    except KeyError:
-                        # The chemical element is already as a symbol
-                        pass
-
-                ## Get the fixed abundances
-                try:
-                    abund.update({key:val
-                                  for key, val in synplot_params['abund']
-                                  if key not in abund.copy()})
-                except ValueError:
-                    # There no fixed abundance
-                    pass
-
-                params['abund'] = abund
-            if abund and 'abund' not in synplot_params:
-                params['abund'] = abund
-
             synplot_params.update(params)
+
+            # Deal with fixed and varying abundances
+            self.merge_abundances(abund, synplot_params)
 
             # Synthesize spectrum
             self.synthesis = Synplot(self.teff, self.logg, self.synplot_path,
@@ -390,6 +359,47 @@ class Synfit:
 
         # Find the best value
         self.find_best_fit()
+
+
+    def merge_abundances(self, abund, synplot_params):
+        """
+        Merge varying and fixed parameters. It change the `abund` and
+        `synplot_params` in place.
+        """
+        ## The abundance should be merged individually because it could be
+        ## a mix of fixed and varying abundances.
+        if abund and 'abund' in synplot_params:
+            # Check for overlapping elements.
+            ## Transform all elements to its symbol
+            for key, val in abund.copy().iteritems():
+                try:
+                    abund[REVERSE_PERIODIC[key]] = val
+                    del abund[key]
+                except KeyError:
+                    # The chemical element is already as a symbol
+                    pass
+
+            for key, val in synplot_params['abund'].copy().iteritems():
+                try:
+                    synplot_params['abund'][REVERSE_PERIODIC[key]] = val
+                    del synplot_params['abund'][key]
+                except KeyError:
+                    # The chemical element is already as a symbol
+                    pass
+
+            ## Get the fixed abundances
+            try:
+                abund.update({key:val
+                              for key, val in synplot_params['abund']
+                              if key not in abund.copy()})
+            except ValueError:
+                # There no fixed abundance
+                pass
+
+            ## Adds to the synplot_params dictionary
+            synplot_params['abund'] = abund
+        if abund and 'abund' not in synplot_params:
+            synplot_params['abund'] = abund
 
 
     def find_best_fit(self):
@@ -449,40 +459,8 @@ class Synfit:
             for key in abund:
                 del best_fit[key]
 
-        ## The abundance should be merged individually because it could be
-        ## a mix of fixed and varying abundances.
-        if abund and 'abund' in synplot_params:
-            # Check for overlapping elements.
-            ## Transform all elements to its symbol
-            for key, val in abund.copy().iteritems():
-                try:
-                    abund[REVERSE_PERIODIC[key]] = val
-                    del abund[key]
-                except KeyError:
-                    # The chemical element is already as a symbol
-                    pass
-
-            for key, val in synplot_params['abund'].copy().iteritems():
-                try:
-                    synplot_params['abund'][REVERSE_PERIODIC[key]] = val
-                    del synplot_params['abund'][key]
-                except KeyError:
-                    # The chemical element is already as a symbol
-                    pass
-
-            ## Get the fixed abundances
-            try:
-                abund.update({key:val
-                              for key, val in synplot_params['abund']
-                              if key not in abund.copy()})
-            except ValueError:
-                # There no fixed abundance
-                pass
-
-            ## Adds to the synplot_params dictionary
-            synplot_params['abund'] = abund
-        if abund and 'abund' not in synplot_params:
-            synplot_params['abund'] = abund
+        # Deal with fixed and varying abundances
+        self.merge_abundances(abund, synplot_params)
 
         # Add the best values found to the Synplot parameters
         for key, value in best_fit.iteritems():
