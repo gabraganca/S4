@@ -59,7 +59,6 @@ DOWNLOAD_URL = 'http://github.com/gabraganca/S4'
 LICENSE = 'BSD'
 SCRIPTS = ["s4/GUI/sagui", 'scripts/sensi_line']
 
-import s4
 
 setup(name=NAME,
       version=VERSION,
