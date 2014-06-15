@@ -7,7 +7,6 @@ import numpy as np
 import s4
 from s4.synthesis import Synplot
 from s4.fitting import Synfit
-from s4.fitting.synfit import iterator
 
 
 def test_sample_params_error():
@@ -21,21 +20,6 @@ def test_sample_params_error():
         fit = Synfit({'vrot':[10, 20, 2, 5]}, **params)
     except Exception:
         pass
-
-
-def test_iterator():
-    """Test the iterator function."""
-
-    # One argument
-    itera = iterator(np.arange(0, 10, 2))
-
-    assert np.all([i == j for i, j in zip(itera, np.arange(0, 10, 2))])
-
-    # Two arguments
-    itera = iterator(np.arange(0, 10, 5), np.arange(20, 15, -3))
-
-    assert np.all([i == j for i, j in zip(itera, [(0, 20), (0, 17), (5, 20),
-                                                  (5, 17)])])
 
 
 def test_synfit_one():
