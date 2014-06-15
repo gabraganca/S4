@@ -74,7 +74,11 @@ class Synplot_abund():
 
     """
     def  __init__(self, abundance):
-        self.abundance = abundance
+        try:
+            self.abundance = abundance.copy()
+        except AttributeError:
+            # abundance is not a dictionary
+            self.abundance = abundance
 
 
     def to_synplot(self):
