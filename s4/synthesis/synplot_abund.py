@@ -35,7 +35,7 @@ import numpy as np
 
 
 # Loads the chemical elements and their atomic numbers
-PERIODIC = json.load(open(os.path.dirname(__file__)+\
+PERIODIC = json.load(open(os.getenv('HOME')+'/.s4/extra_resc'+\
                           '/chemical_elements.json'))
 
 
