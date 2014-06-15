@@ -81,7 +81,7 @@ setup(name=NAME,
                 's4'],
       data_files=[(path+'/synthesis/atdata', atdata),
                   (path+'/synthesis/bstar2006', bstar2006),
-                  (path+'/synthesis/synplot', synplot)],
+                  (path+'/synthesis/synplot', synplot),
                   (path+'/synthesis/synplot', synplot),
                   (path+'/extra_resc', extra_resc)],
       classifiers=[
