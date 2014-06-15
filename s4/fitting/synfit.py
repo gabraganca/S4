@@ -74,6 +74,19 @@ class Synfit:
         All Synplot parameters desired to be use, including `teff`,
         `logg`, `synplot_path`, `idl`, `noplot`.
 
+        abund: dic (optional);
+            Abundance of chosen chemical elements.
+
+            Should be passsed as a dictionary which the keys are the chemical
+            element symbol or atomic number i(can be mixed) and the values are
+            the abundance, e.g, for Helium and Oxygen abundance of 10.93 and
+            8.69, respectively:
+
+            {2:10.93, 'O':8.69}
+
+
+            ATTENTION: it does not accept the Synplot format.
+
         windows: list (optional);
             Spectral region in which the chi-sqaure will be calculated. At
             this point, it only accept a single window, i.e., the list should
@@ -283,13 +296,19 @@ class Synfit:
                      for key in it.dtype.names
                      if key in PERIODIC}
             if abund:
-                params['abund'] = abund
                 ## delete the chemical elements parameters from the dictionary
-                for key in params['abund']:
+                for key in abund:
                     del params[key]
 
             # Set parameters for synplot
             synplot_params = self.syn_params.copy()
+            ## The abundance should be merged individually because it could be
+            ## a mix of fixed and varying abundances.
+            if abund and 'abund' in synplot_params:
+                synplot_params['abund'].update(abund)
+            if abund and 'abund' not in synplot_params:
+                params['abund'] = abund
+
             synplot_params.update(params)
 
             # Synthesize spectrum
@@ -390,8 +409,6 @@ class Synfit:
         if 'logg' in best_fit:
             self.logg = best_fit.pop('logg')
 
-        for key, value in best_fit.iteritems():
-            synplot_params[key] = value
 
         # Join the abundances
 
@@ -400,9 +417,20 @@ class Synfit:
                  for key, val in self.best_fit.iteritems()
                  if key in PERIODIC}
         if abund:
+            for key in abund:
+                del best_fit[key]
+
+        ## The abundance should be merged individually because it could be
+        ## a mix of fixed and varying abundances.
+        if abund and 'abund' in synplot_params:
+            synplot_params['abund'].update(abund)
+        if abund and 'abund' not in synplot_params:
             synplot_params['abund'] = abund
-            for key in synplot_params['abund']:
-                del synplot_params[key]
+
+        # Add the best values found to the Synplot parameters
+        for key, value in best_fit.iteritems():
+            synplot_params[key] = value
+
 
         # Synthesize spectrum
         synthesis = Synplot(self.teff, self.logg, self.synplot_path,
