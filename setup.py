@@ -39,7 +39,7 @@ if glob('s4/synthesis/synplot/synspec49') == []:
 atdata = glob('s4/synthesis/atdata/*')
 bstar2006 = glob('s4/synthesis/bstar2006/*')
 synplot = glob('s4/synthesis/synplot/*')
-extra_resc = glob('extra_resc')
+extra_resc = glob('extra_resc/*')
 #path to data_files
 home = os.getenv('HOME')
 path = home+'/.s4'
