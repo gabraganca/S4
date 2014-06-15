@@ -350,11 +350,11 @@ class Synfit:
         """
         fitted_vals = self.chisq_values[np.argmin(
                                         self.chisq_values['chisquare'])]
-        #best_fit = list(fitted_vals[0])
 
-        self.best_fit = {param:fitted_value[param]
+        self.best_fit = {param:fitted_value
                            for param, fitted_value
-                           in zip(self.iter_params.keys(), fitted_vals)}
+                           in zip(self.iter_params.keys(),
+                                  fitted_vals.view(float))}
         self.best_fit['chisquare'] = fitted_vals['chisquare'][0]
 
 
