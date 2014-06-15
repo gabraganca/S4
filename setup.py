@@ -39,6 +39,7 @@ if glob('s4/synthesis/synplot/synspec49') == []:
 atdata = glob('s4/synthesis/atdata/*')
 bstar2006 = glob('s4/synthesis/bstar2006/*')
 synplot = glob('s4/synthesis/synplot/*')
+extra_resc = glob('extra_resc/*')
 #path to data_files
 home = os.getenv('HOME')
 path = home+'/.s4'
@@ -58,7 +59,6 @@ DOWNLOAD_URL = 'http://github.com/gabraganca/S4'
 LICENSE = 'BSD'
 SCRIPTS = ["s4/GUI/sagui", 'scripts/sensi_line']
 
-import s4
 
 class PyTest(Command):
     # Class for test purposes
@@ -95,7 +95,8 @@ setup(name=NAME,
                 's4'],
       data_files=[(path+'/synthesis/atdata', atdata),
                   (path+'/synthesis/bstar2006', bstar2006),
-                  (path+'/synthesis/synplot', synplot)],
+                  (path+'/synthesis/synplot', synplot),
+                  (path+'/extra_resc', extra_resc)],
       classifiers=[
         'Development Status :: Alpha',
         'Environment :: Console',
