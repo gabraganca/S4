@@ -152,15 +152,15 @@ class Synfit:
         """
 
         #Test if the parameter were given properly.
-        for key in self.fit_params:
+        for key, val in self.fit_params.iteritems():
             # Test if the parameters were inserted correctly.
             try:
-                assert len(self.fit_params[key]) == 3
+                assert len(val) == 3
 
-                min_value = float(self.fit_params[key][0])
-                max_value = float(self.fit_params[key][1])
+                min_value = float(val[0])
+                max_value = float(val[1])
 
-                step = float(self.fit_params[key][2])
+                step = float(val[2])
                 n_values = np.rint((max_value - min_value)/step + 1)
                 vector = np.linspace(min_value, max_value, n_values)
 
