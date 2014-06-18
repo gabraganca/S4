@@ -29,6 +29,35 @@ PERIODIC = json.load(open(os.getenv('HOME')+'/.s4/extra_resc'+\
 
 REVERSE_PERIODIC = {val:key for key, val in PERIODIC.iteritems()}
 
+def iterator(fit_keys, iter_params):
+    """
+    Create an array with the values to iterate.
+
+    Parameters
+    ----------
+
+    fit_keys: dict;
+        A dictionary containing the name of the parameters,
+
+    fit_params: dict;
+        A dictionary containing the parameters as keys and the values to be
+        fitted.
+
+    Returns
+    -------
+
+    iter_values: numpy.ndarray;
+        The values to be fitted as a structured array
+    """
+    # Create the iterator vector.
+    args = [iter_params[k] for k in fit_keys]
+    iter_values = list(product(*args))
+
+    ## add the iterrating values to self as a numpy array
+    data_type = [(key, float) for key in fit_keys]
+
+    return np.array(iter_values, dtype=data_type)
+
 
 class Synfit:
     """
@@ -181,17 +210,6 @@ class Synfit:
         self.fit_keys = self.iter_params.keys()
 
 
-    def iterator(self):
-        """Create an array with the values to iterate. """
-        # Create the iterator vector.
-        args = [self.iter_params[k] for k in self.fit_keys]
-        iter_values = list(product(*args))
-
-        ## add the iterrating values to self as a numpy array
-        data_type = [(key, float) for key in self.fit_keys]
-        self.iter_values = np.array(iter_values, dtype=data_type)
-
-
     def fit(self):
         r"""
         Fit a spectral line by iterating on user defined parameter
@@ -205,7 +223,7 @@ class Synfit:
         self.sample_params()
 
         # Create iterator.
-        self.iterator()
+        iter_values = iterator(self.fit_keys, self.iter_params)
 
         #Obtain the number of varying params
         n_params = len(self.fit_keys)
@@ -214,7 +232,7 @@ class Synfit:
         # Array to store the values of each parameter and the chisquare
 
         ## Create an array of NaN
-        chisquare = np.empty([len(self.iter_values), 1])
+        chisquare = np.empty([len(iter_values), 1])
         chisquare.fill(np.nan)
 
         ## Create the array with the iteration avlues + NaN for the chisquare
@@ -222,10 +240,10 @@ class Synfit:
         ### Remove the data type of the iter_values array.
         ### this is necessary in order to add the chisquare array
         #### Removes data type
-        tmp_array = self.iter_values.view((float, n_params))
+        tmp_array = iter_values.view((float, n_params))
         #### Guarantee that the format will be correct for any number of
         #### parameters
-        tmp_array = tmp_array.reshape(len(self.iter_values), -1)
+        tmp_array = tmp_array.reshape(len(iter_values), -1)
 
         ### Join the arrays
         self.chisq_values = np.hstack((tmp_array, chisquare))
@@ -237,7 +255,7 @@ class Synfit:
         ######
 
         # Loop it!
-        for n, it in enumerate(self.iter_values):
+        for n, it in enumerate(iter_values):
             self.iteration(n, it)
 
         # Find the best value
