@@ -78,13 +78,9 @@ class Synfit:
         self.syn_params = kwargs.copy()
         ##########
 
-        # Creates the values in which each parameter will be fitted
-        self.iter_params = {}
-        self.fit_keys = {}
-        self.sample_params()
-
-        # Create iterator.
-        self.iterator()
+        # Initalizaze varibales.
+        self.iter_params = None
+        self.fit_keys = None
 
         # Check for radial velocity
         if 'rv' in self.syn_params:
@@ -151,6 +147,7 @@ class Synfit:
         the chemical elements to a parameter accepted by `Synplot`.
         """
 
+        self.iter_params = {}
         #Test if the parameter were given properly.
         for key, val in self.fit_params.iteritems():
             # Test if the parameters were inserted correctly.
@@ -193,6 +190,11 @@ class Synfit:
         Based on the homonym IDL software created by Dr. Ivan
         Hubeny.
         """
+        # Creates the values in which each parameter will be fitted
+        self.sample_params()
+
+        # Create iterator.
+        self.iterator()
 
         #Obtain the number of varying params
         n_params = len(self.fit_keys)
