@@ -146,25 +146,36 @@ class Synfit:
         Creates the values to fit for each parameter. It also merge
         the chemical elements to a parameter accepted by `Synplot`.
         """
+        def values_to_fit(key, val):
+            """
+            Creates the values to fit from a three-value list.
 
-        self.iter_params = {}
-        #Test if the parameter were given properly.
-        for key, val in self.fit_params.iteritems():
-            # Test if the parameters were inserted correctly.
+            Parameters
+            ----------
+
+            key: string
+                Parameter to be fitted.
+
+            val: list;
+                List with initial value, final value and the step.
+            """
             try:
+            # Test if the parameters were inserted correctly.
                 assert len(val) == 3
 
-                min_value = float(val[0])
-                max_value = float(val[1])
+                min_value, max_value, step = [float(i) for i in val]
 
-                step = float(val[2])
                 n_values = np.rint((max_value - min_value)/step + 1)
                 vector = np.linspace(min_value, max_value, n_values)
 
-                self.iter_params[key] = vector
-            except:
-                raise Exception("Value of '{}' must be a list ".format(key)+\
-                                "with three values.")
+                return vector
+            except :
+                raise Exception("Value of '{}' must be a ".format(key)+\
+                                "list with three values.")
+
+
+        self.iter_params = {key:values_to_fit(key, val)
+                            for key, val in self.fit_params.iteritems()}
 
         # Get the name of the parameters to be fitted
         self.fit_keys = self.iter_params.keys()
