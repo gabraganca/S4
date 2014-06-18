@@ -80,18 +80,11 @@ class Synfit:
 
         # Creates the values in which each parameter will be fitted
         self.iter_params = {}
+        self.fit_keys = {}
         self.sample_params()
 
-        # Get the name of the parameters to be fitted
-        self.fit_keys = self.iter_params.keys()
-
-        # Create the iterator vector.
-        args = [self.iter_params[k] for k in self.fit_keys]
-        iter_values = list(product(*args))
-
-        ## add the iterrating values to self as a numpy array
-        data_type = [(key, float) for key in self.fit_keys]
-        self.iter_values = np.array(iter_values, dtype=data_type)
+        # Create iterator.
+        self.iterator()
 
         # Check for radial velocity
         if 'rv' in self.syn_params:
@@ -175,6 +168,20 @@ class Synfit:
             except:
                 raise Exception("Value of '{}' must be a list ".format(key)+\
                                 "with three values.")
+
+        # Get the name of the parameters to be fitted
+        self.fit_keys = self.iter_params.keys()
+
+
+    def iterator(self):
+        """Create an array with the values to iterate. """
+        # Create the iterator vector.
+        args = [self.iter_params[k] for k in self.fit_keys]
+        iter_values = list(product(*args))
+
+        ## add the iterrating values to self as a numpy array
+        data_type = [(key, float) for key in self.fit_keys]
+        self.iter_values = np.array(iter_values, dtype=data_type)
 
 
     def fit(self):
