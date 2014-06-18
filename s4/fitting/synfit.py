@@ -238,88 +238,92 @@ class Synfit:
 
         # Loop it!
         for n, it in enumerate(self.iter_values):
-
-            # Creates a dic with the parameters and values to be fitted
-            #in this loop
-            params = {key:val for key, val in zip(self.fit_keys, it)}
-
-
-            #make plot title before removing teff and logg
-            if self.noplot == False:
-                plot_title = ', '.join(['{}={}'.format(key, val)
-                                        for key, val in params.iteritems()])
-
-            # Check if teff and logg were selected to be fitted.
-            # If yes, set a variable to them.
-            if 'teff' in params:
-                self.teff = params.pop('teff')
-
-            if 'logg' in params:
-                self.logg = params.pop('logg')
-
-            # Join the abundances
-
-            ## Gets all chemical elements asked to be fit
-            abund = {key:it[key]
-                     for key in it.dtype.names
-                     if (key in PERIODIC) or (key in REVERSE_PERIODIC)}
-            if abund:
-                ## delete the chemical elements parameters from the dictionary
-                for key in abund:
-                    del params[key]
-
-            # Set parameters for synplot
-            synplot_params = self.syn_params.copy()
-            synplot_params.update(params)
-
-            # Deal with fixed and varying abundances
-            self.merge_abundances(abund, synplot_params)
-
-            # Synthesize spectrum
-            self.synthesis = Synplot(self.teff, self.logg, self.synplot_path,
-                                     self.idl, **synplot_params)
-
-            self.synthesis.run()
-
-            # Apply scale and radial velocity if needed
-            if 'scale' in self.synthesis.parameters:
-                self.synthesis.apply_scale()
-
-            self.synthesis.observation[:, 0] *= rvcorr(self.rad_vel)
-
-            #Do an interpolation
-
-            flm = np.interp(self.synthesis.observation[:,0],
-                            self.synthesis.spectrum[:,0],
-                            self.synthesis.spectrum[:,1])
-                            #/max(syn.observation[:,1])
-
-            #Some kind of normalization on the observed flux?
-            fobm = self.synthesis.observation[:,1]#/max(syn.observation[:,1])
-
-            # Calculate the chi**2
-            chisq = np.sum(((fobm - flm)**2/flm) * self.weights)
-            #chisq = chisq * max(fobs)                 #????
-
-            # store the values of the parameters
-            self.chisq_values['chisquare'][n] = chisq
-
-            # Plot, if desired
-            if self.noplot == False:
-                # The synthetic spectrum was corrected by scale and the
-                #observed one by radial velocity. The plot function in Synplot
-                #also does that, so we need to set those parameters to 1 and 0,
-                # respectively.
-                self.synthesis.parameters['scale'] = 1
-                self.synthesis.parameters['rv'] = 0
-
-                # Adds the value of chisquare to the title
-                plot_title += r'$\chi^2$='+'{:.06f}'.format(chisq)
-                self.synthesis.plot(title=plot_title, windows=self.windows)
-
+            self.iteration(n, it)
 
         # Find the best value
         self.find_best_fit()
+
+
+    def iteration(self, n, it):
+        """Code to be iterated on a loop."""
+
+        # Creates a dic with the parameters and values to be fitted
+        #in this loop
+        params = {key:val for key, val in zip(self.fit_keys, it)}
+
+
+        #make plot title before removing teff and logg
+        if self.noplot == False:
+            plot_title = ', '.join(['{}={}'.format(key, val)
+                                    for key, val in params.iteritems()])
+
+        # Check if teff and logg were selected to be fitted.
+        # If yes, set a variable to them.
+        if 'teff' in params:
+            self.teff = params.pop('teff')
+
+        if 'logg' in params:
+            self.logg = params.pop('logg')
+
+        # Join the abundances
+
+        ## Gets all chemical elements asked to be fit
+        abund = {key:it[key]
+                 for key in it.dtype.names
+                 if (key in PERIODIC) or (key in REVERSE_PERIODIC)}
+        if abund:
+            ## delete the chemical elements parameters from the dictionary
+            for key in abund:
+                del params[key]
+
+        # Set parameters for synplot
+        synplot_params = self.syn_params.copy()
+        synplot_params.update(params)
+
+        # Deal with fixed and varying abundances
+        self.merge_abundances(abund, synplot_params)
+
+        # Synthesize spectrum
+        self.synthesis = Synplot(self.teff, self.logg, self.synplot_path,
+                                 self.idl, **synplot_params)
+
+        self.synthesis.run()
+
+        # Apply scale and radial velocity if needed
+        if 'scale' in self.synthesis.parameters:
+            self.synthesis.apply_scale()
+
+        self.synthesis.observation[:, 0] *= rvcorr(self.rad_vel)
+
+        #Do an interpolation
+
+        flm = np.interp(self.synthesis.observation[:,0],
+                        self.synthesis.spectrum[:,0],
+                        self.synthesis.spectrum[:,1])
+                        #/max(syn.observation[:,1])
+
+        #Some kind of normalization on the observed flux?
+        fobm = self.synthesis.observation[:,1]#/max(syn.observation[:,1])
+
+        # Calculate the chi**2
+        chisq = np.sum(((fobm - flm)**2/flm) * self.weights)
+        #chisq = chisq * max(fobs)                 #????
+
+        # store the values of the parameters
+        self.chisq_values['chisquare'][n] = chisq
+
+        # Plot, if desired
+        if self.noplot == False:
+            # The synthetic spectrum was corrected by scale and the
+            #observed one by radial velocity. The plot function in Synplot
+            #also does that, so we need to set those parameters to 1 and 0,
+            # respectively.
+            self.synthesis.parameters['scale'] = 1
+            self.synthesis.parameters['rv'] = 0
+
+            # Adds the value of chisquare to the title
+            plot_title += r'$\chi^2$='+'{:.06f}'.format(chisq)
+            self.synthesis.plot(title=plot_title, windows=self.windows)
 
 
     def merge_abundances(self, abund, synplot_params):
