@@ -311,7 +311,7 @@ class Synfit:
 
         # Creates a dic with the parameters and values to be fitted
         #in this loop
-        params = {key:val for key, val in zip(self.fit_keys, it)}
+        params = {key:val for key, val in zip(it.dtype.names, it)}
 
 
         #make plot title before removing teff and logg
