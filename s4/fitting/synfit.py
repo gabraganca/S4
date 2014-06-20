@@ -16,6 +16,7 @@ It is also possible to select a subregion of the spectrum by using the
 import os
 import re
 import json
+import shutil
 from copy import deepcopy
 import numpy as np
 import matplotlib.pyplot as plt
@@ -255,12 +256,54 @@ class Synfit:
         self.chisq_values.dtype = data_type
         ######
 
+        # Create a library of unconvolved spectra
+        self.build_library()
+
         # Loop it!
         for n, it in enumerate(iter_values):
             self.iteration(n, it)
 
         # Find the best value
         self.find_best_fit()
+
+
+    def build_library(self):
+        """Build library of unconvolved spectra"""
+        if 'synplot_path' not in self.syn_params:
+            spath = os.getenv('HOME')+'/.s4/synthesis/synplot/'
+        else:
+            spath = self.syn_params['synplot_path']
+
+
+        # Get the keys unrelated to rotation (i.e. not in ['vrot', 'vmac_rt'])
+        no_rot_keys = [key
+                       for key in self.fit_keys
+                       if key not in ['vrot', 'vmac_rt']]
+
+        # Creates the iteration values
+        try:
+            no_rot_values = iterator(no_rot_keys, self.iter_params)
+        except TypeError:
+            ## There is only 'vrot' or/and 'vmac_rt'.
+            ## Creates only one spectrum
+
+            ### Set parameters for synplot
+            synplot_params = deepcopy(self.syn_params)
+            ### Set values of rotation to 0
+            for key in self.fit_keys:
+                synplot_params[key] = 0
+
+            ### Synthesize spectrum
+            synthesis = Synplot(self.teff, self.logg, self.synplot_path,
+                                self.idl, **synplot_params)
+
+            synthesis.run()
+
+            ### Backup fort.7 and fort.17
+            shutil.move('{}fort.7'.format(spath),
+                        '/tmp/synfit.7')
+            shutil.move('{}fort.17'.format(spath),
+                        '/tmp/synfit.17')
 
 
     def iteration(self, n, it):
