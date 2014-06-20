@@ -81,6 +81,9 @@ class Synplot:
             else:
                 raise IOError("File '{}' does not exist.".format(abspath))
 
+        # Initizalize variable 'spectrum'
+        self.spectrum = None
+
 
     #=========================================================================
     #
@@ -133,7 +136,8 @@ class Synplot:
 
         #load synthetized spectra
         try:
-            self.spectrum = np.loadtxt(self.spath + 'fort.11')
+            self.spectrum = specio.loadtxt_fast(self.spath + 'fort.11',
+                                                np.float)
         except IOError:
             raise IOError('Calculated spectrum is not available. Check if ' +
                 'syn(spec|plot) ran correctly.')
