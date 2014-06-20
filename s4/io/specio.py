@@ -38,7 +38,7 @@ def loadtxt_fast(filename, dtype=np.int, skiprows=0, delimiter=' '):
                 next(infile)
             skip = 0
             for line in infile:
-                line = line.rstrip().split(delimiter)
+                line = line.strip().split(delimiter)
                 for item in line:
                     yield dtype(item)
             loadtxt_fast.rowlength = len(line)
