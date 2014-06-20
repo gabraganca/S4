@@ -16,6 +16,7 @@ It is also possible to select a subregion of the spectrum by using the
 import os
 import re
 import json
+from copy import deepcopy
 import numpy as np
 import matplotlib.pyplot as plt
 from itertools import product
@@ -102,9 +103,9 @@ class Synfit:
 
     def __init__(self, fit_params, **kwargs):
         # Parameters to be fitted
-        self.fit_params = fit_params.copy()
+        self.fit_params = deepcopy(fit_params)
         # Fixed parameters
-        self.syn_params = kwargs.copy()
+        self.syn_params = deepcopy(kwargs)
         ##########
 
         # Initalizaze varibales.
@@ -295,7 +296,7 @@ class Synfit:
                 del params[key]
 
         # Set parameters for synplot
-        synplot_params = self.syn_params.copy()
+        synplot_params = deepcopy(self.syn_params)
         synplot_params.update(params)
 
         # Deal with fixed and varying abundances
@@ -354,7 +355,7 @@ class Synfit:
         if abund and 'abund' in synplot_params:
             ## Check for overlapping elements.
             ### Transform all elements to its symbol
-            for key, val in abund.copy().iteritems():
+            for key, val in deepcopy(abund).iteritems():
                 try:
                     abund[REVERSE_PERIODIC[key]] = val
                     del abund[key]
@@ -362,7 +363,7 @@ class Synfit:
                     #### The chemical element is already as a symbol
                     pass
 
-            for key, val in synplot_params['abund'].copy().iteritems():
+            for key, val in deepcopy(synplot_params['abund']).iteritems():
                 try:
                     synplot_params['abund'][REVERSE_PERIODIC[key]] = val
                     del synplot_params['abund'][key]
@@ -374,7 +375,7 @@ class Synfit:
             try:
                 abund.update({k:v
                               for k, v in synplot_params['abund'].iteritems()
-                              if k not in abund.copy()})
+                              if k not in deepcopy(abund)})
             except ValueError:
                 # There no fixed abundance
                 pass
@@ -414,8 +415,8 @@ class Synfit:
         """
 
         # Set parameters for synplot
-        synplot_params = self.syn_params.copy()
-        best_fit = self.best_fit.copy()
+        synplot_params = deepcopy(self.syn_params)
+        best_fit = deepcopy(self.best_fit)
         chisq = best_fit.pop('chisquare')
 
         #make plot title before removing teff and logg
@@ -494,7 +495,7 @@ class Synfit:
 
             # Transform the chisquare array in a proper array
             #and not an array of tuples
-            chisq_values = self.chisq_values.copy()
+            chisq_values = deepcopy(self.chisq_values)
 
             ## Check for abundance
             if 'abund' in self.chisq_values.dtype.names:
