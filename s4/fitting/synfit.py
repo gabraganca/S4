@@ -388,7 +388,8 @@ class Synfit:
             self.synthesis.plot(title=plot_title, windows=self.windows)
 
 
-    def merge_abundances(self, abund, synplot_params):
+    @staticmethod
+    def merge_abundances(abund, synplot_params):
         """
         Merge varying and fixed parameters. It change the `abund` and
         `synplot_params` in place.
