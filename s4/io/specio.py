@@ -6,6 +6,47 @@ import numpy as np
 from astropy.io import fits as pyfits
 
 
+def loadtxt_fast(filename, dtype=np.int, skiprows=0, delimiter=' '):
+    """
+    Function to load text files. Faster than numpy.loadtxt
+
+    Obtained from http://cyrille.rossant.net/numpy-performance-tricks/
+
+    Parameters
+    ----------
+
+    filename: str;
+        Name of the file to be loaded.
+
+    dtype: dtype;
+        Data type.
+
+    skiprows: int (optional);
+        Number of rows to skip. The default is 0.
+
+    delimiter: str (optional);
+        The delimiter. The default is ' '.
+
+    Returns
+    -------
+
+    A numpy.ndarray with the data.
+    """
+    def iter_func():
+        with open(filename, 'r') as infile:
+            for _ in range(skiprows):
+                next(infile)
+            skip = 0
+            for line in infile:
+                line = line.rstrip().split(delimiter)
+                for item in line:
+                    yield dtype(item)
+            loadtxt_fast.rowlength = len(line)
+    data = np.fromiter(iter_func(), dtype=dtype)
+    data = data.reshape((-1, loadtxt_fast.rowlength))
+    return data
+
+
 def get_wstart(ref, wave_ref, wave_per_pixel):
     """
     Obtain the starting wavelength of a spectrum.
@@ -97,4 +138,4 @@ def load_spectrum(fname):
 
         return np.dstack((wave, flux))[0]
     else:
-        return np.loadtxt(fname)
+        return loadtxt_fast(fname, np.float)
