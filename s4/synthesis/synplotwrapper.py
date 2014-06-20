@@ -302,5 +302,5 @@ class Synplot:
         Check if spectrum was already calculated. If not, calculate it.
         """
 
-        if not hasattr(self, 'spectrum'):
+        if isinstance(self.spectrum, type(None)):
             self.run()
