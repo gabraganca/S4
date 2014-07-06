@@ -286,7 +286,55 @@ class Synfit:
         if len(self.no_rot_keys) > 0 and len(self.rot_keys) > 0:
             # Build library for non rotation parameters with vsini=vmac_rt=0
             no_rot_values = iterator(self.no_rot_keys, self.iter_params)
-            raise NotImplementedError
+            for n, it in enumerate(no_rot_values):
+                ## Creates a dic with the parameters and values to be fitted
+                ## in this loop
+                params = {key:val for key, val in zip(it.dtype.names, it)}
+
+                ## Set vsini=vmac_rt=0
+                params['vrot'] = 0
+                params['vmac_rt'] = 0
+
+                ## Check if teff and logg were selected to be fitted.
+                ## If yes, set a variable to them.
+                if 'teff' in params:
+                    self.teff = params.pop('teff')
+
+                if 'logg' in params:
+                    self.logg = params.pop('logg')
+
+                ## Join the abundances
+
+                ### Gets all chemical elements asked to be fit
+                abund = {key:it[key]
+                         for key in it.dtype.names
+                         if (key in PERIODIC) or (key in REVERSE_PERIODIC)}
+                if abund:
+                    ### delete the chemical elements parameters from the
+                    ### dictionary
+                    for key in abund:
+                        del params[key]
+
+                ## Set parameters for synplot
+                synplot_params = deepcopy(self.syn_params)
+                synplot_params.update(params)
+
+                ## Deal with fixed and varying abundances
+                self.merge_abundances(abund, synplot_params)
+
+                ## Synthesize spectrum
+                self.synthesis = Synplot(self.teff, self.logg,
+                                         self.synplot_path, self.idl,
+                                         **synplot_params)
+                self.synthesis.run()
+
+                ## Backup fort.7 and fort.17
+                spec_name = '_'.join(['{}_{}'.format(key, val)
+                                      for key, val in zip(it.dtype.names, it)])
+                shutil.move('{}fort.7'.format(self.synplot_path),
+                            '/tmp/synfit_{}.7'.format(spec_name))
+                shutil.move('{}fort.17'.format(self.synplot_path),
+                            '/tmp/synfit_{}.17'.format(spec_name))
 
         elif len(self.no_rot_keys) == 0 and len(self.rot_keys) > 0:
             # There is only 'vrot' or/and 'vmac_rt'. All iteration fits will
@@ -368,7 +416,15 @@ class Synfit:
 
         # Copy not convolved spectrum to Synplot folder
         if len(self.no_rot_keys) > 0 and len(self.rot_keys) > 0:
-            raise NotImplementedError
+            ## There are rotational and non rotational parameters
+            spec_name = '_'.join(['{}_{}'.format(key, val)
+                                  for key, val in zip(it.dtype.names, it)
+                                  if key not in ['vrot', 'vmac_rt']])
+            shutil.copy('/tmp/synfit_{}.7'.format(spec_name),
+                        '{}fort.7'.format(self.synplot_path))
+            shutil.copy('/tmp/synfit_{}.17'.format(spec_name),
+                        '{}fort.17'.format(self.synplot_path))
+
         elif len(self.no_rot_keys) == 0 and len(self.rot_keys) > 0:
             ## There is only 'vrot' or/and 'vmac_rt'.
             shutil.copy('/tmp/synfit.7',
