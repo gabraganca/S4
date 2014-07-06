@@ -409,13 +409,14 @@ class Synfit:
         # Deal with fixed and varying abundances
         self.merge_abundances(abund, synplot_params)
 
-        # Set to not calculate spectrum, just convolve
-        ## I tried to set the parameter 'ispec' to -1 but it didn't work.
-        ## So it will use the parameter 'norun'.
-        synplot_params['norun'] = 1
 
         # Copy not convolved spectrum to Synplot folder
         if len(self.no_rot_keys) > 0 and len(self.rot_keys) > 0:
+            # Set to not calculate spectrum, just convolve
+            ## I tried to set the parameter 'ispec' to -1 but it didn't work.
+            ## So it will use the parameter 'norun'.
+            synplot_params['norun'] = 1
+
             ## There are rotational and non rotational parameters
             spec_name = '_'.join(['{}_{}'.format(key, val)
                                   for key, val in zip(it.dtype.names, it)
@@ -426,6 +427,11 @@ class Synfit:
                         '{}fort.17'.format(self.synplot_path))
 
         elif len(self.no_rot_keys) == 0 and len(self.rot_keys) > 0:
+            # Set to not calculate spectrum, just convolve
+            ## I tried to set the parameter 'ispec' to -1 but it didn't work.
+            ## So it will use the parameter 'norun'.
+            synplot_params['norun'] = 1
+
             ## There is only 'vrot' or/and 'vmac_rt'.
             shutil.copy('/tmp/synfit.7',
                         '{}fort.7'.format(self.synplot_path))
@@ -433,7 +439,7 @@ class Synfit:
                         '{}fort.17'.format(self.synplot_path))
         elif len(self.no_rot_keys) > 0 and len(self.rot_keys) == 0:
             # No rotational parameters
-            raise NotImplementedError
+            pass
         else:
             # There is no parameters. Something wen wrong?
             raise RuntimeError("There is no parameters or it was not " + \
