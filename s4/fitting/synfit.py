@@ -14,6 +14,7 @@ It is also possible to select a subregion of the spectrum by using the
 `windows` argument.
 """
 import os
+import shutil
 import re
 import json
 import shutil
@@ -112,6 +113,8 @@ class Synfit:
         # Initalizaze varibales.
         self.iter_params = None
         self.fit_keys = None
+        self.no_rot_keys = None
+        self.rot_keys = None
 
         # Check for radial velocity
         if 'rv' in self.syn_params:
@@ -134,7 +137,7 @@ class Synfit:
         if 'synplot_path' in self.syn_params:
             self.synplot_path = self.syn_params.pop('synplot_path')
         else:
-            self.synplot_path = None
+            self.synplot_path = os.getenv('HOME')+'/.s4/synthesis/synplot/'
 
         if 'idl' in self.syn_params:
             self.idl = self.syn_params.pop('idl')
@@ -211,6 +214,17 @@ class Synfit:
         # Get the name of the parameters to be fitted
         self.fit_keys = self.iter_params.keys()
 
+        # Segregate paramates in convolution related and unrelated.
+        ## Get the keys convolution unrelated (i.e. not in ['vrot', 'vmac_rt'])
+        self.no_rot_keys = [key
+                            for key in self.fit_keys
+                            if key not in ['vrot', 'vmac_rt']]
+        ## Get the keys convolution related (i.e. in ['vrot', 'vmac_rt'])
+        self.rot_keys = [key
+                         for key in self.fit_keys
+                         if key in ['vrot', 'vmac_rt']]
+
+
 
     def fit(self):
         r"""
@@ -268,42 +282,44 @@ class Synfit:
 
 
     def build_library(self):
-        """Build library of unconvolved spectra"""
-        if 'synplot_path' not in self.syn_params:
-            spath = os.getenv('HOME')+'/.s4/synthesis/synplot/'
-        else:
-            spath = self.syn_params['synplot_path']
+        """Build spectra library of unconvolved spectra"""
+        if len(self.no_rot_keys) > 0 and len(self.rot_keys) > 0:
+            # Build library for non rotation parameters with vsini=vmac_rt=0
+            no_rot_values = iterator(self.no_rot_keys, self.iter_params)
+            raise NotImplementedError
 
+        elif len(self.no_rot_keys) == 0 and len(self.rot_keys) > 0:
+            # There is only 'vrot' or/and 'vmac_rt'. All iteration fits will
+            # be just convolutions. It creates only one spectrum
 
-        # Get the keys unrelated to rotation (i.e. not in ['vrot', 'vmac_rt'])
-        no_rot_keys = [key
-                       for key in self.fit_keys
-                       if key not in ['vrot', 'vmac_rt']]
-
-        # Creates the iteration values
-        try:
-            no_rot_values = iterator(no_rot_keys, self.iter_params)
-        except TypeError:
-            ## There is only 'vrot' or/and 'vmac_rt'.
-            ## Creates only one spectrum
-
-            ### Set parameters for synplot
+            ## Set parameters for synplot
             synplot_params = deepcopy(self.syn_params)
-            ### Set values of rotation to 0
-            for key in self.fit_keys:
-                synplot_params[key] = 0
 
-            ### Synthesize spectrum
+            ## Set values of rotation to 0
+            synplot_params['vrot'] = 0
+            synplot_params['vmac_rt'] = 0
+
+            ## Synthesize spectrum
             synthesis = Synplot(self.teff, self.logg, self.synplot_path,
                                 self.idl, **synplot_params)
-
             synthesis.run()
 
-            ### Backup fort.7 and fort.17
-            shutil.move('{}fort.7'.format(spath),
+            ## Backup fort.7 and fort.17
+            shutil.move('{}fort.7'.format(self.synplot_path),
                         '/tmp/synfit.7')
-            shutil.move('{}fort.17'.format(spath),
+            shutil.move('{}fort.17'.format(self.synplot_path),
                         '/tmp/synfit.17')
+
+        elif len(self.no_rot_keys) > 0 and len(self.rot_keys) == 0:
+            # No rotational parameters
+            # Do not build library.
+            # There is no need since Synspec will have to run every time.
+            pass
+        else:
+            # There is no parameters. Something wen wrong?
+            raise RuntimeError("There is no parameters or it was not " + \
+                               "classified as rotational or non rotational. " +\
+                               "It seems that something went wrong.")
 
 
     def iteration(self, n, it):
@@ -345,10 +361,33 @@ class Synfit:
         # Deal with fixed and varying abundances
         self.merge_abundances(abund, synplot_params)
 
+        # Set to not calculate spectrum, just convolve
+        ## I tried to set the parameter 'ispec' to -1 but it didn't work.
+        ## So it will use the parameter 'norun'.
+        synplot_params['norun'] = 1
+
+        # Copy not convolved spectrum to Synplot folder
+        if len(self.no_rot_keys) > 0 and len(self.rot_keys) > 0:
+            raise NotImplementedError
+        elif len(self.no_rot_keys) == 0 and len(self.rot_keys) > 0:
+            ## There is only 'vrot' or/and 'vmac_rt'.
+            shutil.copy('/tmp/synfit.7',
+                        '{}fort.7'.format(self.synplot_path))
+            shutil.copy('/tmp/synfit.17',
+                        '{}fort.17'.format(self.synplot_path))
+        elif len(self.no_rot_keys) > 0 and len(self.rot_keys) == 0:
+            # No rotational parameters
+            raise NotImplementedError
+        else:
+            # There is no parameters. Something wen wrong?
+            raise RuntimeError("There is no parameters or it was not " + \
+                               "classified as rotational or non rotational. " +\
+                               "It seems that something went wrong.")
+
+
         # Synthesize spectrum
         self.synthesis = Synplot(self.teff, self.logg, self.synplot_path,
                                  self.idl, **synplot_params)
-
         self.synthesis.run()
 
         # Apply scale and radial velocity if needed
