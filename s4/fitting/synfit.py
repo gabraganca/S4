@@ -382,7 +382,7 @@ class Synfit:
         self.best_fit['chisquare'] = fitted_vals['chisquare'][0]
 
 
-    def best_plot(self, title=None):
+    def plot_best_fit(self, title=None):
         """
         Plot the observed spectrum and the synthetic using the best values
         found.
