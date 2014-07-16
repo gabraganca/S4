@@ -14,8 +14,11 @@ It is also possible to select a subregion of the spectrum by using the
 `windows` argument.
 """
 import os
+import shutil
 import re
 import json
+import shutil
+from copy import deepcopy
 import numpy as np
 import matplotlib.pyplot as plt
 from itertools import product
@@ -28,6 +31,35 @@ PERIODIC = json.load(open(os.getenv('HOME')+'/.s4/extra_resc'+\
                           '/chemical_elements.json'))
 
 REVERSE_PERIODIC = {val:key for key, val in PERIODIC.iteritems()}
+
+def iterator(fit_keys, iter_params):
+    """
+    Create an array with the values to iterate.
+
+    Parameters
+    ----------
+
+    fit_keys: dict;
+        A dictionary containing the name of the parameters,
+
+    fit_params: dict;
+        A dictionary containing the parameters as keys and the values to be
+        fitted.
+
+    Returns
+    -------
+
+    iter_values: numpy.ndarray;
+        The values to be fitted as a structured array
+    """
+    # Create the iterator vector.
+    args = [iter_params[k] for k in fit_keys]
+    iter_values = list(product(*args))
+
+    ## add the iterrating values to self as a numpy array
+    data_type = [(key, float) for key in fit_keys]
+
+    return np.array(iter_values, dtype=data_type)
 
 
 class Synfit:
@@ -73,14 +105,16 @@ class Synfit:
 
     def __init__(self, fit_params, **kwargs):
         # Parameters to be fitted
-        self.fit_params = fit_params.copy()
+        self.fit_params = deepcopy(fit_params)
         # Fixed parameters
-        self.syn_params = kwargs.copy()
+        self.syn_params = deepcopy(kwargs)
         ##########
 
         # Initalizaze varibales.
         self.iter_params = None
         self.fit_keys = None
+        self.no_rot_keys = None
+        self.rot_keys = None
 
         # Check for radial velocity
         if 'rv' in self.syn_params:
@@ -103,7 +137,7 @@ class Synfit:
         if 'synplot_path' in self.syn_params:
             self.synplot_path = self.syn_params.pop('synplot_path')
         else:
-            self.synplot_path = None
+            self.synplot_path = os.getenv('HOME')+'/.s4/synthesis/synplot/'
 
         if 'idl' in self.syn_params:
             self.idl = self.syn_params.pop('idl')
@@ -180,16 +214,16 @@ class Synfit:
         # Get the name of the parameters to be fitted
         self.fit_keys = self.iter_params.keys()
 
+        # Segregate paramates in convolution related and unrelated.
+        ## Get the keys convolution unrelated (i.e. not in ['vrot', 'vmac_rt'])
+        self.no_rot_keys = [key
+                            for key in self.fit_keys
+                            if key not in ['vrot', 'vmac_rt']]
+        ## Get the keys convolution related (i.e. in ['vrot', 'vmac_rt'])
+        self.rot_keys = [key
+                         for key in self.fit_keys
+                         if key in ['vrot', 'vmac_rt']]
 
-    def iterator(self):
-        """Create an array with the values to iterate. """
-        # Create the iterator vector.
-        args = [self.iter_params[k] for k in self.fit_keys]
-        iter_values = list(product(*args))
-
-        ## add the iterrating values to self as a numpy array
-        data_type = [(key, float) for key in self.fit_keys]
-        self.iter_values = np.array(iter_values, dtype=data_type)
 
 
     def fit(self):
@@ -205,7 +239,7 @@ class Synfit:
         self.sample_params()
 
         # Create iterator.
-        self.iterator()
+        iter_values = iterator(self.fit_keys, self.iter_params)
 
         #Obtain the number of varying params
         n_params = len(self.fit_keys)
@@ -214,7 +248,7 @@ class Synfit:
         # Array to store the values of each parameter and the chisquare
 
         ## Create an array of NaN
-        chisquare = np.empty([len(self.iter_values), 1])
+        chisquare = np.empty([len(iter_values), 1])
         chisquare.fill(np.nan)
 
         ## Create the array with the iteration avlues + NaN for the chisquare
@@ -222,10 +256,10 @@ class Synfit:
         ### Remove the data type of the iter_values array.
         ### this is necessary in order to add the chisquare array
         #### Removes data type
-        tmp_array = self.iter_values.view((float, n_params))
+        tmp_array = iter_values.view((float, n_params))
         #### Guarantee that the format will be correct for any number of
         #### parameters
-        tmp_array = tmp_array.reshape(len(self.iter_values), -1)
+        tmp_array = tmp_array.reshape(len(iter_values), -1)
 
         ### Join the arrays
         self.chisq_values = np.hstack((tmp_array, chisquare))
@@ -236,12 +270,104 @@ class Synfit:
         self.chisq_values.dtype = data_type
         ######
 
+        # Create a library of unconvolved spectra
+        self.build_library()
+
         # Loop it!
-        for n, it in enumerate(self.iter_values):
+        for n, it in enumerate(iter_values):
             self.iteration(n, it)
 
         # Find the best value
         self.find_best_fit()
+
+
+    def build_library(self):
+        """Build spectra library of unconvolved spectra"""
+        if len(self.no_rot_keys) > 0 and len(self.rot_keys) > 0:
+            # Build library for non rotation parameters with vsini=vmac_rt=0
+            no_rot_values = iterator(self.no_rot_keys, self.iter_params)
+            for n, it in enumerate(no_rot_values):
+                ## Creates a dic with the parameters and values to be fitted
+                ## in this loop
+                params = {key:val for key, val in zip(it.dtype.names, it)}
+
+                ## Set vsini=vmac_rt=0
+                params['vrot'] = 0
+                params['vmac_rt'] = 0
+
+                ## Check if teff and logg were selected to be fitted.
+                ## If yes, set a variable to them.
+                if 'teff' in params:
+                    self.teff = params.pop('teff')
+
+                if 'logg' in params:
+                    self.logg = params.pop('logg')
+
+                ## Join the abundances
+
+                ### Gets all chemical elements asked to be fit
+                abund = {key:it[key]
+                         for key in it.dtype.names
+                         if (key in PERIODIC) or (key in REVERSE_PERIODIC)}
+                if abund:
+                    ### delete the chemical elements parameters from the
+                    ### dictionary
+                    for key in abund:
+                        del params[key]
+
+                ## Set parameters for synplot
+                synplot_params = deepcopy(self.syn_params)
+                synplot_params.update(params)
+
+                ## Deal with fixed and varying abundances
+                self.merge_abundances(abund, synplot_params)
+
+                ## Synthesize spectrum
+                self.synthesis = Synplot(self.teff, self.logg,
+                                         self.synplot_path, self.idl,
+                                         **synplot_params)
+                self.synthesis.run()
+
+                ## Backup fort.7 and fort.17
+                spec_name = '_'.join(['{}_{}'.format(key, val)
+                                      for key, val in zip(it.dtype.names, it)])
+                shutil.move('{}fort.7'.format(self.synplot_path),
+                            '/tmp/synfit_{}.7'.format(spec_name))
+                shutil.move('{}fort.17'.format(self.synplot_path),
+                            '/tmp/synfit_{}.17'.format(spec_name))
+
+        elif len(self.no_rot_keys) == 0 and len(self.rot_keys) > 0:
+            # There is only 'vrot' or/and 'vmac_rt'. All iteration fits will
+            # be just convolutions. It creates only one spectrum
+
+            ## Set parameters for synplot
+            synplot_params = deepcopy(self.syn_params)
+
+            ## Set values of rotation to 0
+            synplot_params['vrot'] = 0
+            synplot_params['vmac_rt'] = 0
+
+            ## Synthesize spectrum
+            synthesis = Synplot(self.teff, self.logg, self.synplot_path,
+                                self.idl, **synplot_params)
+            synthesis.run()
+
+            ## Backup fort.7 and fort.17
+            shutil.move('{}fort.7'.format(self.synplot_path),
+                        '/tmp/synfit.7')
+            shutil.move('{}fort.17'.format(self.synplot_path),
+                        '/tmp/synfit.17')
+
+        elif len(self.no_rot_keys) > 0 and len(self.rot_keys) == 0:
+            # No rotational parameters
+            # Do not build library.
+            # There is no need since Synspec will have to run every time.
+            pass
+        else:
+            # There is no parameters. Something wen wrong?
+            raise RuntimeError("There is no parameters or it was not " + \
+                               "classified as rotational or non rotational. " +\
+                               "It seems that something went wrong.")
 
 
     def iteration(self, n, it):
@@ -249,7 +375,7 @@ class Synfit:
 
         # Creates a dic with the parameters and values to be fitted
         #in this loop
-        params = {key:val for key, val in zip(self.fit_keys, it)}
+        params = {key:val for key, val in zip(it.dtype.names, it)}
 
 
         #make plot title before removing teff and logg
@@ -277,16 +403,53 @@ class Synfit:
                 del params[key]
 
         # Set parameters for synplot
-        synplot_params = self.syn_params.copy()
+        synplot_params = deepcopy(self.syn_params)
         synplot_params.update(params)
 
         # Deal with fixed and varying abundances
         self.merge_abundances(abund, synplot_params)
 
+
+        # Copy not convolved spectrum to Synplot folder
+        if len(self.no_rot_keys) > 0 and len(self.rot_keys) > 0:
+            # Set to not calculate spectrum, just convolve
+            ## I tried to set the parameter 'ispec' to -1 but it didn't work.
+            ## So it will use the parameter 'norun'.
+            synplot_params['norun'] = 1
+
+            ## There are rotational and non rotational parameters
+            spec_name = '_'.join(['{}_{}'.format(key, val)
+                                  for key, val in zip(it.dtype.names, it)
+                                  if key not in ['vrot', 'vmac_rt']])
+            shutil.copy('/tmp/synfit_{}.7'.format(spec_name),
+                        '{}fort.7'.format(self.synplot_path))
+            shutil.copy('/tmp/synfit_{}.17'.format(spec_name),
+                        '{}fort.17'.format(self.synplot_path))
+
+        elif len(self.no_rot_keys) == 0 and len(self.rot_keys) > 0:
+            # Set to not calculate spectrum, just convolve
+            ## I tried to set the parameter 'ispec' to -1 but it didn't work.
+            ## So it will use the parameter 'norun'.
+            synplot_params['norun'] = 1
+
+            ## There is only 'vrot' or/and 'vmac_rt'.
+            shutil.copy('/tmp/synfit.7',
+                        '{}fort.7'.format(self.synplot_path))
+            shutil.copy('/tmp/synfit.17',
+                        '{}fort.17'.format(self.synplot_path))
+        elif len(self.no_rot_keys) > 0 and len(self.rot_keys) == 0:
+            # No rotational parameters
+            pass
+        else:
+            # There is no parameters. Something wen wrong?
+            raise RuntimeError("There is no parameters or it was not " + \
+                               "classified as rotational or non rotational. " +\
+                               "It seems that something went wrong.")
+
+
         # Synthesize spectrum
         self.synthesis = Synplot(self.teff, self.logg, self.synplot_path,
                                  self.idl, **synplot_params)
-
         self.synthesis.run()
 
         # Apply scale and radial velocity if needed
@@ -326,7 +489,8 @@ class Synfit:
             self.synthesis.plot(title=plot_title, windows=self.windows)
 
 
-    def merge_abundances(self, abund, synplot_params):
+    @staticmethod
+    def merge_abundances(abund, synplot_params):
         """
         Merge varying and fixed parameters. It change the `abund` and
         `synplot_params` in place.
@@ -336,7 +500,7 @@ class Synfit:
         if abund and 'abund' in synplot_params:
             ## Check for overlapping elements.
             ### Transform all elements to its symbol
-            for key, val in abund.copy().iteritems():
+            for key, val in deepcopy(abund).iteritems():
                 try:
                     abund[REVERSE_PERIODIC[key]] = val
                     del abund[key]
@@ -344,7 +508,7 @@ class Synfit:
                     #### The chemical element is already as a symbol
                     pass
 
-            for key, val in synplot_params['abund'].copy().iteritems():
+            for key, val in deepcopy(synplot_params['abund']).iteritems():
                 try:
                     synplot_params['abund'][REVERSE_PERIODIC[key]] = val
                     del synplot_params['abund'][key]
@@ -356,7 +520,7 @@ class Synfit:
             try:
                 abund.update({k:v
                               for k, v in synplot_params['abund'].iteritems()
-                              if k not in abund.copy()})
+                              if k not in deepcopy(abund)})
             except ValueError:
                 # There no fixed abundance
                 pass
@@ -396,8 +560,8 @@ class Synfit:
         """
 
         # Set parameters for synplot
-        synplot_params = self.syn_params.copy()
-        best_fit = self.best_fit.copy()
+        synplot_params = deepcopy(self.syn_params)
+        best_fit = deepcopy(self.best_fit)
         chisq = best_fit.pop('chisquare')
 
         #make plot title before removing teff and logg
@@ -481,7 +645,7 @@ class Synfit:
 
             # Transform the chisquare array in a proper array
             #and not an array of tuples
-            chisq_values = self.chisq_values.copy()
+            chisq_values = deepcopy(self.chisq_values)
 
             ## Check for abundance
             if 'abund' in self.chisq_values.dtype.names:
