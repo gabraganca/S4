@@ -438,7 +438,7 @@ class Synfit:
         synthesis.plot(title=title, windows=self.windows)
 
 
-    def plot_chisquare(self, interpolation='linear', log=False, **kwargs):
+    def plot_chisquare(self, interpolation='linear', logscale=False, **kwargs):
         """
         Plot the distribution of chi-square for one given parameter.
         It obly works if the number of parameters to be fitted are one or two.
@@ -466,8 +466,13 @@ class Synfit:
         ax = fig.add_subplot(111)
 
         if number_params == 1:
+            if logscale:
+                y_axis = np.log(self.chisq_values['chisquare'])
+            else:
+                y_axis = self.chisq_values['chisquare']
+
             ax.plot(self.iter_params[self.fit_keys[0]],
-                    self.chisq_values['chisquare'], **kwargs)
+                    y_axis, **kwargs)
 
             ax.set_xlabel(self.fit_keys[0])
             ax.set_ylabel(r'$\chi^2$')
@@ -507,7 +512,7 @@ class Synfit:
             Z = griddata(chisquare_arr[:,:number_params], chisquare_arr[:,-1],
                          grid_params, method=interpolation)
 
-            if log:
+            if logscale:
                 # Get the log to increase the contrast between limits
                 from matplotlib.colors import LogNorm
                 kwargs['norm'] = LogNorm()
