@@ -5,6 +5,8 @@ Functions in this module can be used to automatically place labels without the
  labels overlapping each other. This is useful, for example, in creating plots
  of spectrum with lines identified with labels.
 
+Based on `lineid_plot` version located at https://github.com/phn/lineid_plot.
+
 """
 from __future__ import division, print_function
 import numpy as np
