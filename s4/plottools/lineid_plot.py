@@ -1,6 +1,10 @@
-"""Automatic placement of labels for features in a plot.
+"""
+Automatic placement of labels for features in a plot.
 
-Depends on Numpy and Matplotlib.
+Functions in this module can be used to automatically place labels without the
+ labels overlapping each other. This is useful, for example, in creating plots
+ of spectrum with lines identified with labels.
+
 """
 from __future__ import division, print_function
 import numpy as np
