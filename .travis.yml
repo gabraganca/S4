@@ -24,7 +24,7 @@ install:
 # I commented the test command because it will throw error.
 # The problem is not `nosetests` but it is that I need IDL to run some of the
 # tests. Then, I guess it will have to stay commented until I get rid of IDL.
-#script:
+script:
 #  - nosetests s4 tests -v --with-doctest --with-coverage --cover-package=s4
 notifications:
   email: false
