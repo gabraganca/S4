@@ -54,8 +54,6 @@ Dependencies
 
 - `Scipy <http://www.scipy.org/>`_
 
-- `Lineid_plot <https://github.com/phn/lineid_plot>`_
-
 
 SAGUI
 -----
