@@ -17,7 +17,7 @@ before_install:
   - export PATH=/home/travis/anaconda/bin:$PATH
   # Update conda itself
   - conda update --yes conda
-  - conda install --yes pip python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib nose pyqt
+  - conda install --yes pip python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib astropy nose pyqt
   - pip install -q --use-mirrors coverage coveralls
 install:
   - nosetests s4 tests -v --with-doctest --with-coverage --cover-package=s4
