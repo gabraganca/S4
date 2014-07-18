@@ -1,8 +1,26 @@
+# Miniconda stuff shamelessly copied from leouieda/fatiando travis.yml file
+
 language: python
 python:
   - "2.7"
-# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
-install: pip install -r requirements.txt
+# Need to set this so that packages installed with apt-get are available
+
+virtualenv:
+  system_site_packages: true
+env:
+  - OMP_NUM_THREADS=4
+before_install:
+  - wget http://repo.continuum.io/miniconda/Miniconda-2.2.2-Linux-x86_64.sh -O miniconda.sh
+  - chmod +x miniconda.sh
+  - ./miniconda.sh -b
+  - export PATH=/home/travis/anaconda/bin:$PATH
+  # Update conda itself
+  - conda update --yes conda
+  - conda install --yes pip python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib nose pyqt
+  - pip install -q --use-mirrors coverage coveralls
+install:
+  - python setup.py build_ext --inplace
+
 # command to run tests, e.g. python setup.py test
 script: python setup.py install 
 
