@@ -22,6 +22,17 @@ if glob('s4/synthesis/synplot/synspec49') == []:
         sp.check_call(['g77', '-fno-automatic', '-o',                         \
                        's4/synthesis/synplot/rotin3',                         \
                        's4/synthesis/synplot/rotin3.f'])
+    elif find_executable('fort77'):
+        os.chdir('s4/synthesis/synplot/')
+        print 'fort77 available.\nCompiling Synspec49.'
+        sp.check_call(['fort77', '-NC198', '-w',  '-o',                       \
+                       'synspec49',                                           \
+                       'synspec49.f'])
+        print 'Compiling Rotin3'
+        sp.check_call(['fort77', '-w',  '-o',                                 \
+                       'rotin3',                                              \
+                       'rotin3.f'])
+        os.chdir('../../..')
     elif find_executable('ifort'):
         print 'ifort available.\nCompiling Synspec49.'
         sp.check_call(['ifort', '-save', '-o',                                \
