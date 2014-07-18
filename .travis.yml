@@ -20,7 +20,7 @@ before_install:
   - conda install --yes pip python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib astropy nose pyqt
   - pip install -q --use-mirrors coverage coveralls
 install:
-  - python setup.py build_ext --inplace
+  - python setup.py install
 script:
   - nosetests s4 tests -v --with-doctest --with-coverage --cover-package=s4
 notifications:
