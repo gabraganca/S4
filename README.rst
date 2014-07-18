@@ -54,6 +54,8 @@ Dependencies
 
 - `Scipy <http://www.scipy.org/>`_
 
+- `Astropy <http://www.astropy.org/>`_
+
 
 SAGUI
 -----
