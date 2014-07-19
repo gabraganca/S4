@@ -151,13 +151,12 @@ class Synfit:
             self.noplot = False
 
         if 'windows' in self.syn_params:
-            assert len(self.syn_params['windows']) == 2
-            index_lower = obs_spec[:,0] > self.syn_params['windows'][0]
-            index_upper = obs_spec[:,0] < self.syn_params['windows'][1]
-            compound_index = index_lower & index_upper
+            self.weights = np.zeros_like(obs_spec[:, 0])
 
-            self.weights = np.where(compound_index, np.ones_like(obs_spec[:,0]),
-                               np.zeros_like(obs_spec[:,0]))
+            for window in np.reshape(self.syn_params['windows'], (-1, 2)):
+                index_lower = obs_spec[:, 0] > window[0]
+                index_upper = obs_spec[:, 0] < window[1]
+                self.weights[index_lower & index_upper] = 1
 
             self.windows = self.syn_params.pop('windows')
         else:
