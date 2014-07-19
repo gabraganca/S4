@@ -13,6 +13,10 @@ The spectral synthesis are done with
 atmospheric models calculated with `Tlusty <http://nova.astro.umd.edu/>`_
 (Hubeny & Lanz et al.).
 
+.. image:: http://img.shields.io/travis/gabraganca/S4/travis.svg?style=flat
+    :target: https://travis-ci.org/gabraganca/S4
+    :alt: Travis CI build status
+
 How to get it?
 --------------
 
@@ -53,6 +57,8 @@ Dependencies
 - `Matplotlib <http://matplotlib.org/>`_
 
 - `Scipy <http://www.scipy.org/>`_
+
+- `Astropy <http://www.astropy.org/>`_
 
 
 SAGUI
