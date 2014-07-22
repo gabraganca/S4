@@ -12,11 +12,11 @@ def test_synplot_run():
     """Test if Synplot is calculating a spectrum"""
     Synplot(TEFF, LOGG, **PARAMS).run()
 
-def test_synplot_savetxt():
+def test_synplot_save():
     """Test if Synplot is saving a spectrum"""
     fname = '/tmp/test.spec'
 
     _ = Synplot(TEFF, LOGG, **PARAMS)
-    _.savetxt(fname)
+    _.save_spec(fname)
 
     assert os.path.isfile(fname)

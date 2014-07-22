@@ -141,7 +141,7 @@ class Synplot:
             raise IOError('Calculated spectrum is not available. Check if ' +
                 'syn(spec|plot) ran correctly.')
 
-    def savetxt(self, file_name, *args):
+    def save_spec(self, file_name, **kwargs):
         """
         Save spectrum fo a file.
 
@@ -151,13 +151,13 @@ class Synplot:
         file_name: str;
             Name of the file to be saved.
 
-        args:
+        kwargs:
             Numpy.savetxt arguments.
         """
 
         self.check_if_run()
 
-        np.savetxt(file_name, self.spectrum, *args)
+        np.savetxt(file_name, self.spectrum, **kwargs)
 
     # Plot
     def plot(self, ymin = None, ymax = None, windows = None, file_name = None,
