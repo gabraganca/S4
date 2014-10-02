@@ -38,7 +38,7 @@ def test_synfit_one():
                   relative=params['relative'], vrot=params['vrot'],
                   abund=params['abund'], vmac_rt=params['vmac_rt'])
 
-    syn.savetxt(params['observ'])
+    syn.save_spec(params['observ'])
 
     ## Test with one parameter
     params_copy = params.copy()
@@ -79,7 +79,7 @@ def test_synfit_rv():
     #Adds a shit on wavelength for the synthetic spectrum due to radial velocity
     syn.spectrum[:, 0] *= s4.spectools.rvcorr(-rad_vel)
 
-    syn.savetxt(spec_file)
+    syn.save_spec(spec_file)
 
     ## Test with one parameter
     params_copy = params.copy()
@@ -118,7 +118,7 @@ def test_synfit_two():
 
     syn.run()
 
-    syn.savetxt(params['observ'])
+    syn.save_spec(params['observ'])
 
     ## Test with two parameters
     params_copy = params.copy()
@@ -156,7 +156,7 @@ def test_synfit_three():
                   relative=params['relative'], vrot=params['vrot'],
                   abund=params['abund'], vmac_rt=params['vmac_rt'])
 
-    syn.savetxt(params['observ'])
+    syn.save_spec(params['observ'])
 
     ## Test with three paramters
     params_copy = params.copy()
@@ -195,7 +195,7 @@ def test_synfit_abund():
                   vrot=params['vrot'], abund=params['abund'],
                   vmac_rt=params['vmac_rt'])
 
-    syn.savetxt(params['observ'])
+    syn.save_spec(params['observ'])
 
     ## Test with one parameter
     params_copy = params.copy()
@@ -229,7 +229,7 @@ def test_synfit_four():
                   vrot=params['vrot'], abund=params['abund'],
                   vmac_rt=params['vmac_rt'])
 
-    syn.savetxt(params['observ'])
+    syn.save_spec(params['observ'])
 
     ## Test with three paramters
     params_copy = params.copy()
@@ -272,7 +272,7 @@ def test_synfit_windows():
                   vrot=params['vrot'], abund=params['abund'],
                   vmac_rt=params['vmac_rt'])
 
-    syn.savetxt(params['observ'])
+    syn.save_spec(params['observ'])
 
     ## Test with one parameter
     params_copy = params.copy()
