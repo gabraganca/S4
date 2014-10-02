@@ -682,16 +682,13 @@ class Synfit:
 
 
             # Plot
-            cax = ax.imshow(Z, aspect='auto', extent=edges,
+            cs = ax.contour(Z, aspect='auto', extent=edges,
                             origin='lower', **kwargs)
+            plt.clabel(cs, inline=1)
 
             # Set labels
             ax.set_xlabel(self.fit_keys[0])
             ax.set_ylabel(self.fit_keys[1])
-
-            # Add colorbar
-            cbar = fig.colorbar(cax)
-            cbar.ax.set_ylabel(r'$\chi^2$')
 
         else:
             raise ValueError('The number of parameters is greater than 2.')
