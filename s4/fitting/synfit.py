@@ -637,8 +637,12 @@ class Synfit:
             ax.plot(self.iter_params[self.fit_keys[0]],
                     y_axis, **kwargs)
 
-            ax.set_xlabel(self.fit_keys[0])
-            ax.set_xticks(self.iter_params[self.fit_keys[0]])
+            xlabel = self.fit_keys[0]
+
+            ax.set_xlabel(xlabel)
+            ax.set_xticks(self.iter_params[xlabel])
+            if xlabel in PERIODIC:
+                ax.set_xticklabels(ax.get_xticks(), rotation=-45)
 
             ax.set_ylabel(r'$\chi^2$')
         elif number_params == 2:
@@ -689,11 +693,18 @@ class Synfit:
             plt.clabel(cs, inline=1)
 
             # Set labels
-            ax.set_xlabel(self.fit_keys[0])
-            ax.set_xticks(self.iter_params[self.fit_keys[0]])
+            xlabel = self.fit_keys[0]
+            ylabel = self.fit_keys[1]
 
-            ax.set_ylabel(self.fit_keys[1])
-            ax.set_yticks(self.iter_params[self.fit_keys[1]])
+            ax.set_xlabel(xlabel)
+            ax.set_xticks(self.iter_params[xlabel])
+            if xlabel in PERIODIC:
+                ax.set_xticklabels(ax.get_xticks(), rotation=-45)
+
+            ax.set_ylabel(ylabel)
+            ax.set_yticks(self.iter_params[ylabel])
+            if ylabel in PERIODIC:
+                ax.set_yticklabels(ax.get_yticks(), rotation=-45)
 
         else:
             raise ValueError('The number of parameters is greater than 2.')
