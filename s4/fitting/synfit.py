@@ -638,6 +638,8 @@ class Synfit:
                     y_axis, **kwargs)
 
             ax.set_xlabel(self.fit_keys[0])
+            ax.set_xticks(self.iter_params[self.fit_keys[0]])
+
             ax.set_ylabel(r'$\chi^2$')
         elif number_params == 2:
             from scipy.interpolate import griddata
@@ -688,7 +690,10 @@ class Synfit:
 
             # Set labels
             ax.set_xlabel(self.fit_keys[0])
+            ax.set_xticks(self.iter_params[self.fit_keys[0]])
+
             ax.set_ylabel(self.fit_keys[1])
+            ax.set_yticks(self.iter_params[self.fit_keys[1]])
 
         else:
             raise ValueError('The number of parameters is greater than 2.')
