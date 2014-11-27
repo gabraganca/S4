@@ -635,7 +635,7 @@ class Synfit:
                 y_axis = self.chisq_values['chisquare']
 
             ax.plot(self.iter_params[self.fit_keys[0]],
-                    y_axis, **kwargs)
+                    y_axis, zorder=5, **kwargs)
 
             xlabel = self.fit_keys[0]
 
@@ -645,6 +645,8 @@ class Synfit:
                 ax.set_xticklabels(ax.get_xticks(), rotation=-45)
 
             ax.set_ylabel(r'$\chi^2$')
+
+            ax.grid(axis='x', zorder=0)
         elif number_params == 2:
             from scipy.interpolate import griddata
 
@@ -689,7 +691,7 @@ class Synfit:
 
             # Plot
             cs = ax.contour(Z, aspect='auto', extent=edges,
-                            origin='lower', **kwargs)
+                            origin='lower', zorder=5, **kwargs)
             plt.clabel(cs, inline=1)
 
             # Set labels
@@ -706,5 +708,6 @@ class Synfit:
             if ylabel in PERIODIC:
                 ax.set_yticklabels(ax.get_yticks(), rotation=-45)
 
+            ax.grid(zorder=0)
         else:
             raise ValueError('The number of parameters is greater than 2.')
