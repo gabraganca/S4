@@ -88,9 +88,8 @@ class Synplot_abund():
 
         # If the chemical element is identified with its symbol, swap to the
         #atomic number
-        for key in self.abundance:
-            if key in PERIODIC:
-                self.abundance[PERIODIC[key]] = self.abundance.pop(key)
+        self.abundance = {PERIODIC[key]:val
+                         for key, val in self.abundance.iteritems()}
 
         try:
             # Writes a list with each chemical element and its abundance
