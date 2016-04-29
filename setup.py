@@ -13,26 +13,18 @@ VERSION = '0.2.3'
 
 # Compiling Synspec and Rotin3 if compiler ios available
 if glob('s4/synthesis/synplot/synspec49') == []:
-    if find_executable('g77'):
-        print 'g77 available.\nCompiling Synspec49.'
-        sp.check_call(['g77', '-fno-automatic', '-o',                         \
-                       's4/synthesis/synplot/synspec49',                      \
+    if find_executable('gfortran'):
+        print 'gfortran available.\nCompiling Synspec49.'
+        command = ['gfortran', '-g', '-fno-automatic', '-static', '-o']
+        sp.check_call(command +                                    \
+                      ['s4/synthesis/synplot/synspec49',           \
                        's4/synthesis/synplot/synspec49.f'])
         print 'Compiling Rotin3'
-        sp.check_call(['g77', '-fno-automatic', '-o',                         \
-                       's4/synthesis/synplot/rotin3',                         \
-                       's4/synthesis/synplot/rotin3.f'])
-    elif find_executable('ifort'):
-        print 'ifort available.\nCompiling Synspec49.'
-        sp.check_call(['ifort', '-save', '-o',                                \
-                       's4/synthesis/synplot/synspec49',                      \
-                       's4/synthesis/synplot/synspec49.f'])
-        print 'Compiling Rotin3'
-        sp.check_call(['ifort', '-save', '-o',                                   \
-                       's4/synthesis/synplot/rotin3',                            \
+        sp.check_call(command +                                    \
+                      ['s4/synthesis/synplot/rotin3',              \
                        's4/synthesis/synplot/rotin3.f'])
     else:
-        print 'g77 and ifort are not available. ' +\
+        print 'gfortran is not available. ' +\
               'Synspec and Rotin will not be compiled.'
 
 #Make list of data files

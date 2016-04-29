@@ -1556,7 +1556,7 @@ C
       DATA BLNK/'                    '/,BLNK6/'      '/
 C
       IF(FINSTD.NE.BLNK) 
-     *   OPEN(UNIT=INPFI,NAME=FINSTD,STATUS='UNKNOWN')
+     *   OPEN(UNIT=INPFI,FILE=FINSTD,STATUS='UNKNOWN')
 C
       INDV=-1
 C
