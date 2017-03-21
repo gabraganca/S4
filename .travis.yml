@@ -1,5 +1,3 @@
-# Miniconda stuff shamelessly copied from leouieda/fatiando travis.yml file
-
 language: python
 python:
   - "2.7"
@@ -10,15 +8,16 @@ virtualenv:
 env:
   - OMP_NUM_THREADS=4
 before_install:
-  - sudo apt-get install fort77
-  - wget http://repo.continuum.io/miniconda/Miniconda-2.2.2-Linux-x86_64.sh -O miniconda.sh
-  - chmod +x miniconda.sh
-  - ./miniconda.sh -b
-  - export PATH=/home/travis/anaconda/bin:$PATH
-  # Update conda itself
-  - conda update --yes conda
-  - conda install --yes pip python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib astropy nose pyqt
-  - pip install -q --use-mirrors coverage coveralls
+  - sudo apt-get update
+  - sudo apt-get install gfortran
+  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  - conda install pip python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib astropy nose pyqt
+  - pip install -q coverage coveralls
 install:
   - python setup.py install
 script:
