@@ -1,0 +1,30 @@
+# Miniconda stuff shamelessly copied from leouieda/fatiando travis.yml file
+
+language: python
+python:
+  - "2.7"
+# Need to set this so that packages installed with apt-get are available
+
+virtualenv:
+  system_site_packages: true
+env:
+  - OMP_NUM_THREADS=4
+before_install:
+  - sudo apt-get install fort77
+  - wget http://repo.continuum.io/miniconda/Miniconda-2.2.2-Linux-x86_64.sh -O miniconda.sh
+  - chmod +x miniconda.sh
+  - ./miniconda.sh -b
+  - export PATH=/home/travis/anaconda/bin:$PATH
+  # Update conda itself
+  - conda update --yes conda
+  - conda install --yes pip python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib astropy nose pyqt
+  - pip install -q --use-mirrors coverage coveralls
+install:
+  - python setup.py install
+script:
+    # Run nosetests as a dry-run. A real run will not work because there is no 
+    # IDL installed under Travis. Thus, to not run it, we added the --collect-only
+    # argument. When the IDL dependcy is removed, take out this argument.
+  - nosetests s4 tests -v --with-doctest --with-coverage --cover-package=s4 --collect-only
+notifications:
+  email: false

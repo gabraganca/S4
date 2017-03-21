@@ -1,3 +1,13 @@
+"""
+Parameters
+---------
+
+abund: str, dic (optional);
+    Chemical abundance. It overrides the values set by Synspec.
+    It can be set as the Synplot format, e.g., '[2, 2, 10.93'] or as a
+    dictionary, e.g., {2:10.93}. As a dictionary, it also accepts the chemical
+    element symbol, i.e., {'He':10.93}.
+"""
 #=============================================================================
 # Modules
 import shutil
@@ -5,11 +15,11 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 import re
-import lineid_plot
 from ..spectools import rvcorr
 from ..utils import File
-from ..plottools import plot_windows
+from ..plottools import plot_windows, plot_line_ids
 from ..io import specio, wrappers
+from synplot_abund import Synplot_abund
 #=============================================================================
 
 
@@ -70,14 +80,23 @@ class Synplot:
             else:
                 raise IOError("File '{}' does not exist.".format(abspath))
 
+        # Initizalize variable 'spectrum'
+        self.spectrum = None
+
 
     #=========================================================================
     #
     def synplot_input(self):
         """Build the synplot command to IDL/GDL."""
 
+        # Copy the parameters
+        parameters_copy = self.parameters.copy()
+        if 'abund' in parameters_copy:
+            abund = Synplot_abund(parameters_copy['abund'])
+            parameters_copy['abund'] = abund.to_synplot()
+
         synplot_command = [key+' = '+str(value)                              \
-                           for key, value in self.parameters.iteritems()]
+                           for key, value in parameters_copy.iteritems()]
 
         cmd = "CD, '"+self.spath+"' & synplot, "+ \
                         ', '.join(synplot_command)
@@ -116,12 +135,13 @@ class Synplot:
 
         #load synthetized spectra
         try:
-            self.spectrum = np.loadtxt(self.spath + 'fort.11')
+            self.spectrum = specio.loadtxt_fast(self.spath + 'fort.11',
+                                                np.float)
         except IOError:
             raise IOError('Calculated spectrum is not available. Check if ' +
                 'syn(spec|plot) ran correctly.')
 
-    def savetxt(self, file_name, *args):
+    def save_spec(self, file_name, **kwargs):
         """
         Save spectrum fo a file.
 
@@ -131,13 +151,13 @@ class Synplot:
         file_name: str;
             Name of the file to be saved.
 
-        args:
+        kwargs:
             Numpy.savetxt arguments.
         """
 
         self.check_if_run()
 
-        np.savetxt(file_name, self.spectrum, *args)
+        np.savetxt(file_name, self.spectrum, **kwargs)
 
     # Plot
     def plot(self, ymin = None, ymax = None, windows = None, file_name = None,
@@ -179,10 +199,10 @@ class Synplot:
         # Plot
         fig = plt.figure(num = 1)
 
-        # Set axes.
-        # If identification of the linesis requiredm set different size to axes
+        # Set ax
+        ## If identification of the lines is required, set different size to ax
         if ident:
-            ax = fig.add_axes([0.1, 0.1, 0.85, 0.6])
+            ax = fig.add_axes([0.1, 0.1, 0.85, 0.55])
         else:
             ax = fig.gca()
 
@@ -222,13 +242,21 @@ class Synplot:
         if ident:
             # Obtain the spectral line wavelength and identification
             line_wave, line_label = self.lineid_select(ident)
-            lineid_plot.plot_line_ids(spectrum_copy[:, 0],
-                                      spectrum_copy[:, 1],
-                                      line_wave, line_label, label1_size = 10,
-                                      extend = False, ax = ax,
-                                      box_axes_space = 0.15)
+            _, _ = plot_line_ids(spectrum_copy[:, 0], spectrum_copy[:, 1],
+                                 line_wave, line_label, label1_size = 8,
+                                 ax = ax, box_axes_space=0.2)
 
-        plt.legend(fancybox = True, loc = 'lower right')
+        # Adds a legend
+        ## A small workaround to no plot the line identification labels
+        if hasattr(self, 'observation'):
+            n_legend = 2
+        else:
+            n_legend = 1
+
+        handles, labels = ax.get_legend_handles_labels()
+
+        ax.legend(handles[:n_legend], labels[:n_legend],
+                  fancybox = True, loc = 'lower right')
 
         if title is not None:
             plt.title(title, verticalalignment = 'baseline')
@@ -281,5 +309,5 @@ class Synplot:
         Check if spectrum was already calculated. If not, calculate it.
         """
 
-        if not hasattr(self, 'spectrum'):
+        if isinstance(self.spectrum, type(None)):
             self.run()

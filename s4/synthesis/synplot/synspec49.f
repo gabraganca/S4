@@ -13352,8 +13352,11 @@ C
 C
       DATA ICOMP /0/
 C
-      save indexs, indexm, index0, is, im, ig0, igpr,
-     *     xl, chion, alf, gam
+C     ####################################################################
+C      save indexs, indexm, index0, is, im, ig0, igpr,
+C     *     xl, chion, alf, gam
+C     ####################################################################
+C
 C
       IF(ICOMP.NE.0) GO TO 5
       IND=1

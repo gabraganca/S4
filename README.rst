@@ -13,6 +13,10 @@ The spectral synthesis are done with
 atmospheric models calculated with `Tlusty <http://nova.astro.umd.edu/>`_
 (Hubeny & Lanz et al.).
 
+.. image:: http://img.shields.io/travis/gabraganca/S4/development.svg?style=flat
+    :target: https://travis-ci.org/gabraganca/S4
+    :alt: Travis CI build status
+
 How to get it?
 --------------
 
@@ -54,7 +58,7 @@ Dependencies
 
 - `Scipy <http://www.scipy.org/>`_
 
-- `Lineid_plot <https://github.com/phn/lineid_plot>`_
+- `Astropy <http://www.astropy.org/>`_
 
 
 SAGUI
@@ -85,3 +89,11 @@ First you should call the script with the following parameters: the parameter
 you want to vary, an array of values for that parameter, the beginning and
 ending wavelength.
 
+
+Citation
+--------
+
+If you use this software please cite as:
+
+Bragança, Gustavo (2014): Stellar Spectral Synthesis Suite (S4). figshare.
+http://dx.doi.org/10.6084/m9.figshare.1051627

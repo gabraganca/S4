@@ -2,14 +2,14 @@
 Install package.
 """
 
-from distutils.core import setup
+from distutils.core import setup, Command
 from distutils.spawn import find_executable
 import subprocess as sp
 from glob import glob
 import os
 from pwd import getpwnam
 
-VERSION = '0.2.3'
+VERSION = '0.3.dev'
 
 # Compiling Synspec and Rotin3 if compiler ios available
 if glob('s4/synthesis/synplot/synspec49') == []:
@@ -31,6 +31,7 @@ if glob('s4/synthesis/synplot/synspec49') == []:
 atdata = glob('s4/synthesis/atdata/*')
 bstar2006 = glob('s4/synthesis/bstar2006/*')
 synplot = glob('s4/synthesis/synplot/*')
+extra_resc = glob('extra_resc/*')
 #path to data_files
 home = os.getenv('HOME')
 path = home+'/.s4'
@@ -50,7 +51,6 @@ DOWNLOAD_URL = 'http://github.com/gabraganca/S4'
 LICENSE = 'BSD'
 SCRIPTS = ["s4/GUI/sagui", 'scripts/sensi_line']
 
-import s4
 
 setup(name=NAME,
       version=VERSION,
@@ -67,12 +67,15 @@ setup(name=NAME,
                 's4.spectools',
                 's4.plottools',
                 's4.synthesis',
+                's4.fitting',
                 's4.utils',
                 's4.io',
                 's4'],
       data_files=[(path+'/synthesis/atdata', atdata),
                   (path+'/synthesis/bstar2006', bstar2006),
-                  (path+'/synthesis/synplot', synplot)],
+                  (path+'/synthesis/synplot', synplot),
+                  (path+'/synthesis/synplot', synplot),
+                  (path+'/extra_resc', extra_resc)],
       classifiers=[
         'Development Status :: Alpha',
         'Environment :: Console',
