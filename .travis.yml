@@ -16,7 +16,7 @@ before_install:
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
   - conda install pip python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib astropy nose pyqt
-  - pip install -q --use-mirrors coverage coveralls
+  - pip install -q coverage coveralls
 install:
   - python setup.py install
 script:
