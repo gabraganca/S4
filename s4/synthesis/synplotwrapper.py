@@ -27,7 +27,7 @@ from synplot_abund import Synplot_abund
 class Synplot:
     """Add docstring"""
 
-    def __init__(self, teff, logg, synplot_path = None, idl = True,
+    def __init__(self, teff, logg, synplot_path = None, idl = False,
                  **kwargs):
         if synplot_path is None:
             self.spath = os.getenv('HOME')+'/.s4/synthesis/synplot/'

@@ -46,8 +46,8 @@ to `git <http://git-scm.com/>`_, just type:
 Dependencies
 ------------
 
-- ITT's IDL. There is also an option to run with GDL, but the Synplot version
-  shipped with S4 do not support GDL.
+- `GNU Data Language <http://gnudatalanguage.sourceforge.net/downloads.php>`
+  greater than v0.9.6.
 
 - ``Intel Fortran Compiler`` or ``f77`` are needed to compile
   ``Synspec`` and ``Rotins``
