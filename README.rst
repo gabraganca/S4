@@ -61,18 +61,6 @@ Dependencies
 - `Astropy <http://www.astropy.org/>`_
 
 
-SAGUI
------
-
-SAGUI stands for stellar spectral **S**\ynthesis **A**\chieves a **G**\raphical
-**U**\ser **I**\nterface. It is a Qt GUI to syntesize spectra using Synspec.
-
-`Sagui <http://en.wikipedia.org/wiki/Callitrichinae>`_ is a family of New World
-monkey very common on Brazil.
-
-To use it, simply type *sagui* on your console.
-
-
 Sensi_line
 ----------
 
