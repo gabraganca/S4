@@ -46,7 +46,7 @@ to `git <http://git-scm.com/>`_, just type:
 Dependencies
 ------------
 
-- `GNU Data Language <http://gnudatalanguage.sourceforge.net/downloads.php>`
+- `GNU Data Language <http://gnudatalanguage.sourceforge.net/downloads.php>`_
   greater than v0.9.6.
 
 - ``Intel Fortran Compiler`` or ``f77`` are needed to compile
