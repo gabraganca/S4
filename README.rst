@@ -13,7 +13,7 @@ The spectral synthesis are done with
 atmospheric models calculated with `Tlusty <http://nova.astro.umd.edu/>`_
 (Hubeny & Lanz et al.).
 
-.. image:: http://img.shields.io/travis/gabraganca/S4/development.svg?style=flat
+.. image:: http://img.shields.io/travis/gabraganca/S4.svg?style=flat
     :target: https://travis-ci.org/gabraganca/S4
     :alt: Travis CI build status
 
