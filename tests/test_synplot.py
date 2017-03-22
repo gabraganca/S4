@@ -10,7 +10,13 @@ PARAMS = dict(wstart=4000, wend=4500, noplot=True, relative=1)
 
 def test_synplot_run():
     """Test if Synplot is calculating a spectrum"""
-    Synplot(TEFF, LOGG, **PARAMS).run()
+    try:
+        Synplot(TEFF, LOGG, **PARAMS).run()
+    except:
+        # Print the output log of the Synplot command
+        with open('run.log') as f:
+            print (f.read())
+        raise
 
 def test_synplot_save():
     """Test if Synplot is saving a spectrum"""
