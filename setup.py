@@ -49,7 +49,7 @@ MAINTAINER = "Gustavo de Almeida Braganca"
 MAINTAINER_EMAIL = "ga.braganca@gmail.com"
 DOWNLOAD_URL = 'http://github.com/gabraganca/S4'
 LICENSE = 'BSD'
-SCRIPTS = ["s4/GUI/sagui", 'scripts/sensi_line']
+SCRIPTS = ['scripts/sensi_line']
 
 
 setup(name=NAME,
