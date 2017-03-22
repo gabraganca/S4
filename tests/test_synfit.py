@@ -38,6 +38,7 @@ def test_synfit_one():
                   relative=params['relative'], vrot=params['vrot'],
                   abund=params['abund'], vmac_rt=params['vmac_rt'])
 
+    syn.run()
     syn.save_spec(params['observ'])
 
     ## Test with one parameter
@@ -156,6 +157,7 @@ def test_synfit_three():
                   relative=params['relative'], vrot=params['vrot'],
                   abund=params['abund'], vmac_rt=params['vmac_rt'])
 
+    syn.run()
     syn.save_spec(params['observ'])
 
     ## Test with three paramters
@@ -195,6 +197,7 @@ def test_synfit_abund():
                   vrot=params['vrot'], abund=params['abund'],
                   vmac_rt=params['vmac_rt'])
 
+    syn.run()
     syn.save_spec(params['observ'])
 
     ## Test with one parameter
@@ -229,6 +232,7 @@ def test_synfit_four():
                   vrot=params['vrot'], abund=params['abund'],
                   vmac_rt=params['vmac_rt'])
 
+    syn.run()
     syn.save_spec(params['observ'])
 
     ## Test with three paramters
@@ -272,6 +276,7 @@ def test_synfit_windows():
                   vrot=params['vrot'], abund=params['abund'],
                   vmac_rt=params['vmac_rt'])
 
+    syn.run()
     syn.save_spec(params['observ'])
 
     ## Test with one parameter
