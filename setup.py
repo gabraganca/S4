@@ -49,7 +49,6 @@ MAINTAINER = "Gustavo de Almeida Braganca"
 MAINTAINER_EMAIL = "ga.braganca@gmail.com"
 DOWNLOAD_URL = 'http://github.com/gabraganca/S4'
 LICENSE = 'BSD'
-SCRIPTS = ['scripts/sensi_line']
 
 
 setup(name=NAME,
@@ -62,7 +61,6 @@ setup(name=NAME,
       maintainer_email=MAINTAINER_EMAIL,
       download_url=DOWNLOAD_URL,
       license=LICENSE,
-      scripts=SCRIPTS,
       packages=['s4',
                 's4.spectools',
                 's4.plottools',
