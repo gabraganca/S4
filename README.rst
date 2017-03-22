@@ -49,7 +49,7 @@ Dependencies
 - `GNU Data Language <http://gnudatalanguage.sourceforge.net/downloads.php>`_
   greater than v0.9.6.
 
-- ``Intel Fortran Compiler`` or ``f77`` are needed to compile
+- `gfortran <https://gcc.gnu.org/fortran/>`_ is needed to compile
   ``Synspec`` and ``Rotins``
 
 - `Numpy <http://www.numpy.org/>`_
