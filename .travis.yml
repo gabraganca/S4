@@ -9,7 +9,130 @@ env:
   - OMP_NUM_THREADS=4
 before_install:
   - sudo apt-get update
-  - sudo apt-get install gfortran gnudatalanguage
+  - sudo apt-get install gfortran
+
+  # Install GDL
+  ## Remove packages that conflict
+  - sudo apt-get remove chromium-browser libnetcdf6 libpango1.0-0 python-gi
+  ## Download dependencies
+  - mirrorBaseURL="http://mirrors.kernel.org/ubuntu/pool"
+  - mirrorBaseURLMain=$mirrorBaseURL/main
+  - mirrorBaseURLUniv=$mirrorBaseURL/universe
+  - securityBaseURL="http://security.ubuntu.com/ubuntu/pool/main"
+  - wget $securityBaseURL/c/cgmanager/libcgmanager0_0.24-0ubuntu7.1_amd64.deb                         -O libcgmanager.deb
+  - wget $securityBaseURL/c/cups/libcups2_1.7.2-0ubuntu1.7_amd64.deb                                  -O libcups2.deb
+  - wget $securityBaseURL/e/eglibc/libc6_2.19-0ubuntu6.11_amd64.deb                                   -O libc6.deb
+  - wget $securityBaseURL/f/fontconfig/fontconfig-config_2.11.0-0ubuntu4.2_all.deb                    -O fontconfig.deb
+  - wget $securityBaseURL/f/fontconfig/libfontconfig1_2.11.0-0ubuntu4.2_amd64.deb                     -O libfontconfig.deb
+  - wget $securityBaseURL/g/gcc-5/gcc-5-base_5.4.0-6ubuntu1~16.04.4_amd64.deb                         -O gcc-5-base.deb
+  - wget $securityBaseURL/g/gcc-5/libstdc++6_5.4.0-6ubuntu1~16.04.4_amd64.deb                         -O libstdc.deb
+  - wget $securityBaseURL/g/gcc-5/libgomp1_5.4.0-6ubuntu1~16.04.4_amd64.deb                           -O libgomp1.deb
+  - wget $securityBaseURL/g/graphite2/libgraphite2-3_1.3.6-1ubuntu0.14.04.1_amd64.deb                 -O libgraphite.deb
+  - wget $securityBaseURL/g/gnutls26/libgnutls26_2.12.23-12ubuntu2.7_amd64.deb                        -O libgnutls.deb
+  - wget $securityBaseURL/g/gtk+2.0/libgtk2.0-0_2.24.23-0ubuntu1.4_amd64.deb                          -O libgtk2.0.deb
+  - wget $securityBaseURL/h/harfbuzz/libharfbuzz0b_0.9.27-1ubuntu1.1_amd64.deb                        -O libharfbuzz.deb
+  - wget $securityBaseURL/j/json-c/libjson-c2_0.11-3ubuntu1.2_amd64.deb                               -O libjsonc2.deb
+  - wget $securityBaseURL/j/json-c/libjson0_0.11-3ubuntu1.2_amd64.deb                                 -O libjson0.deb
+  - wget $securityBaseURL/libt/libtasn1-6/libtasn1-6_3.4-3ubuntu0.4_amd64.deb                         -O libtasn.deb
+  - wget $securityBaseURL/libg/libgcrypt11/libgcrypt11_1.5.3-2ubuntu4.4_amd64.deb                     -O libgcrypt.deb
+  - wget $securityBaseURL/t/tiff/libtiff5_4.0.6-1ubuntu0.1_amd64.deb                                  -O libtiff5.deb
+  - wget $mirrorBaseURLMain/c/cairo/libcairo2_1.13.0~20140204-0ubuntu1_amd64.deb                     -O libcairo2.deb
+  - wget $mirrorBaseURLMain/f/fftw3/libfftw3-double3_3.3.3-7ubuntu3_amd64.deb                        -O libfftw3-double.deb
+  - wget $mirrorBaseURLMain/f/fftw3/libfftw3-single3_3.3.3-7ubuntu3_amd64.deb                        -O libfftw3-single.deb
+  - wget $mirrorBaseURLMain/g/glib2.0/libglib2.0-0_2.40.0-2_amd64.deb                                -O libglib.deb
+  - wget $mirrorBaseURLMain/g/gccgo-6/libgcc1_6.0.1-0ubuntu1_amd64.deb                               -O libgcc1.deb
+  - wget $mirrorBaseURLMain/g/gccgo-6/gcc-6-base_6.0.1-0ubuntu1_amd64.deb                            -O gcc-6-base.deb
+  - wget $mirrorBaseURLMain/g/gsl/libgsl2_2.1+dfsg-2_amd64.deb                                       -O libgsl2.deb
+  - wget $mirrorBaseURLMain/j/jbigkit/libjbig0_2.1-3.1_amd64.deb                                     -O libjbig0.deb
+  - wget $mirrorBaseURLMain/libw/libwebp/libwebp5_0.4.4-1_amd64.deb                                  -O libwebp5.deb
+  - wget $mirrorBaseURLMain/libt/libtool/libltdl7_2.4.6-0.1_amd64.deb                                -O libltdl.deb
+  - wget $mirrorBaseURLMain/p/pango1.0/libpangoft2-1.0-0_1.36.3-1ubuntu1_amd64.deb                   -O libpangoft.deb
+  - wget $mirrorBaseURLMain/p/pango1.0/libpangocairo-1.0-0_1.36.3-1ubuntu1_amd64.deb                 -O libpangocairo.deb
+  - wget $mirrorBaseURLMain/p/pango1.0/libpango-1.0-0_1.36.3-1ubuntu1_amd64.deb                      -O libpango-1.0-0.deb
+  - wget $mirrorBaseURLMain/p/plymouth/libplymouth2_0.8.8-0ubuntu17_amd64.deb                        -O libplymouth.deb
+  - wget $mirrorBaseURLMain/p/plymouth/plymouth_0.8.8-0ubuntu17_amd64.deb                            -O plymouth.deb
+  - wget $mirrorBaseURLMain/s/systemd/libudev1_204-5ubuntu20_amd64.deb                               -O libudev1.deb
+  - wget $mirrorBaseURLMain/s/sysvinit/sysv-rc_2.88dsf-41ubuntu6_all.deb                             -O sysv-rc.deb
+  - wget $mirrorBaseURLMain/u/upstart/upstart_1.12.1-0ubuntu4_amd64.deb                              -O upstart.deb
+  - wget $mirrorBaseURLMain/x/xz-utils/liblzma5_5.1.1alpha+20120614-2ubuntu2_amd64.deb               -O liblzma5.deb
+  - wget $mirrorBaseURLUniv/g/graphicsmagick/libgraphicsmagick-q16-3_1.3.23-1build1_amd64.deb    -O libgraphicsmagick.deb
+  - wget $mirrorBaseURLUniv/g/graphicsmagick/libgraphicsmagick++-q16-12_1.3.23-1build1_amd64.deb -O libgraphicsmagick++.deb
+  - wget $mirrorBaseURLUniv/g/grib-api/libgrib-api0_1.14.4-5_amd64.deb                           -O libgrib.deb
+  - wget $mirrorBaseURLUniv/g/gnudatalanguage/libgnudatalanguage0_0.9.6v2-1build1_amd64.deb      -O gdl0.deb
+  - wget $mirrorBaseURLUniv/h/hdf5/libhdf5-10_1.8.16+docs-4ubuntu1_amd64.deb                     -O libhdf5.deb
+  - wget $mirrorBaseURLUniv/liba/libaec/libaec0_0.3.2-1_amd64.deb                                -O libaec0.deb
+  - wget $mirrorBaseURLUniv/liba/libaec/libsz2_0.3.2-1_amd64.deb                                 -O libsz2.deb
+  - wget $mirrorBaseURLUniv/n/netcdf/libnetcdf11_4.4.0-2_amd64.deb                               -O libnetcdf11.deb
+  - wget $mirrorBaseURLUniv/p/plplot/libcsiro0_5.10.0+dfsg2-0.1ubuntu2_amd64.deb                 -O libcsiro0.deb
+  - wget $mirrorBaseURLUniv/p/plplot/libqsastime0_5.10.0+dfsg2-0.1ubuntu2_amd64.deb              -O libqsastime.deb
+  - wget $mirrorBaseURLUniv/p/plplot/libplplot12_5.10.0+dfsg2-0.1ubuntu2_amd64.deb               -O libplplot12.deb
+  - wget $mirrorBaseURLUniv/p/plplot/libplplot-c++11_5.10.0+dfsg2-0.1ubuntu2_amd64.deb           -O libplplot.deb
+  - wget $mirrorBaseURLUniv/p/pslib/pslib1_0.4.5-3.1_amd64.deb                                   -O pslib.deb
+  - wget $mirrorBaseURLUniv/q/qhull/libqhull7_2015.2-1_amd64.deb                                 -O libqhull.deb
+  - wget $mirrorBaseURLUniv/s/shapelib/libshp2_1.3.0-5_amd64.deb                                 -O libshp.deb
+  - wget $mirrorBaseURLUniv/u/udunits/libudunits2-0_2.2.20-1_amd64.deb                           -O libudunits.deb
+  - wget $mirrorBaseURLUniv/w/wxwidgets3.0/libwxbase3.0-0v5_3.0.2+dfsg-1.3_amd64.deb             -O libwxbase3.deb
+  - wget $mirrorBaseURLUniv/w/wxwidgets3.0/libwxgtk3.0-0v5_3.0.2+dfsg-1.3_amd64.deb              -O libwxgtk3.deb
+  ## Install dependencies 
+  - sudo dpkg -i gcc-5-base.deb
+  - sudo dpkg -i libc6.deb
+  - sudo dpkg -i libstdc.deb
+  - sudo dpkg -i gcc-6-base.deb
+  - sudo dpkg -i libgcc1.deb
+  - sudo dpkg -i libfftw3-double.deb
+  - sudo dpkg -i libfftw3-single.deb
+  - sudo dpkg -i libgomp1.deb
+  - sudo dpkg -i libjbig0.deb
+  - sudo dpkg -i liblzma5.deb
+  - sudo dpkg -i libtiff5.deb
+  - sudo dpkg -i libwebp5.deb
+  - sudo dpkg -i libgraphicsmagick.deb
+  - sudo dpkg -i libgraphicsmagick++.deb
+  - sudo dpkg -i libaec0.deb
+  - sudo dpkg -i libgrib.deb
+  - sudo dpkg -i libgsl2.deb
+  - sudo dpkg -i libsz2.deb
+  - sudo dpkg -i libhdf5.deb
+  - sudo dpkg -i libnetcdf11.deb
+  - sudo dpkg -i libqhull.deb
+  - sudo dpkg -i libcsiro0.deb
+  - sudo dpkg -i libqsastime.deb
+  - sudo dpkg -i libshp.deb
+  - sudo dpkg -i libltdl.deb
+  - sudo dpkg -i libplplot12.deb
+  - sudo dpkg -i libplplot.deb
+  - sudo dpkg -i libwxbase3.deb
+  - sudo dpkg -i libcgmanager.deb
+  - sudo dpkg -i libudev1.deb
+  - sudo dpkg -i libjsonc2.deb
+  - sudo dpkg -i libjson0.deb
+  - sudo dpkg -i upstart.deb
+  - sudo dpkg -i libplymouth.deb
+  - sudo dpkg -i sysv-rc.deb
+  - sudo dpkg -i plymouth.deb
+  - sudo dpkg -i libglib.deb
+  - sudo dpkg -i libpango-1.0-0.deb
+  - sudo dpkg -i libtasn.deb
+  - sudo dpkg -i libgcrypt.deb
+  - sudo dpkg -i libgnutls.deb
+  - sudo dpkg -i libcups2.deb
+  - sudo dpkg -i fontconfig.deb
+  - sudo dpkg -i libfontconfig.deb
+  - sudo dpkg -i libcairo2.deb
+  - sudo dpkg -i libgraphite.deb
+  - sudo dpkg -i libharfbuzz.deb
+  - sudo dpkg -i libpangoft.deb
+  - sudo dpkg -i libpangocairo.deb
+  - sudo dpkg -i libgtk2.0.deb
+  - sudo dpkg -i libwxgtk3.deb
+  - sudo dpkg -i libudunits.deb
+  - sudo dpkg -i pslib.deb
+  - sudo dpkg -i gdl0.deb
+  ## Install GDL v0.9.6v2
+  - wget $mirrorBaseURL/universe/g/gnudatalanguage/gnudatalanguage_0.9.6v2-1build1_amd64.deb -O gdl.deb
+  - sudo dpkg -i gdl.deb
+
+  # Install python packages through miniconda
   - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
