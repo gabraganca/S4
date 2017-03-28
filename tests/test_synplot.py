@@ -42,7 +42,7 @@ def test_synplot_lineid_select():
     syn.run()
 
     # All lines
-    for line_strength in range(0, 900):
+    for line_strength in range(0, 500, 50):
         wave_list, text_list = syn.lineid_select(line_strength)
         assert len(wave_list) == len(text_list)
         assert all(isinstance(wave, float) for wave in wave_list)
