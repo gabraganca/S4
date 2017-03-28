@@ -45,7 +45,13 @@ def test_synfit_one():
 
     fit = Synfit({'vrot': [10, 20, 2]},
                  **params_copy)
-    fit.fit()
+    try:
+        fit.fit()
+    except:
+        # Print the output log of the Synplot command
+        with open('run.log') as log:
+            print(log.read())
+        raise
 
     # Remove synthetic spectrum
     os.remove(params['observ'])
