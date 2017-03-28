@@ -142,7 +142,7 @@ class Synfit:
         if 'idl' in self.syn_params:
             self.idl = self.syn_params.pop('idl')
         else:
-            self.idl = True
+            self.idl = False  # It will run GDL
 
         if 'noplot' in self.syn_params and self.syn_params['noplot'] == True:
             self.noplot = True
