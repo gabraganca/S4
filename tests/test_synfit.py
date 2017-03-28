@@ -1,7 +1,6 @@
 """
 Test suite for Synfit and complementary functions.
 """
-
 import os
 import numpy as np
 import s4
@@ -17,8 +16,8 @@ def test_sample_params_error():
     params = dict(teff=20000, logg=4)
 
     try:
-        fit = Synfit({'vrot':[10, 20, 2, 5]}, **params)
-    except Exception:
+        Synfit({'vrot': [10, 20, 2, 5]}, **params)
+    except KeyError:
         pass
 
 
@@ -27,11 +26,10 @@ def test_synfit_one():
 
     # Test with synthetic spectrum
 
-    ## Creates a fake spectrum
+    # Creates a fake spectrum
     params = dict(teff=20000, logg=4, vrot=16, abund={'He': 10.93}, vmac_rt=5,
                   wstart=4460, wend=4480, noplot=True, relative=1,
                   observ='test_spectrum.dat')
-
 
     syn = Synplot(params['teff'], params['logg'],
                   wstart=params['wstart'], wend=params['wend'],
@@ -41,11 +39,11 @@ def test_synfit_one():
     syn.run()
     syn.save_spec(params['observ'])
 
-    ## Test with one parameter
+    # Test with one parameter
     params_copy = params.copy()
     del params_copy['vrot']
 
-    fit = Synfit({'vrot':[10, 20, 2]},
+    fit = Synfit({'vrot': [10, 20, 2]},
                  **params_copy)
     fit.fit()
 
@@ -54,7 +52,7 @@ def test_synfit_one():
 
     assert len(fit.best_fit.keys()) == 2
     assert fit.best_fit['vrot'] == params['vrot']
-    assert fit.best_fit['chisquare'] == 0 # chi^2
+    assert fit.best_fit['chisquare'] == 0  # chi^2
 
 
 def test_synfit_rv():
@@ -66,10 +64,9 @@ def test_synfit_rv():
 
     # Test with synthetic spectrum
 
-    ## Creates a fake spectrum
+    # Creates a fake spectrum
     params = dict(teff=20000, logg=4, vrot=16, abund={'He': 10.93}, vmac_rt=5,
                   wstart=4460, wend=4480, noplot=True, relative=1)
-
 
     syn = Synplot(params['teff'], params['logg'],
                   wstart=params['wstart'], wend=params['wend'],
@@ -77,19 +74,21 @@ def test_synfit_rv():
                   abund=params['abund'], vmac_rt=params['vmac_rt'])
 
     syn.run()
-    #Adds a shit on wavelength for the synthetic spectrum due to radial velocity
+
+    # Adds a shit on wavelength for the synthetic spectrum due to
+    # radial velocity
     syn.spectrum[:, 0] *= s4.spectools.rvcorr(-rad_vel)
 
     syn.save_spec(spec_file)
 
-    ## Test with one parameter
+    # Test with one parameter
     params_copy = params.copy()
     del params_copy['vrot']
     params_copy['observ'] = 'test_spectrum.dat'
     params_copy['windows'] = [4465, 4475]
     params_copy['rv'] = rad_vel
 
-    fit = Synfit({'vrot':[10, 20, 2]},
+    fit = Synfit({'vrot': [10, 20, 2]},
                  **params_copy)
     fit.fit()
 
@@ -98,7 +97,7 @@ def test_synfit_rv():
 
     assert len(fit.best_fit.keys()) == 2
     assert fit.best_fit['vrot'] == params['vrot']
-    assert np.round(fit.best_fit['chisquare'], 5) == 0 # chi^2
+    assert np.round(fit.best_fit['chisquare'], 5) == 0  # chi^2
 
 
 def test_synfit_two():
@@ -106,11 +105,10 @@ def test_synfit_two():
 
     # Test with synthetic spectrum
 
-    ## Creates a fake spectrum
+    # Creates a fake spectrum
     params = dict(teff=20000, logg=4, vrot=16, abund={'He': 10.93}, vmac_rt=5,
                   wstart=4460, wend=4480, noplot=True, relative=1,
                   observ='test_spectrum.dat')
-
 
     syn = Synplot(params['teff'], params['logg'],
                   wstart=params['wstart'], wend=params['wend'],
@@ -121,24 +119,22 @@ def test_synfit_two():
 
     syn.save_spec(params['observ'])
 
-    ## Test with two parameters
+    # Test with two parameters
     params_copy = params.copy()
     del params_copy['vrot']
     del params_copy['vmac_rt']
 
-
-    fit = Synfit({'vrot': [10, 20, 2], 'vmac_rt':[0, 10, 5]},
+    fit = Synfit({'vrot': [10, 20, 2], 'vmac_rt': [0, 10, 5]},
                  **params_copy)
     fit.fit()
 
     # Remove synthetic spectrum
     os.remove(params['observ'])
 
-
     assert len(fit.best_fit.keys()) == 3
     assert fit.best_fit['vrot'] == params['vrot']
     assert fit.best_fit['vmac_rt'] == params['vmac_rt']
-    assert fit.best_fit['chisquare'] == 0 # chi^2
+    assert fit.best_fit['chisquare'] == 0  # chi^2
 
 
 def test_synfit_three():
@@ -146,11 +142,10 @@ def test_synfit_three():
 
     # Test with synthetic spectrum
 
-    ## Creates a fake spectrum
+    # Creates a fake spectrum
     params = dict(teff=20000, logg=4, vrot=16, abund={'He': 10.93}, vmac_rt=5,
                   wstart=4460, wend=4480, noplot=True, relative=1,
                   observ='test_spectrum.dat')
-
 
     syn = Synplot(params['teff'], params['logg'],
                   wstart=params['wstart'], wend=params['wend'],
@@ -160,14 +155,14 @@ def test_synfit_three():
     syn.run()
     syn.save_spec(params['observ'])
 
-    ## Test with three paramters
+    # Test with three paramters
     params_copy = params.copy()
     del params_copy['teff']
     del params_copy['vrot']
     del params_copy['vmac_rt']
 
-    fit = Synfit({'vrot':[10, 20, 2], 'vmac_rt':[0, 10, 5],
-                  'teff':[19000, 22000, 1000]},
+    fit = Synfit({'vrot': [10, 20, 2], 'vmac_rt': [0, 10, 5],
+                  'teff': [19000, 22000, 1000]},
                  **params_copy)
     fit.fit()
 
@@ -178,7 +173,7 @@ def test_synfit_three():
     assert fit.best_fit['vrot'] == params['vrot']
     assert fit.best_fit['vmac_rt'] == params['vmac_rt']
     assert fit.best_fit['teff'] == params['teff']
-    assert fit.best_fit['chisquare'] == 0 # chi^2
+    assert fit.best_fit['chisquare'] == 0  # chi^2
 
 
 def test_synfit_abund():
@@ -186,11 +181,10 @@ def test_synfit_abund():
 
     # Test with synthetic spectrum
 
-    ## Creates a fake spectrum
-    params = dict(teff=20000, logg=4, vrot=16, abund={'He': 10.93, 'S':7.12},
+    # Creates a fake spectrum
+    params = dict(teff=20000, logg=4, vrot=16, abund={'He': 10.93, 'S': 7.12},
                   wstart=4460, wend=4480, noplot=True, relative=1, vmac_rt=5,
                   observ='test_spectrum.dat')
-
 
     syn = Synplot(params['teff'], params['logg'], wstart=params['wstart'],
                   wend=params['wend'], relative=params['relative'],
@@ -200,10 +194,10 @@ def test_synfit_abund():
     syn.run()
     syn.save_spec(params['observ'])
 
-    ## Test with one parameter
+    # Test with one parameter
     params_copy = params.copy()
 
-    fit = Synfit({'He':[10.89, 10.95, 0.02]},
+    fit = Synfit({'He': [10.89, 10.95, 0.02]},
                  **params_copy)
     fit.fit()
 
@@ -213,7 +207,7 @@ def test_synfit_abund():
     assert len(fit.best_fit.keys()) == 2
     assert 'S' in fit.synthesis.parameters['abund']
     assert fit.best_fit['He'] == params['abund']['He']
-    assert fit.best_fit['chisquare'] == 0 # chi^2
+    assert fit.best_fit['chisquare'] == 0  # chi^2
 
 
 def test_synfit_four():
@@ -221,11 +215,10 @@ def test_synfit_four():
 
     # Test with synthetic spectrum
 
-    ## Creates a fake spectrum
+    # Creates a fake spectrum
     params = dict(teff=20000, logg=4, vrot=16, abund={'He': 10.93}, vmac_rt=5,
                   wstart=4460, wend=4480, noplot=True, relative=1,
                   observ='test_spectrum.dat')
-
 
     syn = Synplot(params['teff'], params['logg'], wstart=params['wstart'],
                   wend=params['wend'], relative=params['relative'],
@@ -235,15 +228,15 @@ def test_synfit_four():
     syn.run()
     syn.save_spec(params['observ'])
 
-    ## Test with three paramters
+    # Test with three paramters
     params_copy = params.copy()
     del params_copy['teff']
     del params_copy['vrot']
     del params_copy['vmac_rt']
     del params_copy['abund']
 
-    fit = Synfit({'vrot':[10, 20, 2], 'vmac_rt':[0, 10, 5],
-                  'teff':[19000, 22000, 1000], 'He':[10.89, 10.95, 0.02]},
+    fit = Synfit({'vrot': [10, 20, 2], 'vmac_rt': [0, 10, 5],
+                  'teff': [19000, 22000, 1000], 'He': [10.89, 10.95, 0.02]},
                  **params_copy)
     fit.fit()
 
@@ -265,11 +258,10 @@ def test_synfit_windows():
 
     # Test with synthetic spectrum
 
-    ## Creates a fake spectrum
+    # Creates a fake spectrum
     params = dict(teff=20000, logg=4, vrot=16, abund={'He': 10.93}, vmac_rt=5,
                   wstart=4460, wend=4480, noplot=True, relative=1,
                   observ='test_spectrum.dat')
-
 
     syn = Synplot(params['teff'], params['logg'], wstart=params['wstart'],
                   wend=params['wend'], relative=params['relative'],
@@ -279,12 +271,12 @@ def test_synfit_windows():
     syn.run()
     syn.save_spec(params['observ'])
 
-    ## Test with one parameter
+    # Test with one parameter
     params_copy = params.copy()
     del params_copy['vrot']
     params_copy['windows'] = [4465, 4475]
 
-    fit = Synfit({'vrot':[10, 20, 2]},
+    fit = Synfit({'vrot': [10, 20, 2]},
                  **params_copy)
     fit.fit()
 
@@ -293,4 +285,4 @@ def test_synfit_windows():
 
     assert len(fit.best_fit.keys()) == 2
     assert fit.best_fit['vrot'] == params['vrot']
-    assert fit.best_fit['chisquare'] == 0 # chi^2
+    assert fit.best_fit['chisquare'] == 0  # chi^2
