@@ -49,3 +49,20 @@ def test_synplot_lineid_select():
         assert all(isinstance(text, str) for text in text_list)
         assert all([float(row.split()[-1]) >= line_strength
                     for row in text_list])
+
+
+def test_synplot_apply_scale():
+    """Test Synplot method `apply_scale`"""
+
+    scale = 2
+
+    syn = Synplot(TEFF, LOGG, **PARAMS)
+    syn.parameters['scale'] = scale
+    syn.run()
+
+    flux = syn.spectrum[:, 1].copy()
+
+    syn.apply_scale()
+    new_flux = syn.spectrum[:, 1]
+
+    assert np.array_equal(flux, new_flux)
