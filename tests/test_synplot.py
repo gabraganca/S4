@@ -65,4 +65,4 @@ def test_synplot_apply_scale():
     syn.apply_scale()
     new_flux = syn.spectrum[:, 1]
 
-    assert np.array_equal(flux, new_flux)
+    assert np.array_equal(flux*scale, new_flux)
