@@ -33,3 +33,19 @@ def test_synplot_save():
     syn.save_spec(fname)
 
     assert os.path.isfile(fname)
+
+
+def test_synplot_lineid_select():
+    """Test line identification"""
+
+    syn = Synplot(TEFF, LOGG, **PARAMS)
+    syn.run()
+
+    # All lines
+    for line_strength in range(0, 900, 100):
+        wave_list, text_list = syn.lineid_select(line_strength)
+        assert len(wave_list) == len(text_list)
+        assert all(isinstance(wave, float) for wave in wave_list)
+        assert all(isinstance(text, str) for text in text_list)
+        assert all([float(row.split()[-1]) > line_strength
+                    for row in text_list])
