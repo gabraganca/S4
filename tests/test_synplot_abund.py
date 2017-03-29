@@ -11,7 +11,7 @@ def test_synplot_abund_to_synplot():
     # Test from dictionary to Synplot format
     assert Synplot_abund({'He': 10.93}).to_synplot() == '[2, 2, 10.93]'
     assert Synplot_abund({'O': 8.69,
-                          'He': 10.93}).to_synplot() == '[8, 8, 8.69,'\
+                          'He': 10.93}).to_synplot() == '[8, 8, 8.69, '\
                                                         '2, 2, 10.93]'
 
 
