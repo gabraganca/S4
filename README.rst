@@ -16,6 +16,9 @@ atmospheric models calculated with `Tlusty <http://nova.astro.umd.edu/>`_
 .. image:: http://img.shields.io/travis/gabraganca/S4.svg?style=flat
     :target: https://travis-ci.org/gabraganca/S4
     :alt: Travis CI build status
+.. image:: https://img.shields.io/coveralls/gabraganca/s4/master.svg?style=flat
+    :target: https://coveralls.io/github/gabraganca/S4?branch=master
+    
 
 How to get it?
 --------------
