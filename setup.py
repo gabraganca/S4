@@ -2,7 +2,7 @@
 Install package.
 """
 
-from distutils.core import setup, Command
+from distutils.core import setup
 from distutils.spawn import find_executable
 import subprocess as sp
 from glob import glob
