@@ -13,11 +13,12 @@ The spectral synthesis are done with
 atmospheric models calculated with `Tlusty <http://nova.astro.umd.edu/>`_
 (Hubeny & Lanz et al.).
 
-.. image:: http://img.shields.io/travis/gabraganca/S4.svg?style=flat
+.. image:: http://img.shields.io/travis/gabraganca/S4.svg
     :target: https://travis-ci.org/gabraganca/S4
     :alt: Travis CI build status
-.. image:: https://img.shields.io/coveralls/gabraganca/s4/master.svg?style=flat
+.. image:: https://coveralls.io/repos/github/gabraganca/S4/badge.svg?branch=master
     :target: https://coveralls.io/github/gabraganca/S4?branch=master
+
     
 
 How to get it?
