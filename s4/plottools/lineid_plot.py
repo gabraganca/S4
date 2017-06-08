@@ -11,6 +11,7 @@ Based on `lineid_plot` version located at https://github.com/phn/lineid_plot.
 
 """
 from __future__ import division, print_function
+import warnings
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -428,7 +429,14 @@ def plot_line_ids(wave, flux, line_wave, line_label1, label1_size=None,
     # Redraw the boxes at their new x location.
     for i in range(nlines):
         box = ax.texts[i]
-        box.xytext = (wlp[i], box.xytext[1])
+        try:
+            if hasattr(box, 'xyann'):
+                box.xyann = (wlp[i], box.xyann[1])
+            elif hasattr(box, 'xytext'):
+                box.xytext = (wlp[i], box.xytext[1])
+        except AttributeError:
+            warnings.warn("Missing xyann and xytext attributes. "
+                          "Your matplotlib version may not be compatible.")
 
     # Update the figure
     fig.canvas.draw()
