@@ -57,10 +57,9 @@ def iterator(fit_keys, iter_params):
     iter_values = list(product(*args))
 
     ## add the iterrating values to self as a numpy array
-    data_type = [(key, float) for key in fit_keys]
+    data_type = [float] *len(fit_keys)
 
-    return np.array(iter_values, dtype=data_type)
-
+    return np.array(iter_values, dtype={'names':fit_keys, 'formats':data_type})
 
 class Synfit:
     """
@@ -264,9 +263,9 @@ class Synfit:
         self.chisq_values = np.hstack((tmp_array, chisquare))
 
         ### Set the data type for the chisq_values array
-        data_type = [(key, float) for key in self.fit_keys]
-        data_type.append(('chisquare', float))
-        self.chisq_values.dtype = data_type
+        data_type = self.fit_keys + ['chisquare']
+        self.chisq_values.dtype = {'names':data_type,
+                                   'formats':[float]*len(data_type)}
         ######
 
         # Create a library of unconvolved spectra
