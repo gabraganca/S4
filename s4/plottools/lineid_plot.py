@@ -10,7 +10,6 @@ Examples are availabe as an IPython notebook in the `examples` folder.
 Based on `lineid_plot` version located at https://github.com/phn/lineid_plot.
 
 """
-from __future__ import division, print_function
 import warnings
 import numpy as np
 from matplotlib import pyplot as plt

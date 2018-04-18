@@ -1,5 +1,4 @@
 """Test suite for Synplot"""
-from __future__ import print_function
 import os
 import numpy as np
 from s4.synthesis import Synplot
