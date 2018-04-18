@@ -48,14 +48,14 @@ class Synplot:
         if 'wstart' not in kwargs.keys():
             kwargs['wstart'] = float(File(self.spath + 'fort.19').\
                                head()[0].split()[0]) * 10
-            print 'wstart not defined.'
-            print 'Setting as {:.2f} Angstrons.\n'.format(kwargs['wstart'])
+            print('wstart not defined.')
+            print('Setting as {:.2f} Angstrons.\n'.format(kwargs['wstart']))
 
         if 'wend' not in kwargs.keys():
             kwargs['wend'] = float(File(self.spath + 'fort.19').\
                                tail()[0].split()[0]) * 10
-            print 'wend not defined.'
-            print 'Setting as {:.2f} Angstrons.\n'.format(kwargs['wend'])
+            print('wend not defined.')
+            print('Setting as {:.2f} Angstrons.\n'.format(kwargs['wend']))
 
         self.parameters = kwargs
 
