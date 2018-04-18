@@ -1,6 +1,6 @@
 language: python
 python:
-  - "2.7"
+  - "3.6"
 # Need to set this so that packages installed with apt-get are available
 
 virtualenv:
