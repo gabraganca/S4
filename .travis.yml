@@ -25,8 +25,8 @@ before_install:
   - wget $securityBaseURL/f/fontconfig/fontconfig-config_2.11.0-0ubuntu4.2_all.deb                    -O fontconfig.deb
   - wget $securityBaseURL/f/fontconfig/libfontconfig1_2.11.0-0ubuntu4.2_amd64.deb                     -O libfontconfig.deb
   - wget $securityBaseURL/g/gcc-5/gcc-5-base_5.4.0-6ubuntu1~16.04.9_amd64.deb                         -O gcc-5-base.deb
-  - wget $securityBaseURL/g/gcc-5/libstdc++6_5.4.0-6ubuntu1~16.04.4_amd64.deb                         -O libstdc.deb
-  - wget $securityBaseURL/g/gcc-5/libgomp1_5.4.0-6ubuntu1~16.04.4_amd64.deb                           -O libgomp1.deb
+  - wget $securityBaseURL/g/gcc-5/libstdc++6_5.4.0-6ubuntu1~16.04.9_amd64.deb                         -O libstdc.deb
+  - wget $securityBaseURL/g/gcc-5/libgomp1_5.4.0-6ubuntu1~16.04.9_amd64.deb                           -O libgomp1.deb
   - wget $securityBaseURL/g/graphite2/libgraphite2-3_1.3.6-1ubuntu0.14.04.1_amd64.deb                 -O libgraphite.deb
   - wget $securityBaseURL/g/gnutls26/libgnutls26_2.12.23-12ubuntu2.7_amd64.deb                        -O libgnutls.deb
   - wget $securityBaseURL/g/gtk+2.0/libgtk2.0-0_2.24.23-0ubuntu1.4_amd64.deb                          -O libgtk2.0.deb
