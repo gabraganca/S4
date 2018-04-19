@@ -20,7 +20,7 @@ before_install:
   - mirrorBaseURLUniv=$mirrorBaseURL/universe
   - securityBaseURL="http://security.ubuntu.com/ubuntu/pool/main"
   - wget $securityBaseURL/c/cgmanager/libcgmanager0_0.24-0ubuntu7.1_amd64.deb                         -O libcgmanager.deb
-  - wget $securityBaseURL/c/cups/libcups2_1.7.2-0ubuntu1.7_amd64.deb                                  -O libcups2.deb
+  - wget $securityBaseURL/c/cups/libcups2_1.7.2-0ubuntu1.9_amd64.deb                                  -O libcups2.deb
   - wget $securityBaseURL/e/eglibc/libc6_2.19-0ubuntu6.11_amd64.deb                                   -O libc6.deb
   - wget $securityBaseURL/f/fontconfig/fontconfig-config_2.11.0-0ubuntu4.2_all.deb                    -O fontconfig.deb
   - wget $securityBaseURL/f/fontconfig/libfontconfig1_2.11.0-0ubuntu4.2_amd64.deb                     -O libfontconfig.deb
