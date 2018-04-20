@@ -27,15 +27,15 @@ before_install:
   - wget $securityBaseURL/g/gcc-5/gcc-5-base_5.4.0-6ubuntu1~16.04.9_amd64.deb                         -O gcc-5-base.deb
   - wget $securityBaseURL/g/gcc-5/libstdc++6_5.4.0-6ubuntu1~16.04.9_amd64.deb                         -O libstdc.deb
   - wget $securityBaseURL/g/gcc-5/libgomp1_5.4.0-6ubuntu1~16.04.9_amd64.deb                           -O libgomp1.deb
-  - wget $securityBaseURL/g/graphite2/libgraphite2-3_1.3.6-1ubuntu0.14.04.1_amd64.deb                 -O libgraphite.deb
-  - wget $securityBaseURL/g/gnutls26/libgnutls26_2.12.23-12ubuntu2.7_amd64.deb                        -O libgnutls.deb
+  - wget $securityBaseURL/g/graphite2/libgraphite2-3_1.3.6-1ubuntu1_amd64.deb                         -O libgraphite.deb
+  - wget $securityBaseURL/g/gnutls26/libgnutls26_2.12.23-12ubuntu2.8_amd64.deb                        -O libgnutls.deb
   - wget $securityBaseURL/g/gtk+2.0/libgtk2.0-0_2.24.23-0ubuntu1.4_amd64.deb                          -O libgtk2.0.deb
   - wget $securityBaseURL/h/harfbuzz/libharfbuzz0b_0.9.27-1ubuntu1.1_amd64.deb                        -O libharfbuzz.deb
   - wget $securityBaseURL/j/json-c/libjson-c2_0.11-3ubuntu1.2_amd64.deb                               -O libjsonc2.deb
   - wget $securityBaseURL/j/json-c/libjson0_0.11-3ubuntu1.2_amd64.deb                                 -O libjson0.deb
-  - wget $securityBaseURL/libt/libtasn1-6/libtasn1-6_3.4-3ubuntu0.4_amd64.deb                         -O libtasn.deb
-  - wget $securityBaseURL/libg/libgcrypt11/libgcrypt11_1.5.3-2ubuntu4.4_amd64.deb                     -O libgcrypt.deb
-  - wget $securityBaseURL/t/tiff/libtiff5_4.0.6-1ubuntu0.1_amd64.deb                                  -O libtiff5.deb
+  - wget $securityBaseURL/libt/libtasn1-6/libtasn1-6_3.4-3ubuntu0.6_amd64.deb                         -O libtasn.deb
+  - wget $securityBaseURL/libg/libgcrypt11/libgcrypt11_1.5.3-2ubuntu4.5_amd64.deb                     -O libgcrypt.deb
+  - wget $securityBaseURL/t/tiff/libtiff5_4.0.6-1ubuntu0.4_amd64.deb                                  -O libtiff5.deb
   - wget $mirrorBaseURLMain/c/cairo/libcairo2_1.13.0~20140204-0ubuntu1_amd64.deb                     -O libcairo2.deb
   - wget $mirrorBaseURLMain/f/fftw3/libfftw3-double3_3.3.3-7ubuntu3_amd64.deb                        -O libfftw3-double.deb
   - wget $mirrorBaseURLMain/f/fftw3/libfftw3-single3_3.3.3-7ubuntu3_amd64.deb                        -O libfftw3-single.deb
