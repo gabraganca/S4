@@ -60,6 +60,7 @@ before_install:
   - wget $mirrorBaseURLUniv/g/grib-api/libgrib-api0_1.14.4-5_amd64.deb                           -O libgrib.deb
   - wget $mirrorBaseURLUniv/g/gnudatalanguage/libgnudatalanguage0_0.9.6v2-1build1_amd64.deb      -O gdl0.deb
   - wget $mirrorBaseURLUniv/h/hdf5/libhdf5-10_1.8.16+docs-4ubuntu1_amd64.deb                     -O libhdf5.deb
+  - wget $mirrorBaseURLUniv/libh/libhdf4/libhdf4-0-alt_4.2r10-0ubuntu1_amd64.deb                 -O libhdf4.deb
   - wget $mirrorBaseURLUniv/liba/libaec/libaec0_0.3.2-1_amd64.deb                                -O libaec0.deb
   - wget $mirrorBaseURLUniv/liba/libaec/libsz2_0.3.2-1_amd64.deb                                 -O libsz2.deb
   - wget $mirrorBaseURLUniv/n/netcdf/libnetcdf11_4.4.0-2_amd64.deb                               -O libnetcdf11.deb
@@ -127,6 +128,7 @@ before_install:
   - sudo dpkg -i libwxgtk3.deb
   - sudo dpkg -i libudunits.deb
   - sudo dpkg -i pslib.deb
+  - sudo dpkg -i libhdf.deb
   - sudo dpkg -i gdl0.deb
   ## Install GDL v0.9.6v2
   - wget $mirrorBaseURL/universe/g/gnudatalanguage/gnudatalanguage_0.9.6v2-1build1_amd64.deb -O gdl.deb
