@@ -128,7 +128,7 @@ before_install:
   - sudo dpkg -i libwxgtk3.deb
   - sudo dpkg -i libudunits.deb
   - sudo dpkg -i pslib.deb
-  - sudo dpkg -i libhdf.deb
+  - sudo dpkg -i libhdf4.deb
   - sudo dpkg -i gdl0.deb
   ## Install GDL v0.9.6v2
   - wget $mirrorBaseURL/universe/g/gnudatalanguage/gnudatalanguage_0.9.6v2-1build1_amd64.deb -O gdl.deb
