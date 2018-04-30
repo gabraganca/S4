@@ -15,7 +15,7 @@ VERSION = '0.3.dev'
 if glob('s4/synthesis/synplot/synspec49') == []:
     if find_executable('gfortran'):
         print 'gfortran available.\nCompiling Synspec49.'
-        command = ['gfortran', '-g', '-fno-automatic', '-static', '-o']
+        command = ['gfortran', '-fno-automatic', '-O3', '-o']
         sp.check_call(command +                                    \
                       ['s4/synthesis/synplot/synspec49',           \
                        's4/synthesis/synplot/synspec49.f'])
